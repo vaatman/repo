@@ -1,0 +1,17 @@
+The following table shows some of the operations that administrators can use when working with conditionals:
+
+OPERATION			EXAMPLE
+Equal (value is a string)	ansible_machine == “x86_64”
+Equal (value is numeric)	max_memory == 512
+Less than			min_memory < 128
+Greater than			min_memory > 256
+Less than or equal to		min_memory <= 256
+Greater than or equal to	min_memory >= 512
+Not equal to			min_memory != 512
+Variable exists			min_memory is defined
+Variable does not exist		min_memory is not defined
+Boolean variable is true	memory_available (The values of 1, True, or yes evaluate to true)
+Boolean variable is false	not memory_available (The values of 0, False, or no evaluate to false)
+
+First variable’s value is present as a value in second variable’s list	ansible_distribution in supported_distros
+ The last entry in the preceding table might be confusing at first. The following example illustrates how it works.
