@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# extra pkgs for Debian9
+
+sudo apt-get install \
+	claudia \
+	cadence cadence-tools
