@@ -1,0 +1,32 @@
+---
+- hosts: rhel8s
+  become: true
+  gather_facts: true
+
+  vars:
+    - krb5file: /tmp/krb5.conf
+
+  tasks:
+    - name: remove fake krb5.conf file
+      file:
+        path: "{{ krb5file }}"
+    - name: create bogus krb5.conf file
+      copy:
+        content: |2
+            .local.net = LOCAL.NET
+            local.net = LOCAL.NET
+        dest: "{{ krb5file }}"
+
+    - name: create the required string
+      lineinfile:
+        path: "{{ krb5file }}"
+        regexp: '^\s+.local.net\s=\s'
+        line: '  .rws.local = IDM.RWS.LOCAL'
+
+    - name: check contents
+      shell: cat {{ krb5file }}
+      register: krb5out
+
+    - name: print
+      debug:
+        msg: "{{ krb5out.stdout }}"
