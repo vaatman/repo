@@ -1,0 +1,16 @@
+. clone
+. copy local id_rsa.pub on GitHub
+  > github.com > SSH and GPG keys > SSH keys > New SSH key
+  paste your local key
+
+. add dir/files
+  $ git add <dir>
+
+. commit dir/files
+  $ git commit -am "some message"
+
+. set remote url to use ssh
+  $ git remote set-url origin git@github.com:hennievaatstra/hennievaatstra.git
+
+. push 
+  $ git push
