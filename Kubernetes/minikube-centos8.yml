@@ -57,7 +57,11 @@
       shell: |
         cp /home/hennie/kubectl /usr/local/bin
     - name: set properties
-      command: chmod +x /usr/local/bin/kubectl
+      #command: chmod +x /usr/local/bin/kubectl
+      file:
+        path: /usr/local/bin/kubectl
+        state: touch
+        mode: 0755
 
     - name: install minikube
       shell: |
@@ -67,7 +71,11 @@
       shell: |
         cp /home/hennie/minikube /usr/local/bin
     - name: set properties
-      command: chmod +x /usr/local/bin/kubectl
+      #command: chmod +x /usr/local/bin/minikube
+      file:
+        path: /usr/local/bin/minikube
+        state: touch
+        mode: 0755
 
     - name: disable swap
       command: swapoff -a
@@ -82,7 +90,11 @@
     - name: add user kubeman
       user:
         name: kubeman
-        groups: kubeman
+        groups: "{{ item }}"
         append: yes
         password: "{{ kubemanpw|password_hash('sha512') }}"
+      loop:
+        - wheel
+        - libvirt
+        - kubeman
 ...
