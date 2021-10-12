@@ -13,20 +13,24 @@
         state: present
 
     - name: install kvm hypervisor
+      command: yum -y install "@virt"
+
+    - name: install more kvm stuff
       yum:
         name: "{{ item }}"
         state: present
       loop:
-        - '@virt'
         - libguestfs-tools
         - virt-manager
 
     - name: ensure sock group is set
       lineinfile:
+        path: /etc/libvirt/libvirtd.conf
         regexp: '^unix_sock_group'
         line: 'unix_sock_group = "libvirt"'
     - name: ensure sock rw is set
       lineinfile:
+        path: /etc/libvirt/libvirtd.conf
         regexp: '^unix_sock_rw_perms'
         line: 'unix_sock_rw_perms = "0770"'
 
@@ -48,7 +52,7 @@
 
     - name: copy to usrlocalbin
       shell: |
-        cp /root/kubectl /usr/local/bin
+        cp /home/hennie/kubectl /usr/local/bin
     - name: set properties
       command: chmod +x /usr/local/bin/kubectl
 
@@ -58,7 +62,7 @@
 
     - name: copy to usrlocalbin
       shell: |
-        cp /root/minikube /usr/local/bin
+        cp /home/hennie/minikube /usr/local/bin
     - name: set properties
       command: chmod +x /usr/local/bin/kubectl
 
@@ -67,4 +71,4 @@
     - name: disable swap fstab
       shell: |
         sed -i '/swap/ s/^/#/' /etc/fstab
-
+...
