@@ -1,6 +1,9 @@
 ---
 - hosts: crdlxhv01
 
+  vars:
+    - kubemanpw: Welcome@2021
+
   tasks:
     - name: update 
       yum:
@@ -71,4 +74,15 @@
     - name: disable swap fstab
       shell: |
         sed -i '/swap/ s/^/#/' /etc/fstab
+
+    - name: ensure groups for user kubeman
+      group:
+        name: kubeman
+        state: present
+    - name: add user kubeman
+      user:
+        name: kubeman
+        groups: kubeman
+        append: yes
+        password: "{{ kubemanpw|password_hash('sha512') }}"
 ...
