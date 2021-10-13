@@ -1,2 +1,119 @@
 ---
-- hosts: kubernetes
+- hosts: node1
+
+  vars:
+    kubemanpw: Welcome@2021
+
+  tasks:
+    - name: disable SElinux
+      command: setenforce 0
+    - name: comment sysconfig
+      lineinfile:
+        path: /etc/sysconfig/selinux
+        regexp: '^SELINUX='
+        line: SELINUX=disabled
+
+    - name: setting for firewall
+      command: modprobe br_netfilter
+    - name: another setting
+      shell: |
+        echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+    - name: add repo
+      #shell: |
+        #dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/kubernetes.repo
+
+    - name: install container.io
+      dnf:
+        name: 'https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm'
+        state: present
+    - name: install docker-ce
+      dnf:
+        name: docker-ce
+        state: present
+    - name: enable docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: create Kubernetes repo
+      yum_repository:
+        name: kubernetes.repo
+        baseurl: 'https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64'
+        description: 'Kubernetes repo'
+        enabled: yes
+        gpgcheck: yes
+        repo_gpgcheck: yes
+        gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+    - name: install Kubernetes
+      dnf:
+        name: kubeadm
+        state: present
+
+    - name: disable swap
+      command: swapoff -a
+    - name: comment swap in fstab
+      lineinfile:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        line: '#\1'
+      tags: swapfstab
+
+    - name: ugly cgroup fix
+      copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+          "exec-opts": ["native.cgroupdriver=systemd"]
+          }
+
+    - name: restart docker
+      service:
+        name: docker
+        state: restarted
+
+    - name: start kubelet
+      service:
+        name: kubelet
+        state: started
+        enabled: yes
+
+    - name: init kubeadm
+      shell: |
+        kubeadm init | tee /root/kubeadmin_init.log 2>&1
+      register: kubeadminit
+
+    - name: print output
+      debug:
+        msg: "{{ kubeadminit.stdout_lines }}"
+
+    - name: add user to start the cluster
+      user:
+        name: kubeman
+        password: "{{ kubemanpw | password_hash('sha512') }}"
+
+    - name: grant sudo passwordless
+      copy:
+        dest: /etc/sudoers.d/kubeman
+        content: 'kubeman ALL=(ALL) NOPASSWD: ALL'
+
+    - name: ensure dir exists
+      file:
+        state: directory
+        path: /home/kubeman/.kube/config
+        owner: kubeman
+        group: kubeman
+        mode: 0700
+
+    - name: copy config files
+      copy:
+        remote_src: yes
+        src: /etc/kubernetes/admin.conf
+        dest: /home/kubeman/.kube/config
+        owner: kubeman
+        group: kubeman
