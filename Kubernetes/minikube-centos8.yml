@@ -1,5 +1,5 @@
 ---
-- hosts: crdlxhv01
+- hosts: kubernetes
 
   vars:
     - kubemanpw: Welcome@2021
@@ -16,7 +16,10 @@
         state: present
 
     - name: install kvm hypervisor
-      command: yum -y install "@virt"
+      #command: yum -y install "@virt"
+      yum:
+        name: '@Virtualization Host'
+        state: present
 
     - name: install more kvm stuff
       yum:
@@ -50,38 +53,26 @@
         enabled: yes
 
     - name: download kubectl
-      shell: |
-        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-
-    - name: copy to usrlocalbin
-      shell: |
-        cp /home/hennie/kubectl /usr/local/bin
-    - name: set properties
-      #command: chmod +x /usr/local/bin/kubectl
-      file:
-        path: /usr/local/bin/kubectl
-        state: touch
+        #curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+      get_url:
+        url: https://storage.googleapis.com/kubernetes-release/release/v1.22.2/bin/linux/amd64/kubectl
+        dest: /usr/local/bin
         mode: 0755
 
     - name: install minikube
-      shell: |
-        curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-
-    - name: copy to usrlocalbin
-      shell: |
-        cp /home/hennie/minikube /usr/local/bin
-    - name: set properties
-      #command: chmod +x /usr/local/bin/minikube
-      file:
-        path: /usr/local/bin/minikube
-        state: touch
+#        curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+      get_url:
+        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        dest: /usr/local/bin/minikube
         mode: 0755
 
     - name: disable swap
       command: swapoff -a
     - name: disable swap fstab
-      shell: |
-        sed -i '/swap/ s/^/#/' /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        line: '# \1'
 
     - name: ensure groups for user kubeman
       group:
