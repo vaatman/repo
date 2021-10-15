@@ -132,24 +132,22 @@
           - /home/kubeman/.kube/config
           - /root/.kube/config
   
-      - name: get kubectl version
-        shell: kubectl version | base64 | tr -d '\n'
-        register: kubectlversion
-        tags: kubeversion
-      - name: setup podnetwork
-        shell: |
-          kubectl apply -y "https://cloud.weave.works/k8s/net?k8s-version={{ kubectlversion }}"
-        tags: podnetwork
-
-      when: inventory_hostname in groups.k8smaster
-      # here ends the K8s master block
+      - name: create script for pod network
+        copy:
+          dest: /root/podnetwork.sh
+          content: |
+            export kubever=$(kubectl version | base64 | tr -d '\n')
+            kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+          mode: 0700
+      - name: run the script
+        command: bash /root/podnetwork.sh
 
     - name: from master, get the string to join the cluster 
       shell: |
         grep -A1 ^kubeadm /root/kubeadmin_init.log |sed "N;s/\n//"|sed 's/\\\t//'
       register: getkubeadmjoinstring
-      tags: getjoinstring
       when: inventory_hostname in groups.k8smaster
+      # here ends the K8s master block
  
 
     - name: create local script to join k8s cluster
@@ -158,10 +156,8 @@
         content: |
           {{ hostvars['node1'].getkubeadmjoinstring.stdout }}
         mode: 0700
-      tags: putjoinstring
       when: inventory_hostname in groups.k8snodes
 
     - name: join the k8s cluster
       shell: bash /root/joink8s.sh
-      tags: joink8s
       when: inventory_hostname in groups.k8snodes
