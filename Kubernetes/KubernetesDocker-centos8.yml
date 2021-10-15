@@ -9,6 +9,7 @@
       block:
       - name: disable SElinux
         command: setenforce 0
+        ignore_errors: true
       - name: comment sysconfig
         lineinfile:
           path: /etc/sysconfig/selinux
@@ -158,8 +159,9 @@
           {{ hostvars['node1'].getkubeadmjoinstring.stdout }}
         mode: 0700
       tags: putjoinstring
+      when: inventory_hostname in groups.k8snodes
 
     - name: join the k8s cluster
-      shell: "/usr/bin/{{ hostvars['node1'].getkubeadmjoinstring.stdout }}"
+      shell: bash /root/joink8s.sh
       tags: joink8s
       when: inventory_hostname in groups.k8snodes
