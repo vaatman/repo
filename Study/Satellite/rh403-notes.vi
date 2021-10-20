@@ -45,6 +45,7 @@ CDN
 
 --- Installing RedHat Satellite
 HW Requirements
-- minimal: x86_64, 4CPU's [2GHz], 20GB.RAM, 4GB.swap, RHEL7
+- minimal: x86_64, 4CPU's [2GHz], 20GB.RAM, 4GB.swap, RHEL7, 6GB.disk
 - firewall ports or RH-Satellite-6 firewalld service
-
+- SELinux set to enforcing
+- chronyd installed and enabled

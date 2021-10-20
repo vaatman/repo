@@ -1,0 +1,20 @@
+---
+- hosts: all
+
+  tasks:
+    - name: update your system
+      block:
+      - name: update
+        yum:
+          name: '*'
+          state: latest
+  
+      - name: disable firewalld
+        service:
+          name: firewalld
+          state: stopped
+          enabled: no
+  
+      - name: reboot
+        reboot:
+      when: inventory_hostname == 'node1'
