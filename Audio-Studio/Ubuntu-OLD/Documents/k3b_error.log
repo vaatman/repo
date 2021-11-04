@@ -1,0 +1,27 @@
+Devices
+-----------------------
+PLEXTOR DVDR    PX-608CU 1.44 (/dev/sr0, CD-R, CD-RW, CD-ROM, DVD-ROM, DVD-R, DVD-RW, DVD-R DL, DVD+R, DVD+RW, DVD+R DL) [DVD-ROM, DVD-R Sequential, DVD-R Dual Layer Sequential, DVD-R Dual Layer Jump, DVD-RAM, DVD-RW Restricted Overwrite, DVD-RW Sequential, DVD+RW, DVD+R, DVD+R Dual Layer, CD-ROM, CD-R, CD-RW] [SAO, TAO, RAW, SAO/R96P, SAO/R96R, RAW/R16, RAW/R96P, RAW/R96R, Restricted Overwrite, Layer Jump] [%7]
+
+K3b::IsoImager
+-----------------------
+mkisofs print size result: 0 (0 bytes)
+
+System
+-----------------------
+K3b Version: 2.0.2
+KDE Version: 4.13.3
+QT Version:  4.8.6
+Kernel:      3.13.0-55-lowlatency
+
+Used versions
+-----------------------
+mkisofs: 1.1.11
+
+mkisofs
+-----------------------
+/usr/bin/genisoimage: Implementation botch. Video pad for file VIDEO_TS.BUP is -1
+/usr/bin/genisoimage: Either the *.IFO file is bad or you found a genisoimage bug.
+
+mkisofs calculate size command:
+-----------------------
+/usr/bin/genisoimage -gui -graft-points -print-size -quiet -volid K3b data project -volset  -appid K3B THE CD KREATOR (C) 1998-2010 SEBASTIAN TRUEG AND MICHAL MALEK -publisher  -preparer  -sysid LINUX -volset-size 1 -volset-seqno 1 -sort /tmp/kde-hennie/k3bc19073.tmp -no-cache-inodes -udf -iso-level 1 -path-list /tmp/kde-hennie/k3bH19073.tmp -dvd-video -f /tmp/kde-hennie/k3bVideoDvd0

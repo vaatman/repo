@@ -1,0 +1,48 @@
+1. do NOT show username in login window
+	$ cd /etc/lightdm/lightdm.conf.d
+	$ sudo vi 50-d430.conf, add:
+	[SeatDefaults]
+	greeter-hide-users=true
+	greeter-show-manual-login=true
+
+2. disable screen blanking in X
+	# sudo vi /etc/lightdm/lightdm.conf
+	add under [SeatDefaults]: 
+	xserver-command=X -s 0 -dpms
+	# reboot
+
+3. disable services by echo'ing 'manual' to following files:
+/etc/init/acpid.override
+/etc/init/cups-browsed.override
+/etc/init/cups.override
+/etc/init/modemmanager.override
+/etc/init/networking.override
+/etc/init/network-manager.override
+/etc/init/whoopsie.override
+
+4. after installing nvidia-331 drivers fonts are too large:
+
+	# grep -i dpi /var/log/Xorg.0.log
+	[    35.099] (--) NVIDIA(0): DPI set to (147, 145); computed from "UseEdidDpi" X config
+
+	# cd /etc/lightdm/lightdm.conf.d
+	# vi 10-xubuntu.conf, add -dpi 96 to X command
+	xserver-command=X -s 0 -dpms -dpi 96
+
+5. on 'Error found when loading /root/.profile: stdin: is not a tty'
+	comment 'mesg n' in /root/.profile
+
+6. fix missing start icon in IceWM (D430)
+	; due to bug in iNtel graphics using 'sna', switch to 'uxa'
+	# cd /etc/X11
+	# mkdir xorg.conf.d
+	# vi 20-intel.conf
+		Section "Device"
+ 		Identifier "Card0"
+ 		Driver "Intel"
+ 		Option "AccelMethod" "uxa"
+		EndSection
+	# reboot
+
+7. download some reverbs for jconvolver
+	# wget kokkinizita.linuxaudio.org/linuxaudio/downloads/jconvolver-reverbs.tar.bz2

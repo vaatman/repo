@@ -1,0 +1,2 @@
+#--- convert .wav's to .mp3's - use only stereo mode (not MS)
+# ls *wav|while read wav; do  lame -m s -b 224 ${wav} $(echo ${wav/wav/mp3} |sed 's/session-//'); done

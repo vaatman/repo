@@ -1,0 +1,20 @@
+#--- Extract channels 1&2 from multichannel audio:
+# sox input.wav output.wav remix 1 2
+
+#--- Convert MidSide to LR Stereo:
+# sox <MS-stereo.wav> <LR-stereo.wav> remix -m 1,2 1,2i
+	;; '-m 1,2 1,2i' == -m <out.L:1,2> <out.R:1,2i>
+#--- Convert MidSide to LR Stereo, amplifying the MID by 3dB:
+# sox madr_oMS.wav tt.wav remix -m 1p3,2 1p3,2i
+
+#--- Create .bin file:
+# sox -S <file.wav> -L -t raw <file.bin>
+	-S	== show progress
+	-L	== endian little
+	-t	== type of audio file (raw)
+
+#--- Extract a part from a large file
+# sox <largefile> <shortfile> trim 2:08:00
+	;; start at 2:08:00 until end
+# sox tt_0001.w64 tt.wav trim 37:00 =39:00
+	;; start at 37:00 and play until 39:00 (trimming to 2 minutes)

@@ -1,0 +1,27 @@
+1a. get non software tree
+ $ cd ~/src
+ $ git clone git://git.tuxfamily.org/gitroot/non/non.git
+
+1b. add some packages
+ $ sudo apt-get install libjpeg8-dev liblo-dev liblrdf0-dev libsigc++-2.0-dev
+
+2. enter tree read build info
+ $ cd non
+ $ view README.build
+
+3. update latest NTK code
+ $ git submodule update --init
+
+4. install NTL system-wide
+ $ cd lib/ntk
+ $ ./waf configure
+ $ ./waf
+ $ sudo ./waf install
+
+5. build all projects
+ $  cd ../..
+ $ ./waf configure
+ $ ./waf
+
+6. install all projects
+ $ sudo ./waf install

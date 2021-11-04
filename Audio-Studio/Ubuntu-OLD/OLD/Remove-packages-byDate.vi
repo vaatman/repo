@@ -1,0 +1,8 @@
+Remove install packages based on install date
+=============================================
+
+1. create list of packages
+	# grep ' install ' /var/log/dpkg.log |grep 2017-11-17 > list
+
+2. remove
+	# apt-get purge $(awk '{print $4}' list)

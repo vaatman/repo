@@ -1,0 +1,26 @@
+Install Postfish on ubuntu 17.04
+================================
+
+1. install subversion
+	$ sudo apt-get install subversion
+2. get postfish source
+	$ svn co http://svn.xiph.org/trunk/postfish postfish
+3. install dependencies
+	$ sudo apt-get update
+	: default libao is too low version, install newer:
+	 $ cd ../Downloads
+	 $ wget http://downloads.xiph.org/releases/ao/libao-1.2.0.tar.gz
+	 $ cd ../src
+	 $ tar zxvf libao-1.2.0.tar.gz 
+	 $ cd libao-1.2.0/
+	 $ ./configure
+	 $ make && sudo make install
+
+4. install
+	$ cd ..
+	$ sudo apt-get install fftw3-dev libgtk2.0-dev libao-dev
+5. compile
+	$ cd postfish
+	$ make
+6. install
+	$ sudo make install

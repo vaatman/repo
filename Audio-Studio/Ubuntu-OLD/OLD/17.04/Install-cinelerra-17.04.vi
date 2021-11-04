@@ -1,0 +1,14 @@
+Install cinelerra video editor on 17.04
+=======================================
+
+1. add ppa
+ $ sudo add-apt-repository ppa:cinelerra-ppa/ppa
+
+2. update
+ $ sudo apt-get update
+
+3. install
+ $ sudo apt-get install cinelerra-cv
+
+4. run
+ $ cinelerracv
