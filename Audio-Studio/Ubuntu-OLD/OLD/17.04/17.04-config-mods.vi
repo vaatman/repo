@@ -1,0 +1,18 @@
+FIX the NOT-working wifi, this is due to a bug in NM 1.4.4.
+
+1. Add following 2 line at the bottom:
+# tail -2 /etc/NetworkManager/NetworkManager.conf 
+[device]
+wifi.scan-rand-mac-address=no
+
+2. restart NM
+
+-----
+
+Enable auto-login
+1. cd /etc/lightdm/
+2. $ sudo vi lightdm.conf, add:
+[SeatDefaults]
+autologin-user=hennie
+autologin-user-timeout=0
+greeter-session=lightdm-gtk-greeter

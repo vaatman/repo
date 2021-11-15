@@ -1,0 +1,7 @@
+convert an [lightdm wallpaper] SVG to PNG [for WindowMaker]
+
+1. go to WindowMaker dir
+	$ cd /GNUstep/Library/WindowMaker/Backgrounds/
+
+2. use Inkscape to convert svg to png:
+	$ inkscape -z -e 1920x1200.png -w 1920 -h 1200 /usr/share/wallpapers/SoftWaves/contents/images/1920x1200.svg

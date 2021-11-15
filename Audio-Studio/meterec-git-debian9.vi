@@ -1,0 +1,21 @@
+Install meterec on ubuntu 17.04
+===============================
+
+1. get source code
+	git clone https://github.com/fafaman/meterec meterec-code
+
+. install dependencies
+	$ sudo apt-get install ncurses-dev libsndfile1-dev libconfig-dev automake make libjack-dev
+
+2. configure
+ $ cd meterec-code
+ $ ./autotool/autotool.sh
+discard following errors:
+ ": warning: autoconf input should be named 'configure.ac', not 'configure.in'" 
+ $ ./configure
+
+3. compile
+ $ make all
+
+4. install
+ $ sudo make install

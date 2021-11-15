@@ -1,0 +1,11 @@
+.Claudia didnt' 'see' firewire drivers with kernel-rt
+- reboot in 'normal kernel
+- start claudia + firewire
+- reboot in kernel-rt
+- now things DO start
+
+.logs go into ~/.logs/ladish/ladish.log
+
+.start a 24ch channel meterbridge:
+$ meterbridge -t dpm -c 24 : : : : : : : : : : : : : : : : : : : : : : : :
+

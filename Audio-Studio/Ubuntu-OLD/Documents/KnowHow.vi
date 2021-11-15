@@ -1,0 +1,2 @@
+Extract first 2 channels from a multitrack file
+# sox cant_za_0072.w64 test.wav remix 1 2

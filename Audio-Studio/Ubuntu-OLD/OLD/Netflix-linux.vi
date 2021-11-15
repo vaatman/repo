@@ -1,0 +1,9 @@
+Add Pipelicght repo [for 'Silverlight']:
+$ sudo add-apt-repository ppa:pipelight/stable
+
+Then, install Pipelight using the command:
+$ sudo apt-get update && sudo apt-get install pipelight-multi
+
+Once Pipelight has been installed, you need to configure it and enable Silverlight using the command:
+
+$ sudo pipelight-plugin --enable silverlight

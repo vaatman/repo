@@ -1,0 +1,15 @@
+1. start dbus in debug mode:
+	# dbus-monitor "member=setValue"
+
+2. open ffado-mixer
+
+3. click PhantomPower button [switching on] gives:
+method call sender=:1.14 -> dest=:1.15 serial=1953 path=/org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 1
+
+4. click PhantomPower button [switching off] gives:
+method call sender=:1.14 -> dest=:1.15 serial=3105 path=/org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 0
+
+5. #3 could be replicated as follows:
+dbus-send --print-reply --dest=org.ffado.Control path=/org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower org.ffado.Control.Element.MatrixMixer.setValue int32:0 int32:0 double:1

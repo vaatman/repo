@@ -1,0 +1,33 @@
+0. Open a terminal
+
+1. Install sqlite
+sudo apt-get install sqlite3
+
+2. Make a backup copy of your database
+cp ~/.gnome2/f-spot/photos.db ~/.gnome2/f-spot/photos.db.bak
+
+3. Export your photos table
+sqlite3 ~/.gnome2/f-spot/photos.db ".dump photos" > photos.sql
+
+4. Edit the file with gedit
+gedit photos.sql
+
+5. Delete the second line of the photos.sql file
+...CREATE TABLE photos...
+
+6. Replace that line with
+DELETE FROM photos;
+
+7. You will see that the path for your pictures points to your old $HOME. Replace the path of your pictures in the file with your new HOME
+
+8. Save the file and quit gedit
+
+9. Re-import the file
+sqlite3 ~/.gnome2/f-spot/photos.db < photos.sql
+
+10. Launch f-spot. You should be an happy man now
+
+11. If it all worked remove the backup of your database and the sql file
+rm ~/.gnome2/f-spot/photos.db.bak
+rm photos.sql
+

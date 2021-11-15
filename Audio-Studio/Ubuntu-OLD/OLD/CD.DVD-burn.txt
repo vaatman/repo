@@ -1,0 +1,94 @@
+COPY ---------------------------------------------------------------------------
+
+Copy an audio CD in the most accurate way, first run:
+	# icedax dev=/dev/cdrom -vall cddb=0 -B -Owav
+	then extract info:
+	# wodim dev=/dev/cdrw1 -v -dao -useinfo -text  *.wav
+
+	or simpler, no trackid's ISRC's:
+	# icedax dev=/dev/cdrom -H -B -Owav
+
+
+Extract an entire disc, putting each track in a separate file:
+	# cdparanoia -B
+
+Extract audio up to a certain track (#7) in separate files:
+	# cdparanoia -B -- -7
+	The "--" above is to distinguish "-3" from an option flag.
+
+
+BURN ---------------------------------------------------------------------------
+
+Burn audio CD in the external USB Plexwriter:
+	# cdrdao write --device /dev/sr1 ardour-cdexport-01.toc 
+Batchmode:
+	# cdrdao write --eject -n --device /dev/sr1 r2_session.toc
+Burn audio CD in the external D430 writer:
+	# cdrdao write --device /dev/sr0 --eject --driver generic-mmc-raw CD02.toc
+
+Burn audio CD on external D430 writer from Reaper cue/bin
+	: also have a .wav render/export
+	: change .bin to .wav in the cue file
+	: then create a .toc
+	# cue2toc -o <outfile.toc> <infile.cue>
+	: burn
+	# cdrdao write --eject --device /dev/sr0 CD_01-all.cue
+
+Blank a CD-RW in the the external USB Plexwriter:
+	# wodim dev=/dev/cdrw1 blank=fast
+
+Burn an .iso image to the external USB Plexwriter:
+	# wodim -v dev=/dev/cdrw1 <file.sio>
+
+Burn file/dir to the external USB PlexWriter:
+	# mkisofs -r -o tt.iso /data/win_d/Audio/CD_Bovendonk/exports/ScholaAll-02_+12dB.mp3
+	# wodim -v -dao speed=4 dev=/dev/cdrw1 tt.iso
+
+Burn file directly to external USB PlexWriter:
+	# mkisofs -J -r ScholaAll-03.wav| cdrecord dev=/dev/cdrw1 blank=fast -
+
+TOC / CUE / DDP ----------------------------------------------------------------
+
+Create .bin file:
+	# sox -S <file.wav> -L -t raw <file.bin>
+
+Convert .toc to .cue:
+	# toc2cue <file.toc> <file.cue>
+	# edit <file.cue>, removed 'FLAGS DCP'
+	leaving only:
+		FILE "cuetest.bin" BINARY
+		TRACK 01 AUDIO
+ 		TITLE "Track01"
+ 		INDEX 01 00:00:00
+		TRACK 02 AUDIO
+ 		TITLE "Track02"
+ 		INDEX 01 03:26:02
+ 		.....
+	# cdrdao write --device /dev/cdrw1 --speed 4 <file.cue>
+
+Extract .wav from .cue & .cbin:
+	# bchunk -w <file.bin> <file.cue> <outputname>
+
+Create DDP image:
+	# software: ddp.andreasruge.de
+	files: cd02.bin (audiodata), cd02.cue (cue,cutsheet) created in NERO
+	# mkdir <OUTDIR>
+	# cue2ddp cd02.cue <OUTDIR>
+
+DVD  ---------------------------------------------------------------------------
+
+Commandline:
+
+# growisofs -speed=2 -dvd-compat -Z /dev/cdrom -dvd-video -V “DVD_LABEL” /path/to/the/VIDEO_TS/directory
+
+:: -speed=2 limits the speed to insure a successful burn and playing in set-top dvd players.
+:: /dev/cdrom – location of your cd/dvd burning device. change accordingly
+:: “DVD_LABEL” – label the dvd to be burned with whatever label you choose
+:: /path/to/the/VIDEO_TS/directory – change accordingly. example: /mnt/movies/Avatar (provide the path to the parent directory of the VIDEO_TS folder)
+
+
+--with K3B
+1) Click K3b launcher to open in
+2) Choose the video DVD option
+3) Drag the VIDEO_TS folder to it
+4) Click the Burn button.

@@ -1,0 +1,18 @@
+Switch the p48 on/off
+
+FIRST start ffado-dbus-server:
+$ ffado-dbus-server &
+
+--- ON:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower org.ffado.Control.Element.Discrete.setValue int32:1
+
+stdout:
+method return sender=:1.24 -> dest=:1.43 reply_serial=2
+   int32 1
+
+--- OFF:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower org.ffado.Control.Element.Discrete.setValue int32:0
+
+stdout:
+method return sender=:1.24 -> dest=:1.44 reply_serial=2
+   int32 0
