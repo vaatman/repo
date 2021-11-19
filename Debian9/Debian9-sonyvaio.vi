@@ -7,3 +7,4 @@ sudo apt-get install xterm rsync \
 	zita-at1 zita-rev1 zita-bls1 zita-mu1 \
 	soundconverter sox \
 	jamin jack-mixer \
+	gcc sysstat
