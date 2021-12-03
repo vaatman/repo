@@ -124,6 +124,7 @@
 
     - name: install Calico Pod network add-on
       shell: |
-        kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml 
-        kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
+        su hennie -c "kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml"
+        su hennie -c "kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml"
+      tags: calico
 
