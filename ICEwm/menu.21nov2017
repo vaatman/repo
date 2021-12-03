@@ -1,0 +1,145 @@
+# This is an example for IceWM's menu definition file.
+#
+# Place your variants in /etc/icewm or in $HOME/.icewm
+# since modifications to this file will be discarded when you
+# (re)install icewm.
+#
+# prog <displayname> <icon> <app>
+prog "xterm default" xterm xterm -sb
+prog "xterm huge" xterm xterm -font 10x20 -sb
+prog PCmanFM pcmanfm pcmanfm
+separator
+prog "Cadence sessions" cadence cadence
+menu AudioFire4 folder {
+prog "AF4 p48 on" firewire /home/hennie/bin/p48 on
+prog "AF4 p48 off" firewire /home/hennie/bin/p48 off
+separator
+prog "ch1 -10" firewire /home/hennie/bin/af4-pad.sh 1 -10
+prog "ch1 +4"  firewire /home/hennie/bin/af4-pad.sh 1 +4
+prog "ch2 -10" firewire /home/hennie/bin/af4-pad.sh 2 -10
+prog "ch2 +4"  firewire /home/hennie/bin/af4-pad.sh 2 +4
+prog "ch3 -10" firewire /home/hennie/bin/af4-pad.sh 3 -10
+prog "ch3 +4"  firewire /home/hennie/bin/af4-pad.sh 3 +4
+prog "ch4 -10" firewire /home/hennie/bin/af4-pad.sh 4 -10
+prog "ch4 +4"  firewire /home/hennie/bin/af4-pad.sh 4 +4
+}
+separator
+prog pulseaudio pulseaudio pulseaudio
+prog PaVucontrol pavucontrol pavucontrol
+prog "Start jackdbus" qjackctl jackdbus auto
+prog "Claudia Studios" claudia claudia
+separator
+prog "Jack Control" qjackctl qjackctl
+prog Patchage patchage patchage
+prog "Aqualung Jack" aqualung aqualung -o jack
+prog "Aqualung Pulse" aqualung aqualung -o pulse
+prog Totem totem totem
+separator
+menu Audio folder {
+#menu AlsaControl folder {
+prog pulseaudio pulseaudio pulseaudio
+prog PaVucontrol pavucontrol pavucontrol
+prog AlsaMixer alsamixergui alsamixergui
+#}
+separator
+prog "FR2LE style xterm" xterm xterm -font 10x20 -sb -bg darkorange -fg black
+prog "NON MS-decoder" non-mixer non-mixer /home/hennie/Configs/NON/MS-decoder
+#prog "SplineEQ" carla carla -c /home/hennie/Configs/Carla/Carla-SplineEQ.carxp
+separator
+prog NON-timeline non-timeline non-timeline
+prog NON-mixer non-mixer non-mixer
+prog FFADO-mixer firewire ffado-mixer
+prog "Stop FFADO-dbus" firewire pkill -f 'ffado-dbus-server -v3'
+separator
+prog "Cadence sessions" cadence cadence
+prog "Claudia studios" claudia claudia
+prog "Carla VST effects" carla carla
+prog "Catia patchbay" catia catia
+separator
+prog "Zita AutoTune" redzita zita-at1
+prog "Zita Reverb" redzita zita-rev1
+prog "Zita Blumlein Shuffler" redzita zita-bls1
+prog "Zita Monitoring Unit" redzita zita-mu1
+prog "Zita Digital Peaklevel Limiter (2ch)" redzita zita-dpl1 -k 2
+prog "JcGui" Jc_Gui /usr/local/bin/Jc_Gui
+separator
+prog JKmeter jkmeter jkmeter -H
+prog "Jack Noisemeter" jnoisemeter jnoisemeter
+prog "Japa Analyser" japa japa -J
+prog "Jaaa Analyser" jaaa jaaa -J
+prog Mbridge meterbridge /root/bin/mbridge.sh
+separator
+prog "Aqualung Jack" aqualung aqualung -D
+prog "Aqualung" aqualung aqualung
+prog SoundConverter soundconverter soundconverter
+separator
+prog Ardour5 ardour5 ardour5
+prog Audacity audacity audacity
+prog Jamin jamin jamin
+prog "Jack Mixer" jack_mixer jack_mixer
+separator
+prog "Calf JACK Host" calfjackhost calfjackhost
+prog "JackRack" jack-rack jack-rack
+separator
+#prog "FreqTweak" freqtweak freqtweak
+#separator
+prog Totem totem totem
+prog "Asunder CD-ripper" asunder asunder
+#}
+#separator
+#menu CD.tools folder {
+prog wavbreaker wavbreaker wavbreaker
+}
+separator
+menu Video folder {
+prog vlc vlc vlc
+prog lxRandr lxrandr lxrandr
+separator
+prog Kino kino kino
+prog Avidemux avidemux avidemux2_gtk
+prog OpenShot kino openshot
+prog Handbrake handbrake handbrake
+prog K3B k3b k3b
+}
+separator
+menu Image folder {
+prog Ristretto ristretto ristretto
+prog Shotwell shotwell shotwell
+prog F-Spot f-spot f-spot
+prog Gwenview gwenview gwenview
+prog "Mirage ImageViewer" mirage mirage
+prog RawTherapee rawtherapee rawtherapee
+prog "Inkscape" inkscape inkscape
+prog ufraw ufraw ufraw
+prog rawstudio rawstudio rawstudio
+prog scrot scrot scrot
+}
+separator
+menu Internet folder {
+prog Firefox firefox firefox
+prog Sky(pe) sky sky
+prog Chrome google-chrome google-chrome
+prog FileZilla filezilla filezilla
+prog Transmission transmission transmission-gtk
+}
+separator
+menu Games folder {
+prog Pinball pinball /home/hennie/bin/pbf.sh
+}
+separator
+menu Office folder {
+prog AbiWord abiword abiword
+prog "LibreOffice Calc" libreoffice-calc libreoffice --calc
+prog "Libreoffice Writer" libreoffice-writer libreoffice --writer
+prog "Scribus" scribus scribus
+prog "Frescobaldi" frescobaldi frescobaldi
+prog Evince evince evince
+prog TrueCrypt truecrypt truecrypt
+prog VeraCrypt veracrypt veracrypt
+}
+separator
+menu Connectivity folder {
+#prog F5-VPN network xterm -hold -e f5vpn-login --dont-check-certificates vaatstra@gatekeeper.catena.nl
+}
+prog "Battery %" xterm xterm -hold -e '/usr/bin/upower -i $(upower -e | grep 'BAT')|grep -e time -e percentage'
+prog "ScreenBlank 5min" xterm /home/hennie/bin/scr.sh

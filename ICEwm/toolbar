@@ -1,0 +1,70 @@
+# This is an example for IceWM's toolbar definition file.
+#
+# Place your variants in /etc/icewm or in $HOME/.icewm
+# since modifications to this file will be discarded when you
+# (re)install icewm.
+#
+separator
+prog "xterm" xterm xterm -font 10x20 -sb
+#prog "nmtui" network-connect xterm -font 10x20 -e nmtui
+prog wicd-gtk wicd-gtk wicd-gtk
+prog PCmanFM pcmanfm pcmanfm
+prog "Cadence" cadence cadence
+prog Alsamixer jack_mixer alsamixergui
+#prog Firefox firefox /usr/bin/firefox
+prog Vivaldi vivaldi /usr/bin/vivaldi
+separator
+prog VeraCrypt veracrypt veracrypt
+prog "LibreOffice Calc" libreoffice-calc libreoffice --calc
+separator
+menu Audio folder {
+prog "QJackCTL" qjackctl qjackctl
+prog pulseaudio pulseaudio pulseaudio
+prog PaVucontrol pavucontrol pavucontrol
+prog AlsaMixer alsamixergui alsamixergui
+separator
+prog "FR2LE style xterm" xterm xterm -font 10x20 -sb -bg darkorange -fg black
+prog "NON MS-decoder" non-mixer non-mixer /home/hennie/Configs/NON/MS-decoder
+prog "NON 88omni.MS-decoder" non-mixer non-mixer /home/hennie/Configs/NON/88omniMS
+#prog "SplineEQ" carla carla -c /home/hennie/Configs/Carla/Carla-SplineEQ.carxp
+separator
+prog NON-timeline non-timeline non-timeline
+prog NON-mixer non-mixer non-mixer
+prog FFADO-mixer firewire ffado-mixer
+prog "Stop FFADO-dbus" firewire pkill -f 'ffado-dbus-server -v3'
+prog "Cadence sessions" cadence cadence
+prog "Claudia studios" claudia claudia
+prog "Carla VST effects" carla carla
+prog "Catia patchbay" catia catia
+separator
+prog "Zita AutoTune" redzita zita-at1
+prog "Zita Reverb" redzita zita-rev1
+prog "Zita Blumlein Shuffler" redzita zita-bls1
+prog "Zita Monitoring Unit" redzita zita-mu1
+prog "Zita Digital Peaklevel Limiter (2ch)" redzita zita-dpl1 -k 2
+prog "JcGui" Jc_Gui /usr/local/bin/Jc_Gui
+separator
+prog JKmeter jkmeter jkmeter -H
+prog "JNoisemeter" jnoisemeter jnoisemeter
+prog "Japa Analyser" japa japa -J
+prog "Jaaa Analyser" jaaa jaaa -J
+prog "Spek" spek spek
+prog Mbridge meterbridge /root/bin/mbridge.sh
+separator
+prog "Aqualung Jack" aqualung aqualung -D
+prog "Aqualung" aqualung aqualung
+prog SoundConverter soundconverter soundconverter
+separator
+prog Ardour5 ardour5 ardour5
+prog Audacity audacity audacity
+prog Jamin jamin jamin
+prog "Jack Mixer" jack_mixer jack_mixer
+separator
+prog "Calf JACK Host" calfjackhost calfjackhost
+prog "JackRack" jack-rack jack-rack
+separator
+#separator
+prog Totem totem totem
+prog "Asunder CD-ripper" asunder asunder
+prog wavbreaker wavbreaker wavbreaker
+}
