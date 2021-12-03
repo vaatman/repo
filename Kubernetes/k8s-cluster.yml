@@ -1,0 +1,129 @@
+---
+- hosts: rhel8s
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: disable swap
+      command: swapoff -a
+    - name: comment swap in fstab
+      replace:
+        path: /etc/fstab
+        #regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        regexp: '^([^#].*?\sswap\s+.*)$'
+        replace: '# \1'
+
+    - name: install iproute-tc
+      yum:
+        name: iproute-tc
+        state: present
+    - name: configure iptables to see bridged traffic
+      copy:
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          overlay
+          br_netfilter
+    - name: load modules
+      shell: |
+        modprobe overlay
+        modprobe br_netfilter  
+    - name: setup required sysctl params
+      copy:
+        dest: /etc/sysctl.d/k8s.conf
+        content: |
+          net.bridge.bridge-nf-call-iptables  = 1
+          net.ipv4.ip_forward                 = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+    - name: reload sysctl
+      command: sysctl --system
+
+    - name: disable SELinux
+      command: setenforce 0
+    - name: unconfigure SELinux
+      lineinfile:
+        path: /etc/sysconfig/selinux
+        regexp: '^SELINUX='
+        line: SELINUX=disabled
+
+    - name: install CRI-O
+      shell: |
+        export VERSION=1.21
+        sudo curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/CentOS_8/devel:kubic:libcontainers:stable.repo
+        sudo curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:$VERSION.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:$VERSION/CentOS_8/devel:kubic:libcontainers:stable:cri-o:$VERSION.repo
+        sudo yum install cri-o -y
+    - name: enable and start CRI-O
+      service:
+        name: cri-o
+        state: started
+        enabled: yes
+
+    - name: create repo for k8s
+      copy:
+        content: |
+          [kubernetes]
+          name=Kubernetes
+          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+          exclude=kubelet kubeadm kubectl
+        dest: /etc/yum.repos.d/kubernetes.repo
+
+    - name: install k8s
+      yum:
+        state: present
+        name: "{{ item }}"
+        disable_excludes: kubernetes
+      loop:
+        - kubeadm
+        - kubectl
+        - kubelet
+
+    - name: enable and start k8s
+      service:
+        name: kubelet
+        state: started
+        enabled: yes
+
+    - name: open firewalld services for k8s
+      firewalld:
+        service: "{{ item }}"
+        state: enabled
+        permanent: yes
+      loop:
+        - kube-apiserver
+        - etcd-client
+        - etcd-server
+    - name: open firewalld ports for k8s
+      firewalld:
+        port: "{{ item }}"
+        state: enabled
+        permanent: yes
+        immediate: yes
+      loop:
+        - 6443/tcp
+        - 8080/tcp
+        - 10250/tcp
+        - 10251/tcp
+        - 10252/tcp
+        - 30000-32767/tcp
+
+    - name: create k8s cluster
+      shell: kubeadm init --pod-network-cidr=192.168.0.0/16
+
+    - name: make kubeclt work for user hennie
+      shell: |
+        mkdir -p /home/hennie/.kube
+        sudo cp -i /etc/kubernetes/admin.conf /home/hennie/.kube/config
+        sudo chown hennie.hennie /home/hennie/.kube/config
+
+    - name: remove all taints from this node so it can be used as a worker node
+      shell: su hennie -c "kubectl taint nodes --all node-role.kubernetes.io/master-"
+      tags: taint
+
+    - name: install Calico Pod network add-on
+      shell: |
+        kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml 
+        kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
+
