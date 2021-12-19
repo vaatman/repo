@@ -1,0 +1,2 @@
+.burn Debian9 iso to cd, as root run:
+# wodim -v dev=/dev/sr0 -eject -sao debian-9.13.0-i386-netinst.iso
