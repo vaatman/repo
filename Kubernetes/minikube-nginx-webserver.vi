@@ -1,0 +1,30 @@
+. start minikube
+$ minikube start
+
+. create deployment yaml file
+$ kubectl create deployment nginx --image=nginx --dry-run=client -o yaml > nginx.yaml
+
+. edit
+  : set number of replicas
+  : add ports for the containers:
+	ports:
+	- containerPort: 80
+
+. apply the deployment
+$ kubectl apply -f nginx.yaml
+
+. expose the deployment
+$ kubectl expose deployment nginx --port=80 --type=NodePort
+
+. check the minikube address
+$ minikube ip
+
+. check the svc port number
+$ kubectl get svc nginx
+
+. check service running
+$ curl http://<minikube ip>:<svc port>
+$ curl http://192.168.49.2:31297
+$ firefox http://192.168.49.2:31297
+or
+$ minikube service nginx
