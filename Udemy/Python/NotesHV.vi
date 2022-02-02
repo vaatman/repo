@@ -3,3 +3,8 @@ list		- []	collection of values, changeable
 tuple		- ()	collection of values, UNchangeable
 set		- {}	collection of values, changeable, NO duplicates
 dictionary	- {}	key:value pair, changeable
+
+dir()		- returns alphabetized list attributes to function
+help()		- return help on module, eg.: help(dir) or help(math.pow)
+
+if	- use 'else:' at end of if loop for 'cath-all' [nothing matches]
