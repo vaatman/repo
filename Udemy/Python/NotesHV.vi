@@ -1,0 +1,5 @@
+--- ch.5 Collections 
+list		- []	collection of values, changeable
+tuple		- ()	collection of values, UNchangeable
+set		- {}	collection of values, changeable, NO duplicates
+dictionary	- {}	key:value pair, changeable
