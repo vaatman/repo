@@ -21,3 +21,50 @@ writing text from file A to file B:
 . read file A into var		xx = A.read()
 . write to B [as str]		B.write(str(xx))
 . close file			B.close
+
+--- ch.12
+use 'os' module to interface with the Operating System
+
+--- ch.13 Functions
+- a function starts with keyword defining the function: def
+- then the function name, the identifier to reference the function in the program
+eg.:
+def hello_func():
+
+- a function is called by its name, eg. hello_func()
+
+'Named Arguments'
+- call a function with arguments. the names enable to use the args in differing order:
+hello_func(firstName = "Kyle", lastName = "Pew")
+in the hello_func the args are used by 'firstName' and 'lastName' [unordered]
+eg.:
+### beginCode
+def calc(first,last):
+        print("The sum is: ", int(first) + int(last))
+num1 = input("Give number 1: ")
+num2 = input("Give number 2: ")
+calc(first = num1, last = num2)
+### endCode
+
+'Default value'
+- if function is called and required arg is missing, you get an error
+- supply a default value in the arg of the function:
+def hello_func(firstName = "User"):
+- if the function is called without an arg for firstName, "User" is used instead
+
+Variable scope
+- a variable in a function is only available in the function
+- a variable outside a function [=global] is not available in the function
+  unless it is explicitly called/used in the function call [actually its value]
+
+Return keyword
+- to return something out of a function once the function is done
+- it returns a value that can be operated on [eg. print()}
+def addNums(arg1, arg2):
+	total = arg1 + arg2
+	return Total
+newTotal(addNums(3,5))
+print(newTotal)
+ # or:
+print(addNums(3,5))
+
