@@ -1,0 +1,34 @@
+---
+- hosts: rhel8-master
+  become: true
+  gather_facts: true
+
+  tasks:
+  - name: add centos8-master /etc/hosts
+    lineinfile:
+      path: /etc/hosts
+      state: present
+      regexp: '^192.168.121*centos8*master$'
+      line: '192.168.121.92 centos8-master master'
+
+  - name: install rpgsql repo
+    yum:
+      name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+      state: present
+
+  - name: disable rhel8 pgsql module 
+    command: dnf -qy module disable postgresql
+
+  - name: install pgsql13
+    yum:
+      name: postgresql13-server
+      state: present
+
+  - name: initialize pgsql13
+    command: sudo /usr/pgsql-13/bin/postgresql-13-setup initdb
+
+  - name: start and enable postgresql-13 service
+    service:
+      name: postgresql-13
+      state: started
+      enabled: yes
