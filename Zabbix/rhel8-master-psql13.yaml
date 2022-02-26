@@ -8,21 +8,25 @@
     lineinfile:
       path: /etc/hosts
       state: present
-      regexp: '^192.168.121*centos8*master$'
+      regexp: '^(192.168.121.*)centos8(.*master)$'
       line: '192.168.121.92 centos8-master master'
 
-  - name: install rpgsql repo
-    yum:
+  - name: install pgsql repo
+    dnf:
       name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
       state: present
+      validate_certs: no
+      disable_gpg_check: yes
 
   - name: disable rhel8 pgsql module 
-    command: dnf -qy module disable postgresql
+    command: "sudo dnf -qy module disable postgresql"
 
   - name: install pgsql13
-    yum:
+    dnf:
       name: postgresql13-server
       state: present
+      validate_certs: no
+      disable_gpg_check: yes
 
   - name: initialize pgsql13
     command: sudo /usr/pgsql-13/bin/postgresql-13-setup initdb
