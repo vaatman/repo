@@ -1,0 +1,32 @@
+. 3 Vagrants running debian10
+
+. install docker.io
+apt update
+apt install docker.io
+systemctl enable --now docker
+
+. install kubelet kubeadm
+apt install -y gnupg
+vi /etc/apt/sources.list.d/kubernetes.list
+	deb http://apt.kubernetes.io/ kubernetes-xenial main
+apt update
+apt install kubeadm
+
+. configure k8s
+swapoff -a
+kubeadm init 10.244.0.0/16
+kubeadm init --pod-network-cidr=10.244.0.0/16
+
+. configure flannel network
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+. join nodes
+vi joink8s
+	kubeadm join 192.168.121.166:6443 --token vgb59n.f3fu6g7xvtjw1o78 \
+	--discovery-token-ca-cert-hash sha256:5632bb1f90e841143f436952f24231adbd59de500aa6e458693e97df8d28dd99
+	# NOT this exact string but the output from kubeadm init!
+
+. run the 'kubeadm join' from joink8s on the nodes
+
+. on master, patch the nodes for the flannel network
+kubectl patch node debian10-03 -p '{"spec":{"podCIDR":"10.244.0.0/16"}}'
