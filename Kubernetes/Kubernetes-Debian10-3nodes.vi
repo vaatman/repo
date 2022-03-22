@@ -21,7 +21,7 @@
 # apt update
 # apt install kubeadm
 
-. configure k8s
+. configure k8s --- ONLY on master
 # swapoff -a
 # kubeadm init 10.244.0.0/16
 # kubeadm init --pod-network-cidr=10.244.0.0/16
