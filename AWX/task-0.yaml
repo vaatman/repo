@@ -9,4 +9,4 @@
       register: thehostname
 
     - debug:
-        msg: "{{ thehostname }}"
+        msg: "{{ thehostname.stdout }}"
