@@ -1,0 +1,8 @@
+### Adding a new stereo track
+- Add a new track
+- Right-click the big Record button on it
+- Set the track's input to one of the stereo options
+
+You can change the default for new tracks by going to Options | Preferences | Project | Track/Send Defaults and changing the "Record config" setting.
+
+Reaper only has one type of track, as opposed to other DAWs that have specific Mono, Stereo, MIDI, Instrument or Bus tracks.
