@@ -18,3 +18,6 @@ Install avidemux on Debian10
 . build
   $ sudo bash bootStrap.bash --deb --with-cli
 
+. install
+  $ cd debs
+  $ sudo dpkg -i *.deb
