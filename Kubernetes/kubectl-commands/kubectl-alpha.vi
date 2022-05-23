@@ -1,4 +1,0 @@
-These commands correspond to alpha features that are not enabled in Kubernetes clusters by default.
-Available Commands:
-  debug       Attach a debug container to a running pod
-Use "kubectl <command> --help" for more information about a given command.
