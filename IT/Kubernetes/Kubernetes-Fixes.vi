@@ -1,0 +1,31 @@
+### kubelet not starting/healthy on 'kubeadm init ...'
+[kubelet-check] Initial timeout of 40s passed.
+[kubelet-check] It seems like the kubelet isn't running or healthy.
+[kubelet-check] The HTTP call equal to 'curl -sSL http://localhost:10248/healthz' failed with error: Get "http://localhost:10248/healthz": dial tcp [::1]:10248: connect: connection refused.
+
+- FIX: mismatch in cgroup driver between docker and kubernetes
+
+. vi /etc/docker/daemon.json
+{
+"exec-opts": ["native.cgroupdriver=systemd"]
+}
+
+
+### No lease acquired
+
+Try this:
+
+Failed to acquire lease simply means, the pod didn't get the podCIDR. Happened with me as well although the manifest on master-node says podCIDR true but still it wasn't working and funnel going in crashbackloop. This is what i did to fix it.
+
+From the master-node, first find out your funnel CIDR
+
+sudo cat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep -i cluster-cidr
+Output:
+
+- --cluster-cidr=172.168.10.0/24
+Then run the following from the master node:
+
+kubectl patch node slave-node-1 -p '{"spec":{"podCIDR":"172.168.10.0/24"}}'
+where, slave-node-1 is your node where acquire lease is failing podCIDR is the cidr that you found in previous command
+
+source: https://stackoverflow.com/questions/52098214/kube-flannel-in-crashloopbackoff-status

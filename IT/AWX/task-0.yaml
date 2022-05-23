@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: get hostname
+      command: hostname -f
+      register: thehostname
+
+    - debug:
+        msg: "{{ thehostname.stdout }}"

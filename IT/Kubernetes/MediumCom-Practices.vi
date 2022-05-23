@@ -1,0 +1,5 @@
+source: https://medium.com/@sensri108/practice-examples-dumps-tips-for-cka-ckad-certified-kubernetes-administrator-exam-by-cncf-4826233ccc27
+
+----- Dump-1:
+
+1. kubectl run --image=nginx:1.11.9-alpine web --port=80 --port=443
