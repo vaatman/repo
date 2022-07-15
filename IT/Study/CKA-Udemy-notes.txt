@@ -1719,3 +1719,557 @@ Storage in Docker
 
 Section 9 : Networking
 
+9.188	Docker Networking
+	various options:
+	- none		: container nog connected to ANY network
+	- host		: connected to host network, NO isolation between host and container(s)
+	- bridge	: internal private network which host and container(s) attach to, default = 172.17.0.0, dev docker0
+
+9.189	Container Network Interface
+	standard to solve common tasks to create a network
+	- ContainerRuntime must create a network Namespace
+	- Identifies the network the container must attach to
+	- ContainerRuntime invokes NetworkPlugin(bridge) when container is ADDed
+	- ContainerRuntime invokes NetworkPlugin(bridge) when container is DELeted
+	- JSON format of Network Config
+		on "plugin side" of CNI also:
+	- must support cli args ADD/DEL/CHECK
+	- must support parameters, container id, network namespace, etc
+	- must manage IP address assignment to PODs
+	- must return results in a specific format
+
+	Many CRT's implement CNI standards
+		weave | flannel | cilium | vmwareNSX | and others
+	!! Docker does NOT implement a CNI !! it uses it's own standards: Container Network Model
+	$ docker run --netowrk=cni-bridge nginx WON'T WORK
+	instead [how k8s does it]:
+		$ docker run --network=none nginx	
+		$ bridge add <id> /var/run/netn/id	
+
+9.190	Cluster Networking
+	parts:	kube-api				:6443
+			kubelet					:10250
+			kubescheduler			:10251
+			kubecontrollermanager	:10252
+			workernodes				:3000-32767	[exposed for services]
+			etcd					:2379
+			etcd client				:2380 [if any]
+			
+	LAB
+	list number of containers:
+	# netstat -anp | grep etcd
+
+9.194	POD networkgin
+	k8s does NOT come with a builtin networking solution on POD layer
+	- you're expected to solve this yourself
+	
+	k8s Network Model
+	- every POD should have an IP address
+	- every POD should be able to communicate with every other POD in the same node
+	- every POD should be able to communicate with every other POD on other nodes without NAT
+	
+	for a 3 node cluster, 192.168.1.0/24	.11/12/13
+	- create a brdige network on each node
+		# ip link add v-net-0 type bridge
+		# ip link set dev v-net-0 up
+	- assign IP address to the bridge(d) network, choose a private range
+	- assign IP address for the bridge interface	
+		# ip addr add 10.244.1.1./24 dev v-net-0	# node1
+		# ip addr add 10.244.2.1./24 dev v-net-0	# node2
+		# ip addr add 10.244.2.1./24 dev v-net-0	# node3
+	- to connect a container to the network we need a a "pipe" or virtual network cable:
+		# ip link set
+	- add IP address
+		# ip -n <NS> addr add .. 
+	- add route to default GW
+		# ip -n <NS> route add ...
+	- bring up interface
+		# ip -n <NS> link set up
+	- repeat on ALL containers
+	- add route in container to nodes to connect to other PODs
+	
+	Commands can be put in a script for CNI to use
+	 - use custom syntax
+	 - to run scripts, the kubelet looks at:
+		--eni-conf-dir=</etc/cni/net.d>
+		--cni-bin-dir=</etc/cni/bin>
+
+9.195	CNI in Kubernetes
+	CNI location is configured in kubelet.service file
+		$ ps -aux | grep kubelet
+
+9.196	CNI Weave
+	- weave deploys agent on each node in cluster
+	- each agent stores topology of ENTIRE setup
+	- agents communicate with eacht other
+	- weave creates its own bridge on nodes
+	
+	Deploy Weave
+	- weave can be setup as daemon/service on node[s]
+	- weave can be setup as PODs in k8s
+	$ kubectl apply -f "https://cloud.weave.workst/k8s/net?k8s-version=$(kubectl version|base64|tr -d '\n')"
+	- is created as DaemonSet, so one POD of the given kind is deployed on ALL nodes in the cluster
+	
+	LAB
+	find available CNI plugins:
+	$ ls -l /opt/cni/bin
+	$ ps -ef|grep kubelet
+	find plugin that CNI is using/configured:
+	$ ls -l /etc/cni/inet.d
+	find network binary to be executed after the container is created:
+	$ grep -i type /etc/cni/inet.d/<10-flannel.conflist>
+	   flannel
+	
+	LAB
+	deploy Weave net with a different IP range:
+	$ kubectl apply -f "https://.....&env.IPALLOC_RANGE=10.50.0.0/16"
+	!!HV the base command is in the kubernetes documentation according to KodeKloud [but not accurate]
+
+9.201	IPAM	- IP Address Management
+	- how do vBridges assign IP's
+	- how are PODs assigned IP's
+	- how to avoid duplicate IP's
+	
+	weave - default network: 10.32.0.0.12	== 10.32.0.0 to 10.47.255.254 [1million IP's]
+	
+	LAB
+	check default route to be deployed
+	$ kubectl run nginx --image=nginx:alpine
+	$ kubectl exec nginx-ti -- /sbin/ip r
+
+9.204	Service Networking
+	to have PODs communicating, it is customary to configure services
+	
+	ClusterIP type
+	- a POD creates a service, which har an IP
+	- the service IP is accessible
+	- only accessible from INSIDE the cluster
+	
+	NodePort type
+	- another POD creates a service, which also has an IP
+	- the IP is/must be accessible from OUTSIDE the cluster
+	- exposes the port on ALL nodes
+	
+	Service IP's are defined by --service-cluster-ip-range on the kubeapiserver
+	IPtables arranges traffic to destination using NAT
+	
+	LAB
+	find IP for PODs when using Weave:
+	$ kubectl logs weave-net-7hcvf weave -n kube-system
+	find proxy type for a kube-proxy
+	$ kubectl logs <pod> -n kube-system
+	$ kubectl -n kube-system logs weave-net-h2x9w -c weave
+	
+9.207	DNS in Kubernetes
+	= DNS resolution WITHIN the cluster
+	focus on PODs
+	
+	when a service is created, the k8s DNS registers an entry
+	when all in same namespace: reachable by (short) name
+	 otherwise use fullname to reach service in other NS
+	 eg. web-service [when in same namespace]
+	     web-service.apps [when in apps NS]
+	
+	- for each NS the domainservice creates a subdomain with the name of the namespace
+	- all services are grouped further in subdomain called 'svc'
+	- all services&PODs are the also grouped further in subdomain called cluster.local
+	eg. web-service.apps.svc.cluster.local  == FQDN of the service
+	- for PODs DNS records are NOT automatically added
+
+9.208	CoreDNS in Kubernetes
+	- POD (2x) in kube-system NS (= replicaset)
+	- default config = /etc/coredns/Corefile
+	- is passed in as ConfigMap file object
+		- edit this ConfigMap to change CoreDNS config
+	NOTE: POD records set hostname to the IP where dots are replaced by hyphens
+	eg. POD IP == 10.244.1.5
+		-> NDS record:
+			10-244-1-5	10.244.1.5
+	- DNS is deployed as a service
+		- the kubelet knows the DNS server IP in /var/lib/kubelet/config.yaml
+	
+	LAB
+	$ kubectl get pod hr --show-labels
+	$ kubectl get pods --all-namespaces
+	$ kubectl exec hr -- nslookup mysql(.payroll)
+	
+9.211	Ingress
+	revisit 'Services'
+	eg.:
+	- application container		->		run in POD as deployment
+	- appl. needs a db			->		create MySQL POD,
+										create service type ClusterIP accessible to application
+	- to make application available OUTSIDE cluster
+		create service of type NodePort (appl is available on high port)
+	NOW application is available at http://<node.ip>:<port>
+	- when traffic increases: add more appl. replicas
+	- you can add a URL in DNS for the node-ip, and a proxy server to direct <URL>:<80> to <node.ip>:<high.port>
+	THIS is an "on prem" solution
+	In public cloud (eg. GCP) you choose servicetype "LoadBalancer"
+	- this creates a high port on the (appl) service
+	- but also requests config on loadbalancer at eg. GCP
+		which creates loadbalancer to route traffic to all nodes on the high port (as above on prem)
+	- the loadbalancer has een external IP (eg. set to URL in DNS)
+	IF you ADD a new service with it's own loadbalancer it will get a new IP ([to be paid for] and so cannot be used in the same URL
+	That's were Ingress comes in:
+	- think of Ingress a Layer7 loadbalancer
+	- built in to kube cluster
+	- configured using native kube parameters like any k8s object
+	
+	Ingress still needs to be exposed to make it accessible OUTSIDE the cluster
+	- so yo have to use a NodePort
+	- or a LoadBalancer [cloud native]
+	
+	The Ingress controller configures
+	- loadbalancing
+	- authentication
+	- SSL
+	- URL based routing
+	
+	Ingress has 2 parts:
+	- deploy a supported solution [eg.GCE,Contour,Istio,Nginx,HAproxy,Trafic]
+		== Ingress controller
+	- configure them
+		== Ingress Resources [def.yaml's]
+	
+	Kubernetes does NOT come woth an Ingress controller by default
+	GCE & Nginx are supported by the k8s project
+	eg.
+	- an Nginx Ingress Controller is deployed just like a regular deployment
+	- a Service is created to expose it to the outside world
+	- a ConfigMap is used for the deployment to alter settings
+	- a ServiceAccount is needed to change settings
+
+	An Nginx Resource is a set of rules and configurations applied on the Ingress Controller
+	eg.
+	- route traffic to an application service [not to a POD]
+	- route traffic to different applications based on URL etc.
+	
+	LAB
+	get Ingress resources:
+	$ kubectl get ingress --all-namespaces
+	
+	If requirements don't amtch a service in Ingress 'default-http-backend' is used
+	To add a new path to an Ingress:
+	 $ kubectl get ingress -A
+	   app-space ingress-wear-watch .....
+	 $ kubectl edit ingress ingress-wear-watch -n app-space
+	 
+	To create a NEW Ingress in another namespace:
+	$ kubectl get svc -n <NS>
+		note service and port details
+	$ vi pod.yaml
+	$ kubectl apply -f pay.yaml
+	
+		about the Rewrite (target) option in Nginx
+	By default a user accessing:
+	 http://<ingress-service>:<ingress-port>/watch
+	will be redirected to
+	 http://<watch-service>:<port>/watch
+	BUT: target-service is NOT configured with /watch
+		so: error 404
+	FIX: "ReWrite":		annotations:
+						nginx.ingress.kubernetes.io/rewrite-target: /
+		so the user gets to "/" == DocumentRoot
+		
+	To create a Service in a Namespace to make an Ingress:
+	$ kubectl expose -n ingress-space deployment ingres-controller --type=NodePort --port=80 --name=Ingress --dry-run=client -o yaml > Ingress.yaml
+	- manually add nodeport under -port
+	- manually add namespace under metadata:
+	
+SECTION 10	-	Design & Install a Kubernetes Cluster
+
+	first question: What is the PURPOSE of the cluster?
+	- education:	minikube	== single node cluster with kubeadm
+	- dev/test:		multinode, single master multi workers	== kubeadm or quick provision
+	- production:	HA Multinode, multi masters	== kubeadm / GCP / KOPS
+						up to 5000 nodes, 150000 PODs, 300000 Containers (total), 100 PODs per node
+	second question: Cloud on OnPrem?
+	- use kubeadm for on-prem
+	- use GKE for GCP
+	- use Kops for AWS
+	- use AKS for Azure
+	
+	Storage
+		HighPerformance?	SSD backed storage!
+	
+	Nodes
+		Physical or Virtual
+		- minimum is 4 nodes
+		- master vs worker	: master node CAN host workloads [best practice is NOT to do so]
+		- linux x86_64
+		- in large clusters ETCD can be separated to its own node[s]
+		
+10.220	Choosing Kubernetes Infrastructure
+	Linux:
+	- download binaries, run them
+	- minikube: deploys VM, single node
+	- kubeadm: requires VM to be ready, single/multi node
+	
+	To start Kubernetes for Production, 2 "categories" in public/private cloud solutions:
+	"Turnkey solution"				"Hosted Solution"
+	- you provision VMs				- "kuberenets as a service"
+	- you configure VMs				- provider provisions VMs
+	- scripts to deploy				- provider install K8S
+	- maintain VMs					- provider maintains VMs
+	K8s on AWS using KOPS			GoogleContainerEngine
+	OpenShift (RedHat)				OpenShift Online
+	CloudFoundry (tool: BOSH)		Azure Kubernetes Service
+	VMware Cloud PKS				Amazon ElasticContainer Service
+	Vagrant
+	
+	"our choice": Virtualbox
+	
+10.221	HA Kubernetes Cluster
+	If 'master' is gone but workers [+containers] are alive: your apps continue running [until those things fail as well]
+	
+	Consider 'multi master' setup in HA config
+	- HA config has redundancy on EVERY component
+	- no single point of failure
+	
+	Master node hosts:
+	- ETCD
+	- apiserver
+	- controllermanager
+	- controllerscheduler
+	
+	In an HA setup the extra master[s] has/have all the same components
+	
+	API server processes 1 request at a time, multi instances can run at the same time
+	-> active:active mode is possible:
+		- put a loadbalancert in front to share requests
+		  (apiserver's ip is configured at setup from specific node)
+		  
+	Scheduler/ControllerManager
+	- watch the state of the cluster
+	- take actions when needed
+		eg. watch state of PODs -> create new PODs if needed
+	- must NOT run in parallel
+	-> active:standby mode required, configured by "leader election process"
+	
+	ETCD
+	2 topologies:
+	- "stacked"		: as part of master node(s), easier, riskier
+	- "external"	: on separate server, less risky, harer to setup, more servers
+	both are defined in kube-apiserver.service
+	!! ETCD is a distributed service (by default)
+	
+10.222	ETCD in HA setup
+	- ETCD is distributed reliable key:value datastore
+	- simple, secure, fast
+	- ensures data is identical on ALL ETCD servers
+	how:
+		- ETCD elects a "leader", rest is "follower"
+		- the "leader" ensures copies are sent to other nodes
+		- if a write comes through on leader: copies are sent to other nodes
+		- if a write comes in through "follower" it is first sent to the leader who processes the write
+	Leaderelection by RAFT protocol
+	- a "write" is considered complete if it can be writeen on the majority of the nodes in the cluster ["quorum" == N/2 + 1 ]
+		instances	 quorum
+			1			1
+			2			2
+			3			2
+			4			3
+			5			3		5/2 + 1 = 3,5
+			6			4
+			7			4
+			
+	2 ETCD servers is useless: 2/2+1 = 2 
+	- with network segmentation, you have better chances with an ODD number of ETCD nodes
+	- minimal number of ETCD servers for HA is 3
+	- better number of ETCD servers for HA is 5
+	
+11.225	Deployment with kubeadm
+	- install VMs	: 1x master, .x workers
+	- install container runtime	: eg. Docker on all nodes
+	- install kubeadm on all nodes
+	- install master server (kubeadm) + copy configfile
+	- install POD network
+	- join workernodes to masternode
+	kubeadm:	command to bootstrap the cluster
+	kubelet:	component running on ALL nodes, (re)starts PODs,containers,etc.
+	kubectl:	cli util to 'talk' to cluster
+	!! kubeadm does NOT manage (=install) kubelet and/or kubectl
+	
+	LAB
+	# kubeadm init  --apiserver-advertise-address <eth0> \
+					--apiserver-cert-extra-sans controlplane \
+					--pod-network-cidr 10.244.0.0./16
+
+	To get the "join token":
+	# kubeadm token create --print-join-command
+
+SECTION 13	-	Troubleshooting
+
+13.234	Application failure
+	- draw a map/chart how is configured
+	- check application accessible on node port ip, use curl
+	- check Endpoints in service
+	- check labels/selectors
+	- check POD running state
+	- check documentation for more troubleshooting tips
+	- check objectnames vs. "design"
+	
+	LAB
+	to get all objects in NS 'alpha'
+	Q1.
+	$ kubectl get all -n alpha
+		-> check object names ; mysql service had incomplete name
+	Q2.
+	$ kubectl describe svc mysql-service -n beta
+		-> TargetPort: 8080/tcp
+		! should be 3306/tcp as per architecture diagram
+		so: create service yaml file:
+			delete service
+			edit yaml:  8080 -> 3306
+			apply yaml
+	Q3. webpage not even loading
+	$ kubectl -n gamma get ep	[=endpoint]
+		! mysql-service has NO endpoint configured
+		so: delete service mysql-service
+		use imperative command[s] to expose mysql POD:
+		$ kubectl -n gamma expose pod mysql --name=mysql-service
+		$ kubeclt -n gamma get ep
+		-> mysql-service HAS endpoint
+	Q4. mysql VARs as Env VARs
+		DB_User is set to 'sql-user' should be 'root'
+		$ kubectl -n delta describe pod mysql
+		$ kubectl -n delta describe deployments webapp-mysql
+		-> PodTemplate: DB_User
+		so: get deployment yaml file
+			delete deployment
+			edit deployment yaml file
+			recreate deployment
+	Q5. set DB_User in deploymnet
+		set password in mysql POD
+	Q6. not reaching port 30081
+		web_service is configured: NodePort 30088
+		so: update service:		ports:
+								  - nodePort: 30081
+			delete service
+			recreate service
+		DB_User wrong again : edit deployment & mysql POD
+
+13.238	Controlplane failure
+	controlplane components deployed as:
+		- PODs		: check PODs & kubeadm logs
+		- Services	: check service on master node & syslog/journal
+	
+	LAB
+	deployed app NOT working
+	$ kubectl get all -A
+	- check kube-system PODs -> kube-scheduler error, fix kube-scheduler
+	- $ cd /etc/kubernetes/manifests
+	Scale a Deployment to '2'
+	$ kubectl scale deploy app --replicas=2
+	BUT not 2 PODs running
+		! kube-controller-manager error
+		edit manifest: /etc/kubernetes/manifests/kube-controller-manager.yaml
+	Scale to '3' not working
+		! kube-controller-manager-controlplane error
+		"/etc/kubernetes/pki/ca.crt no such file"
+		-> manifest: - hostPath:
+					   path: /etc/kubernetes/WRONG-PKI-DIRECTORY
+	Solution:
+	- if a system POD has a node name attached to its name, it is a STATIC POD on the node
+	eg.: kube-scheduler-master == static pod 'kube-scheduler' at node 'master
+	-> check static pod config on/in kubelet
+	eg. $ cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+	Environment="KUBELET_CONFIG_ARGS"=--config=/var/lib/kubelete/config.yaml
+	  search for 'static pod' in kubernetes documentation
+	  -> grep -i statisPodPath /var/lib/kubelet/config.yaml
+	     staticPodPath: /etc/kubernetes/manifests	[=default]
+		 
+13.241	Worker node failure
+	check node status:	$ kubectl<get|describe> <nodes|node>
+	check kubelet:		$ service kubelet status
+	check kubelet cert:	$ openssl x509 -in <cert> -text -noout
+	
+	LAB
+	check node to connect apiserver port
+	$ journalctl -u kubelet
+	! SEE official documentation "Troubleshooting"
+	$ kubectl get nodes
+	1. -> node01 NotReady
+			$ ssh node01
+			$ systemctl status kubelet
+				= dead -> restart
+	2. -> node01 service kubelet is inactive
+			$ journalctl -u kubelet
+			-> wrong ca.crt file
+			check kubelet service config: /etc/systemd/system/kubelet.service.d/<...>
+			check kubelet config file: /var/lib/kubelet/config.yaml
+			-> clientCAFile: <wrong>
+				$ systemctl daemon-reload
+				$ systemctl restart kubelet
+	3. -> connection refused to APIserver port 6553
+		@master:	$ kubectl clister-info		# port == 6443 !
+		@node:		$ vi /etc/kubernetes/kubelet.conf
+					set:  server: https://172.17.0.22:6443
+
+13.244	Network troubleshooting
+	- k8s uses plugins to setup network
+	- kubelet executes the plugins
+		parameters:	cni-bin-dir		: dir to check for plugins
+					network-plugin	: plugin to use from cni-bin-dir
+		some network plugins:
+		- Weave Net		- the only plugin mentioned in the documentation
+		- Flannel		- does NOT support k8s network policies
+		- Calico		- said to have most advances CNI network plugin
+	
+	IMPORTANT:	"In CKA&CKAD exam you're not asked to install the CNI plugin"
+	
+	Troubleshooting CoreDNS
+	- CoreDNS PODs in pending state:
+		check if network plugins is installed
+	- in CrashLookpBackOff or Error state:
+		- upgrade DOcker version
+		- disable SELinux
+		- set allowPrivilegescalation to 'true' in CoreDNS deployment
+	- if CoreDNS PODs running & kube-dns service is fine
+		- check if kube-dns service has valid endpoints:
+			$ kubectl -n kube-system get ep kube-dns
+	
+	Kube-Proxy
+		- is a network proxy on each node
+		- maintains network rules on nodes
+			- allow network communication to PODS from network sessions inside or outside the cluster
+		- in "kubeadm cluster" kube-proxy is a daemon-set
+		- responsible for watching services and endpoints associated with services
+		- responsible for sending traffic to actual PODs
+	Troubleshooting Kube-proxy
+	- check kube-proxy POD in kube-system namespace
+	- check kube-proxy logs
+	- check configMap and configfile
+	- kube-config is defined in the configMap
+	- check kube-proxy is running inside the container
+		# netstat -plan | grep kube-proxy
+		
+	LAB
+	1. a 2 tier app in 'triton' namespace
+	$ kubectl -n triton get ep <web-service|mysql>
+		<none>
+	$ kubectl get all -A
+		network plugin installed?? no! => fix it!
+	2. same 2tier app:	"502 bad gateway"
+	$ kubectl -n kube-system get all
+		pod/kube-proxy-bfnqn CrashLoopBackOff
+	$ kubectl -n kube-system logs kube-proxy-bfnqn
+		open: /var/lib/kube-proxy/configuration.conf: no such file or directory
+		!! kube-porxy is a daemon-set
+		-> $ kubectl -n kube-system get ds kube-proxy -o yaml
+			@containers:	--config=/var/lib/kube=prixy/configuration.conf
+			BUT:
+			$ kubectl -n kube-system describe configmap kube-proxy
+			@clientConnection: kubeconfig: /var/lib/kube-proxy/config.conf
+				!! different name
+			so:
+			$ kubectl -n kube-system edit ds kube-proxy
+				@spec:	--config=/var/lib/kube-proxy/config.conf
+				! :wq! == restarting the kube-proxy
+				
+SECTION 14	-	Other Topics
+		
+			
+	
+	
