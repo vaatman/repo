@@ -10,7 +10,7 @@
   $ git commit -am "some message"
 
 . set remote url to use ssh
-  $ git remote set-url origin git@github.com:hennievaatstra/hennievaatstra.git
+  $ git remote set-url origin git@github.com:vaatman/repo.git
 
 . push 
   $ git push
