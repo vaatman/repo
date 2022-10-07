@@ -1,0 +1,33 @@
+. install gitlab on rhel8 using the ansible playbook
+
+. create your user account
+. add you SSH key
+
+. create a project in Gitlab
+  > Create blank project 
+    > Project name
+    > Pick a group or username [hennie]
+    > Project slug [the project name]
+    > Private
+    > Initialize repository with a README
+  > Create project
+
+. on the client
+. create a working area
+  $ mkdir -p ~/GITLAB/Ansible
+  $ cd $_
+
+. clone - copy the URL from the Gitlab server
+  $ git clone git@rhel8-node1.local:hennie/ansible.git
+
+. set remote
+  $ cd ansible
+  $ git remote set-url origin git@rhel8-node1.hennie/ansible.git
+
+. get to work
+  $ rsync -av /home/hennie/ansible/Vault/ .
+  $ git add *
+  $ git commit -am "some text"
+  $ git push
+
+. check the Gitlab webUI
