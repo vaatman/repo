@@ -53,6 +53,8 @@ A good benchmark for when you are ready is:
 
 The two exams share approximately 60% of their question ppols, so preparing for both before taking either exam is highly recommended. For further example questions, you can use the PSM I mock exam on my website https://Scrum-examples.info
 
+--------------------------------------------------------------------------------
+
 Complexity, Empiricism, Scrum
 
 question
@@ -68,6 +70,8 @@ question
 ? Scrum uses an iterative approach
 ? Scrum uses an incremental approach
 
+--- Context: This part is included to provide context an is not part of the Scrum Guide ---
+
 Traditional Product Development with Waterfall
 When building a new product, we often see the following happen in the organization:
 The initial idea is developed and product managers are assigend. These work out the ideas of the product, conduct market research, determine overarching requiremnets and set out a roadmap for the development.
@@ -78,3 +82,41 @@ Lastly, the final product is tested by Quality Assurance people, who verify that
 Once the product is live, it is handed over to another team, responsible for its operation and maintenance.
 Ths process is called waterfall development, as informations flows from one stage to the next.
 
+Risks with Waterfall Development
+Approaches like the waterdall development assume that every part of the chain works as expected, that every plan made can be executed as planned and that no changes arise. This may work well for simple problems, but for complex problems, ths is rarely the case. In each step, assumptions are made that may or may not be correct. THe larger and thus often more complex a product is, the more the risks of these assumptions compound and the more likely it is that the development effort will fail.
+
+Complexity
+When we speak of complexity, we mean a specific definition. A problem is complex if the relationship between action and reaction cannot be known in advance. Takle, for example, the development of a mobile app. The development has finished, testing is done, the app works reliably. Whether or not the market will react positively to it, whether people will bw willing to download and even pay for it, is not known. While we can take steps such as market research beforehand, there is no guarantee that releasing our app (action) will lead to a successful acceptance in the marketplace (desired reaction).
+
+In product development, many aspects are complex: market reactions, the interactions within a team, technical problems arising throughout the development effort, and so on. In none of these cases can a definitive statement be nade beforehand. Even extensive planning cannot reasonably address complex problems.
+
+Some problems are not only complex but also adaptive. This means that the relationship between action and reaction changes over time. A software that is released and considered user-friendly in 1999 will hardly satisfy any user 20 years later. The definition of user-friendliness has changed over time. Releasing the software (action) may have led to happy customers (reaction, old) in the last millennium, but is looked upon skeptically at best today (reaction, new).
+
+So how does Scrum help us address complex and even complex adaptive problems?
+
+--- End Context ---
+
+Empiricism
+Scrum's theoretical foundations lie in the idea that ou knowledge comes not from long-term planning but from experience. Rather than make long-reaching assumptions, we should make our decisions based on what we have known from experience.
+Therefore, to make decisions, we need to try things, learn from the outcomes, and adjust our plans. Considering that we are dealing no only with complex adaptive problems, we take nothing for granted. Even the knowledge we gained through experiments can become obsolete, so we need to run these experiments regularly.
+
+Empiricism requires three factors:
+. Transparancy	- we need to be able to see and understand the things that are relevant
+. Inspection	- we need to frequently take a look at the things that affect our work
+. Adaptation	- we need to make adjustments if through inspection we gain the insight that another or new approach may be more successful
+
+Scrum and Empiricism
+Scrum is a framework built upon the idea of empiricism. It prescribes rules, roles, values, events and artifacts, all of which are designed to maximize opportunities for empiricism. Every aspect in Scrum aims towards fostering transparancy, allowing for frequent inspection and empowering adaptation.
+
+It is important to note that while Scrum comes with prescriptions in the form of mandatory rules, roles, values, events and artifacts, it is a framework. Within Scrum, teams are free to choose whatever apporach they think is approriate. How the development takes place is left to the teams. This follows the idea that those closest to an issue generally know the most about is and are best at making the right decision.
+Thus, Scrum is neiter a process nor a methodology but a framework. It provides a container within which teams can self-manage their work, including the application of processes and methodologies, as long as they do no violate the ideas of Scrum.
+
+For people unfamiliar with Scrum, the most characteristic thing when learning about usually is that it develops products in Sprints. We will go into detail about Sprints later; at this point, it is only necessary to understand that to address complex adaptive problems, Scrum takes an iterative, incremental approach.
+Incremental means that the entire product is not built completely and the shown to the users, but rather smaller, functioning version are built successively, allowing the team to gather feedback and make adjustements if necessary.
+Iterative means that Scrum Teams work in cycles or iterations, called Sprints, in which planning, development, gathering feedback and process improvements are conducted. A Sprint lasts at most one month an is ofter even shorter than that.
+This combination  ensures that learning is incorporated regularly, and even changing conditions are quickly detected and the team can react to them.
+
+Furthermore, Scrum is light-weight. The entire Scrum Guide only spans 13 pages to define the entirety of Scrum. That is because Scrum prescribes only the essentials and leaves a lot of freedom to those applying the framework. This reflects Scrum's foundation in lean thinking.
+
+Anwers to the questions in order:
+False; False; False; True; True; True; False; False; Ture; True; True
