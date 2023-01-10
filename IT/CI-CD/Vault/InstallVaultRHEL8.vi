@@ -1,0 +1,28 @@
+---
+- hosts: rhel8-master
+  become: true
+  gather_facts: true
+
+  vars:
+    hashirepo: /etc/yum.repos.d/hashicorp.repo
+
+  tasks:
+    - name: instal yum-config-manager
+      yum:
+        name: yum-utils
+        state: present
+
+    - name: check for existing hashi repo
+      stat:
+        path: "{{ hashirepo }}"
+      register: hashicorprepo
+
+    - name: install HashiCorp Vault repo
+      command: yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+      when: not hashicorprepo.stat.exists
+
+    - name: install Vault
+      yum:
+        name: vault
+        state: present
+      when: hashicorprepo.stat.exists
