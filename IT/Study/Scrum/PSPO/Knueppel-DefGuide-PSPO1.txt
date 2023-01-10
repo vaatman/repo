@@ -1,0 +1,80 @@
+Preface
+Scrum offers a way of working that is breaking withc seemingly conventional wisdom. Where there used to be strict hierarchies, we are discovering ways fot teams to manage their work on their own. Where product development was divided into depoartmenst such as planning, requirements engineering, implementation, testing, documentation and release, we are discaorvering waus to build small teams taht are capable of all this. And perhaps most importantly of all, where projects used to take uears, we are now discovering ways to deliver value within a month and often even more quickly thant that.
+
+What is this book for?
+This book will grant yo an overview of the Scrum framework, provide contextt for many of its ideas and rules and provide you all the knowledge necessary to pass Scrum.org's PSM I exam. This boot sticks to the current Scrum Guide and marks additional practices explicitly, allowing you to understand what is (Core) Scrum and what are helpful things to use along-side Scrum.
+
+How is this book structured?
+Scrum.org advocates for the idea of Test-Driven-Decelopment (TDD) in software development. THis means we first define the test that our new product increment must fulfill and the work our way there.
+Analogously, this book will start eacht section qith questions that prepare you for PSM I ans PSPO I.
+THe book will begin by introducing why agile development, of which Scrum is hte most well-known and popular approach, is on the rise. It will then explain Scrum's roles, its events and its artifacts.
+Finally, you will receiv detailed information on the Professional Scrum examinations to prepare for PSM I and/or PSPO I.
+
+What sets this book apart?
+There are a number of books on the market tahta aim to prepare you fir PSM I and/or PSPO I, some good, some rather questionable.
+If you buy a car, you wish to buy it from a reputable brand at a reputablde vendor to be sure of its quality and performance. Equally, you'd want to learn Scrum from a highly knowledgeable source. Regarding Scrum.org's exams, I can say with absolute certainty that there is no PSM I and'or PSPO I preparation book by an author more familiar with the Scrum.org exams. Why? Because I have taken and passed litterally every Scrum.org exam there is.
+
+Why pursue a Professional Scrum certification
+. Professional Scrum certifications are recognized as at least among the two most valuable basic-level Scrum certifications, alongside the Scrum Alliance's Certified Scrum certifications. Due to its high passing requirements, the Professional Scrum ones are often considered the more valuale one among the two
+. The Prodessional Scrum certifications are awarded by Scrum.org, which was founded and to this day is still supported by Ken Schwaber, one of the co-founders of Scrum and maintainers fo the Scrum Guide.
+. Professional Scrum has the highest quality standard among the various Scrum certifications in the market. Rather than just handing you hte certification after attending a class, you have to take an exam, which has a difficult passing grade of 85%!
+. Professional Scrum certifications do not require you to take a class. While attending an official Scrum.org class can be a rewarding experience, especially on the more advanced levels, you are not obligated to do so. Preparing on your own and passing the examn is sufficient.
+. Once you receive you Professional Scrum certification, it will not expire and does not require the payment of renewal fees.
+
+Preparations for PSM I and PSPO I
+Basic information for each
+. Duration: 60 minutes
+. Number of questions: 80
+. Style: multiple-choice, multi-select, true/false
+. Passing score: 85%
+
+Taking the PSM I and/or PSPO I feels like a big step, primarily due to the uncertainty of what to expect.
+The average time that can be spent per question is 45 seconds, leading to a fast-paces exam that leads many to believe it will be stressful. The relatively high passing grade of 85% means that out of th 80 questions, only 12 may be answered incorrectly
+
+After having taken and passed all Scrum.org's exams and having guided numerous people through their preparation process for PSM I and the smiliare PSPO I, I gained an understanding of how the exams are built and how to prepare for them efficiently and effectively.
+
+All the knowledge necessary to pass the PSM I and the PSPO I exam is contained in this book. While this book is much more compact than othes you may find in the market, it contains the distilled essence of what you will need to pass the exam, without lengthy text about non-essential aspects.
+
+To prepare properly for the exams, read the entire book carefully at least once, ideally twice. Try each time to answer the questions at the beginning of each chapter prior to reading it.
+
+Once you have finished you reading, take advantage fo Scrum.org's Scrum Open Assessment. Each attempt on the Scrum Open contains 30 from the same pool as the PSM I questions, each Product Owner one 15 from the same pool as the PSPO I questions.
+
+If you attempt the Scrum Open and Product Owner Open multiple times, you are very likely to find some of the same questions during your actual exams.
+Knowing the answer to those questions will save you important time that you can use on other questions.
+Therefore, take this preparation exam multiple times.
+
+A good benchmark for when you are ready is:
+. You pass the Scrum Open thre times in a row,
+. With 100% each time,
+. In under 10 minutes each (giving you 20 seconds per question on average).
+. You pass the Product Owner Open three times in a row,
+. With 100% eacht time,
+. In under 5 minutes each (giving you 20 seconds per question on average).
+
+The two exams share approximately 60% of their question ppols, so preparing for both before taking either exam is highly recommended. For further example questions, you can use the PSM I mock exam on my website https://Scrum-examples.info
+
+Complexity, Empiricism, Scrum
+
+question
+? In a waterfall approach, feedback is usually acquired early and continuously throughout the process
+? Complexity can be addressed well throuh extensive up-front planning
+? Empiricism is based on the notions that we can determine everything rationally before taking action
+? Scrum is based on empiricism
+? Scrum is based on lean thinking
+? Scrum prescribes rules, roles, values, artifacts and events
+? Scrum is a process
+? Scrum is a methodology
+? Scrum is a framework
+? Scrum uses an iterative approach
+? Scrum uses an incremental approach
+
+Traditional Product Development with Waterfall
+When building a new product, we often see the following happen in the organization:
+The initial idea is developed and product managers are assigend. These work out the ideas of the product, conduct market research, determine overarching requiremnets and set out a roadmap for the development.
+Next up, tasks are handed over th project managers, who are in charge of the day-to-day business of managing the project of building the product. Under their supervision, more detailed requirements are gathered, typically by individuals with titles such as Requirement Engineer.
+Once all requirements have been gathered, Solution Architects develop a plan for technical implementation, including things like architecture and tech-stack to be used. Based on these plans, they also determine how long the development will need and what budget is necessary.
+This plan is then executed by the developers, who turn the requirements into the product as defined by the plan developed by the Solution Architects.
+Lastly, the final product is tested by Quality Assurance people, who verify that the product suffices the quality standards. It is then released to the users for the first time since the development process began.
+Once the product is live, it is handed over to another team, responsible for its operation and maintenance.
+Ths process is called waterfall development, as informations flows from one stage to the next.
+
