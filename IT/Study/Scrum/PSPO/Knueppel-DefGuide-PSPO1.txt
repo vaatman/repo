@@ -120,3 +120,42 @@ Furthermore, Scrum is light-weight. The entire Scrum Guide only spans 13 pages t
 
 Anwers to the questions in order:
 False; False; False; True; True; True; False; False; Ture; True; True
+
+--------------------------------------------------------------------------------
+
+Scrum Team
+
+Question
+? The roles on the Scrum Team are Product Owner, Developer and Scrum Master
+? Project Manger (PM) is a possible role within a Scrum Team
+? Scrum Teams are cross-functional
+? The self-managing of a Scrum Team is unlimited
+
+The Scrum Team, as a small, highly flexible and adaptive team, is described as the essence of Scrum.
+Scrum Teams are usually 10 people or fewer in size to ensure that those who are port of it can communicate with each other effectively and can make necessary changes quickly. This makes Scrum Steams more agile than more conventional corporate structures, where work is split between different departments, eacht with its own management structure, to which it is difficult to make changes.
+
+The work in the Scrum Team is devided into so-colles "accountabilities". Formerly, there were to as "roles", and throughout this book this technically now out-date terminology will be used for the sake of readability.
+Scrum recognizes only the following three roles in a Scrum Team:
+. The Product Owner, a single person who manages the Product Backlog and determines the direction of the product development through the Product Goal; this role may be filled as a prtim-time role by a Developer or Scrum Master, though especially the latter may not be advisable.
+. The Scrum Master, a single persion who supports the Product Owner, Developers and organization in delivering high-value products by spreading Scrum; the role may be filled as a part-time role by a Developer or Product Owner, though especially the latter may not be advisable.
+. The Developers, a group of people responsible for the development work, i.e., turning Product Backlog items (e.g., in the format of User Stories) into a working piece of product.
+
+All of these roles must be filled in a Scrum Team.
+There are no other roles in a Scrum Team!
+
+A Scrum Team is characterized by three crucial aspects: cross-functionality, self-management, and shared ownhership.
+
+- Cross-functionality	describes the ability of the Scrum Team to deliver a Done product increment without the need for external help, e.g., by database specialists or a QA departement. All skille required must be present within the team.
+- Self-management	is the ability and empowerment of the Scrum Team to determine what to work on and how to do it. The Product Owner determines what Product Backlog items the team will work on, the Developers decide how they turn Product Backlog items into an increment.
+To be effective in its coordination and internal communication, the team should not be too large. When there are too many people, the complexity of organizing and conducting meetings and keeping everybody synchronized becomes impractical. Therefore, the whole Scrum Team should typically consist of 10 members or fewer, including Developers, Product Owner and Scrum Master.
+While not an explicit rule in the Scrum Guide, it is good practice to have teams be long-lived, meaning that the team's composition does not change frequently if not needed. If a long-term- need is identitied, the staffing of the team may be changed. However, a short-term realization that a Sprint cannong be finished would not justify adding a (temporary) new member to the team. Any change will temporarily reduce productivity, as new person needs to be worked into their position and the team dynamics need to adjust.
+- Shared ownership	describes the ide that the Scrum Team as a while is responsible for the outcome. While in a waterfall, there may be sub-teams (e.g., "programmers" and "testers"), Scrum recognizes no titles and no sub-teams within the group of Developers. Everybody is collectively accountable for the  outcome of the whole team. While a person may still specialize primarily in testing, all of the Developers are responsible for testing to be conducted and have to figure out a way collectively to ensure it takes place. It is important to note that this also applies to (the lack of) internal hierarchies: Scrum Teams do not heave concepts like tech leads, team leads, or an explicit internal junior-senior-hierarchy; all members are equally responsible for the outcome and equally repsonsible for working toward common goals.
+Furthermore, the Product Owner, Scrum Master and the Developers share the responsibility that the Scrum Team as a whole produces a valuable product increment.
+
+It's important to note that self-management is not completely unlimited, but takes place within the limits set by the organization within which the development takes place. While a Product Owner decides on the priorities for development an de the Developers decide how to best implement the requirements, the Scrum Team does not usually get to decide on aspects like how many hours everybody works, their own salaries or broader corporate strategies that have direct effects on the team's work.
+
+Answers to the questions in order:
+True; False; True; False
+
+--------------------------------------------------------------------------------
+
