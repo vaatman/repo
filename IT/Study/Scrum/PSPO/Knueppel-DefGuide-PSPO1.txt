@@ -345,3 +345,42 @@ False; True; False; False; False; False; True; True
 ---
 
 Daily Scrum
+
+Question
+? The timebox of the Daily Scrum depends on the number of Developers participating
+? The Daily Scrum is held in the same place and at teh same time every (work) day
+? The Developers inspect the Product Backlog during the Daily Scrum
+? The Daily Scrum is a key opportunity to raise impediments
+? Burn-down charts are one way to visualize progress and remaining work
+? The Daily Scrum is a good opportunity for managers to inquire about the team's progress
+? The Product Owner actively participates in the Daily Scrum
+? The Scrum Master teaches or coaches the Developers to keep the Daily Scrum within its timebox
+
+The key outputs from the Sprint Planning are the Sprint Goal and the Sprint Backlog. Throughout the Sprint, the Deveopers work toward achieving the Sprint Goal by following the plan laid out in the Sprint Backlog. As product development is a comples problem, this plan will likely need to change as more is learned throughout the Sprint. Thus, the Developers inspect and adapt the Sprint Backlog every day during the Daily Scrum.
+
+The Daily Scrum is a meeting of Developers and timeboxed to 15 minutes, regardless of Sprint length or number of Developers. To reduce complexity, it takes place every (work) day in the same place and at the same time. The Developers use the Daily Scrum to create transparency over the current status of the development and to plan the next steps towards achieving the Sprint Goal. The goal of the Daily Scrum is to make the achievement of the Sprint Goal more likely.
+
+During the Daily Scrun, the Developers may raise impediments, which may be passed along to the Scrum Master to address.
+
+A common format for the Daily Scrum is known as "the three questions". Until the 2013 Scrum Guide it was the prescribed format, with the 2017 Scrum Guide it was made optional and the 2020 Scrum Guide does not mention it at all. This possible format asks every member to share:
+. What have they done yesterday towards achieving the Sprint Goal?
+. What will they do today towards achieving the Sprint Goal?
+. Were any impediments encountered while working towards the Sprint Goal?
+
+While not proescribed by the Scrum Guide, the Daily Scrum may be supported by visualistations of internal metrics such as a Sprint Burndown Chart, which plots the remaining work in the Sprint (often measured in Story Points) against a trend line aiming towards zero work left at the end of the Sprint.
+
+It is important to note that the purpose of the Daily Scrum is internal synchronization and inspeciont and adaptation of the Sprint Backlog:
+
+The meeting si nog supposed to be a status update for the members of the management, the Scrum Master or the Product Owner. As an internal meeting of the Developers, only the Developers participate, while the Scrum Master may facilitate the event id requested or necessary, and the Product Owner may listen to the meeting without actively participating. They may only actively participate if they are also part-time Developers and then take pare in their function as Developers.
+
+Th Scumr Master's only responsibility toward the Developers regarding the Daily Scrum is to teach and/or coach them to keep the meeting within its 15 minute timebox.
+
+Neither is the meeting supposed to contain in-depth technical discussions. These often take places immediately after the Daily Scrum.
+
+Possoble outputs of the Daily Scrum are a revised plan in the Sprint Backlog and/or the insight that not all items in the Sprint Backlog will likely be achieved in the Sprint. This insight is then shared with the Product Owner, and the Developers and Product Owner work towards reducing the scope of the Sprint Backlog by removing lower priority items, while keeping the Sprint Goal achievable.
+
+The act of daily inspection and adaptation of the Sprint Backlog leads to the Daily Scrum being referred to as a key inspect-and-adapt meeting.
+Lowering its frequency would lower the team's ability to inspect and adapt.
+
+Answers to the question in order:
+False; True; False; True; True; False; False; True
