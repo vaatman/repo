@@ -305,3 +305,43 @@ Answers to the question in order:
 True; True; True; False; False; True; True; False
 
 ---
+
+Sprint Planning
+
+Question
+? The Scrum Master forecasts the Developers' capacity empirically, based on past Sprints' performance
+? The whole Scrum Team participates in the Sprint Planning
+? The Sprint Goal is created by the Product Owner
+? The plan in the Sprint Backlog must include all the work for all the items
+? During the Sprint Planning, items are assigned to individual Developers
+? The Developers may remove items from the Sprint Backlog during the Sprint without any approval from the Product Owner
+? The Developers owns the Sprint Backlog collectively; no member is responsible for any single part of it
+? For a four-week Sprint, the timebox of the Sprint Planning is eight hours
+
+The Sprint Planning serves to clarify three questions:
+. Why is the Sprint valuable?
+. What is the product at the end of the Sprint supposed to deliver that it cannot do now?
+. How will this be achieved?
+
+In the beginning of the Sprint Planning, the Product Owner proposes how the product could gain in value through the work that can de done in the Sprint.
+
+Developers and Product Owner discuss much they believe to be able to deliver. The Developers provides a forecast of what they believe they can achieve. The metric is left up to the Scrum Team: this is often a numerical value in Story Points, which is referred to as velocity, though this is an optional practice not prescribed by the Scrum Guide. Once it is clear how much the Developers will be able to achieve, the Product Owner discusses the objective this Sprint is supposed to achieve and which items from the Product Backlog would serve this purpose.
+
+The entire Scurm Team together crafts a Sprint Goal, an overaching goal which the work of the Developers is supposed to achieve through the delivery of an Increment. This Sprint Gola serves as the purpose of the Sprint; all plans may and should be adjused to ensure this goal is met.
+
+The Developers pull as many items from the Product Backlog as they believes they can achieve into their own backlog for the Sprint, which is called the Sprint Backlog. Once this is done, the Developers develop a plan on how to implement the selected items. In this process, there may be a back-and-forth with the Product Onwer, as multiple possible solutions are evaluated and discussed.
+
+The plan may include all selected items being planned throughl however, it must at least plan the work for the coming few days. Planning to far ahead may reulst in waste, as new learning throughout the Sprint amy alter the basis upon which the plans were built.
+
+The created plan then becomes part of the Sprint Backlog. This plan addresses how items will be implemented, now who will implement them. As the Developers are collectively responsible for producing an Increment, nobody is assigned individual items, neither during the Sprint Planning nor throughout the Sprint.
+
+The Sprint Planning is timeboxed to 8 hours. For Sprint shorter than one month, it is usually shorter; however, the timebox always remains 8 hours. The outputs of the event are the Sprint Goal and the Sprint Backlog. The Scrum Team commits to achieving the Sprint Goal, not the items in the Sprint Backlog. This allows for flexibility: if, for example, inidividual items turn out to take more time than expected (which is very possible in a complex environment), other items may be removed from the Sprint Backlog to compensate. This, however, requires agreement from the Product Owner.
+
+Throughout the Sprint, the Sprint Backlog is likely to change, as more is learned, and development work progresses. The Sprint Backlog is owned exclusively by the Developers, who are the only ones allowed to update it bu also the only ones responsible for ding so.
+
+Answers to the questions in order:
+False; True; False; False; False; False; True; True
+
+---
+
+Daily Scrum
