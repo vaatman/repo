@@ -1,12 +1,12 @@
 Preface
-Scrum offers a way of working that is breaking withc seemingly conventional wisdom. Where there used to be strict hierarchies, we are discovering ways fot teams to manage their work on their own. Where product development was divided into depoartmenst such as planning, requirements engineering, implementation, testing, documentation and release, we are discaorvering waus to build small teams taht are capable of all this. And perhaps most importantly of all, where projects used to take uears, we are now discovering ways to deliver value within a month and often even more quickly thant that.
+Scrum offers a way of working that is breaking withc seemingly conventional wisdom. Where there used to be strict hierarchies, we are discovering ways fot teams to manage their work on their own. Where product development was divided into depoartmenst such as planning, requirements engineering, implementation, testing, documentation and release, we are discaorvering waus to build small teams that are capable of all this. And perhaps most importantly of all, where projects used to take uears, we are now discovering ways to deliver value within a month and often even more quickly thant that.
 
 What is this book for?
 This book will grant yo an overview of the Scrum framework, provide contextt for many of its ideas and rules and provide you all the knowledge necessary to pass Scrum.org's PSM I exam. This boot sticks to the current Scrum Guide and marks additional practices explicitly, allowing you to understand what is (Core) Scrum and what are helpful things to use along-side Scrum.
 
 How is this book structured?
 Scrum.org advocates for the idea of Test-Driven-Decelopment (TDD) in software development. THis means we first define the test that our new product increment must fulfill and the work our way there.
-Analogously, this book will start eacht section qith questions that prepare you for PSM I ans PSPO I.
+Analogously, this book will start each section qith questions that prepare you for PSM I ans PSPO I.
 THe book will begin by introducing why agile development, of which Scrum is hte most well-known and popular approach, is on the rise. It will then explain Scrum's roles, its events and its artifacts.
 Finally, you will receiv detailed information on the Professional Scrum examinations to prepare for PSM I and/or PSPO I.
 
@@ -53,7 +53,7 @@ A good benchmark for when you are ready is:
 
 The two exams share approximately 60% of their question ppols, so preparing for both before taking either exam is highly recommended. For further example questions, you can use the PSM I mock exam on my website https://Scrum-examples.info
 
---------------------------------------------------------------------------------
+---
 
 Complexity, Empiricism, Scrum
 
@@ -121,7 +121,7 @@ Furthermore, Scrum is light-weight. The entire Scrum Guide only spans 13 pages t
 Anwers to the questions in order:
 False; False; False; True; True; True; False; False; Ture; True; True
 
---------------------------------------------------------------------------------
+---
 
 Scrum Team
 
@@ -157,5 +157,151 @@ It's important to note that self-management is not completely unlimited, but tak
 Answers to the questions in order:
 True; False; True; False
 
---------------------------------------------------------------------------------
+---
 
+Product Owner
+
+Question
+? The Product Owner role is tha of a value maximizer
+? The Product Backlog changes over time
+? The Product Goal provides an overarching direction for the Product Backlog
+? The Product Owner can delegate accountability for the Product Backlog
+? The Product Owner protext the Developers from external work requests
+? A Scrum Team can have multiple Product Owners
+? When multiple Scurm Teams work on a product, each team has its own Product Backlog
+
+The Product Own er is often described as a value maximizer. The are reposonsuble for detemining the direction in which the product development effort is heading. For this, the Product Ovwner is responsible for engaging with the stakeholders to gather feedback to better understand the needs the product should meet. The Product Onwer alos maximizes the vlaue of the product and of the work delivered by the Developers by supporting their understanding of the product, the stakeholder needs and the Product Backlog items in a Sprint.
+
+Unlike Product Managers or Project Managers, neither of which exist on a Scrum Team, the Product Owner is not in charge of the Developers. The Product Owner is concerned with WHAT the Developers work on and to ensure they understand WHY. HOW the Developers do their work is up to the Developers.
+
+The Product Owner manages the Product Backlog and is the only one accountable for it. The Product Backlog is a list of items, that reflects what is currently known about the product and the requirements that should be implemented. Unlike a project plan in waterfall, the Product Backlog is not static. It evolves as more is learned, e.g., though feedback from stakeholders, and is constantly updated and reordered. The order of the Product Backlog reflects what the Product Owner believes to be the most valuable nexxt steps.
+
+The Product backlog ordering reflects what is called the Product Goals. The Product Goals is the desired future state of the product, whereas the Product Backlog describes the way to achieve that goal. The Product Goals is an overarching goal for the Scrum Team to ensure focus and alignment. This goal may change over time, if the previous goal has beem achieved or is abandoned if it is no longer relevant.
+
+The Product Owner may delegate some of the work of managing the Product Backlog to others, by they cannot pass the accountability to others!
+
+All work the Developers do originates from the Product Backlog. This allows the Product Owner effective control of the direction in which the development is going. It also brings with it the responsibility to protect the Developers from interruptions. When somebody requests the Developers to work on something not in the Product Backlog, they should turn down that request and send that person to the Product Owner.
+
+It is important to understand taht the Product Owner is the final decision maker regarding the direction of the product. In this capacity, their decision must be respected, both by the Developers and the management. This alos necessitates that there is on one Product Owner per Scrum Team. Only this way can it be ensured that there is one person to make the final decisions. One product has one Product Backlog, for which one Product Owner is accountabled, regardless of how many Scrum Teams work on the same product.
+
+Answers to the questions in order:
+True; True; True; False; True; False; False
+
+---
+
+Developers
+
+Question
+? The Developers are responsible for turnning Product Backlog items into an increment of working product
+? It is okay for Developers to work with an external specialist on a regular basis to develop an increment
+? The Product Owner is responsible for providing estimates of Product Backlog items
+? The Scrum Team owns the Sprint Backlog
+? Managers and the Product Owner may use the Daily Scrum to inquire about progress
+? A Scrum Team can add or remove Developers without any drops in productivity
+? There can be a persion with the title of "tester" among the Developers
+
+Developers in Scrum are responsible for turning requirements from the Product Backlog into a working product increment. All the work necessary for this is done within the team. Waterfall divides the development in phases such as design, coding, and testing and often assigns a different team to each step. In Scrum, things such as design, coding and testing are typical parts of the development work, which is performed by the Developers, in software development.
+
+The Developers are given their own artifact, their own event in Scrumand the right to estimate the size of Product Backlog items:
+. The Spring Backlog is the list of items the Developers believe they can implement in the Sprint and a plan on how to achie this. The Sprint Backlog is owned exclusively by the Developers; nobody else has controlover it or can change it without the Developers' consent.
+. The Daily Scrum is an even exclusively for the Developers. In it, the Developers inspect the progress and plan the next steps. Nobody can tell the Developers how to run t, and nobody else has a right to participate as a non-Developer. This event is not a status meeting in which the Product Owner or management can get updated about the progress; it is an internal meeting of, for and by the Developers.
+. The Developers provide the estimates for how much effort they believe they will need to implement a specific item from the Product Backlog and estimates of how much they believe they can deliver in a Sprint.
+
+Answers to the question in order:
+True; False; False; False; False; False; False
+
+---
+
+Scrum Master
+
+Question
+? The Scrum Master is a conventional leadership position
+? The Scrum Master provides guidance; they teach and coach
+? The Scrum Master supports the Developers by removing impediments
+? The Scrum Master should solve all of the Scrum Team's problems
+? The Scrum Master position is a management position
+
+Within the Scrum framework, the Scrum Master often leads their team from the stance of a servant-leader to their team and their organization. This means that unlike more conventional leadership styles, they derive their impact not from being in charge of others and ordering them to do things but by enabling and empowering others. Among other things, this usually takes the following forms:
+. Teaching Scrum whith the Scrum Team, to the organization, and to the relevant stakeholders
+. Coaching the Product Owner about Product Backlog management, the Scrum Team about good practices of Scrum, and the management of the organization how best to interact with and support the Scrum Team
+. Removing impediments, making sure the Scrum Team has nothing in the way of successful development work
+. Facilitating some or all of the Scrum Evens, as needed or requested
+
+It is important to note that within the context of the Scrum Team, the Scrum Master rarely makes nay decisionIt is importatn to note that within the context of the Scrum Team, the Scrum Master rarely makes any decisions. Rather, they provide advice and support and guide people towards reaching the best possible decision.
+
+Furthermore, it is importand to note that the Scrum Master must try to coach the Developers towards self-management, letting them remove as many issues they face on their own and only helping whcn success is not possible otherwise. The term "impediment" in the context of the Scrum Master is to be understood as issues that go beyond the slef-management of the Developers. Internal conflicts of the Develoeprs should bre resolved by the team; structural issues such as management expectin reular reports are an impediment a Scrum Master should deal with.
+
+The Scurm Master is responsible for ensuring that Scrum is properly understaood by the Scrum Team and by those relevant to the process. Therefore, the Scrum Master is sometimes called the "manager of the Scrum process". While the are not responsible for managing people, they are responsible for planning how to improve the Scrum awareness and to determind and implement necessary step to achieve this goal, i.e., for managin Scrum.
+
+Most curcial among the thins that a Scrum Master must ensure are understood are:
+. Product backlog management - by the Product Owner
+. Empirical product management - especially by the Product Owner
+. How to effectively support a Scrum Team - by the management
+. The purpose of the Scrum Events - by the Scrum Team
+. The durations of timeboxes and their purpose - by the Scrum Team
+
+Answers to the quesionts in order:
+False; True; True; False; True
+
+---
+
+Scrum Events
+
+Question
+? There are size different Scrum Events
+? All Scrum Events except for the Sprint happen during a Sprint
+? Timeboxed means an event must take at least a certain amount of time
+? All Scrum Events are timeboxed
+? Participation in Scrum Events is optional
+? Product Backlog refinement is one of the Scrum Events
+
+In ordere to ensure that empiricism can take place, Scrum prescribes a number of mandatory events.
+Collectively, these events - if executed properly - are succifcient to ensure inspection and adaptation of all crucial aspects of the product development.
+
+The Scrum Events are as follows:
+. Sprint
+. Sprint Planning
+. Daily Scrum(s)
+. Sprint Review
+. Sprint Retrospective
+
+The Sprint acts as a container; all other events take place within a Sprint. To ensure that the team works efficiently and in a focused manner, all events have maximum durations defined by the Scrum Guide. This is called timeboxing. Furthermore, participation in the Scrum Events is mandatory (if possible), as this is the only way to ensure the necessary transparancy to allow for inspection and adaptation.
+
+Many teams have regular Product backlog refinement meetings within their Sprints, sometimes wrongly called the "sixth Scrum Event". While the activity of the Product Backlog refinement is encouraged by the Scrum Guide, it is not a formal Scrum Event, as it des nog have to take place in the form of a meeting, nor every Sprint.
+
+Answars to the questions in order:
+False; True; False; True; False; False
+
+---
+
+The Sprint
+
+Question
+? Sprints make Scrum iterative
+? The timebox of a Sprint is one calendat month maximum
+? Working in Sprins, expesially in short ones, limits risk by limiting the time and effort that are potentially wasted.
+? The Sprint length may change frequently
+? There can be a time in-between Sprints
+? The output of a Sprint is a potentially releasable Imcrement.
+? The Sprint supports Scrum's incremental approach.
+? The Developers may choose to cancel a Sprint.
+
+As we established earlier, in product development, we are dealing with complex adaptive problems, meaning with problems that we can only learn about through experimentation and which can change over time. Therefore, we need to inspect and adapt repeatedly. This is the foundation for the iterative and incremental approach Scrum employs.
+
+Planning to develop something, developing it while regularly inspecting the progress, inspecting whether or not the result is valuable and finding possible improvements to the process; als this is repeated regularly. Each of these activities manifests in a Scrum Event, all of which are contained in a Sprint.
+
+Scrum is iterative because these activities happen over and over again in Sprints.
+
+A Sprint may be up to one calendat month in lenght, i.e., its timebox is one month. A Scrum Team may also choose their Sprints to be shorter. A Sprint should be long enough to produce something useful but as short as possible to limit the risk of productin something that turns out to not be valuable. This could be the case through changes in the market, uncertainty regarding stakeholde requirements, or the technology used. Short Sprints limit risk by limiting the time and effort that are potentially wasted if the result of a Sprint needs to be completely thrown away.
+The Sprint length should remain constant over time.
+
+A Sprint begins with the Sprint Planning, after which he Developers start their work. Every day, the Developers conduct a Daily Scrum. The Sprint ends with the Sprint Review and the Sprint Retrospective. Immediately after a Sprint ends, the next Sprint begins.
+
+The output of a Sprint is an Increment, meaning the procut before the Sprint (if there was one) plus at least one added userful outcome, e.g., a piece of new functionality. Rather than building the entire product in one go and having a useful version at the end of the development, potentially years later, in Scrum every Sprint producs all least one Increment that could be released into the market. Thsi is why Scrum is described as following an incremental approach, supported by the use of Sprints.
+
+A Sprint takes as long as its defined timebox. It may not exceed this duration. The only reason a Sprint may end before its timebox expires is if the Product Owner determines that the goal that the Sprint was supposed to achieve is no longer feasible or worth pursuing. This is called "cancelling a Sprint". Stakeholders, the Scrum Master, and the Developers may encourage this step to be taken; the decision is exclusively up to the Product Owner, however.
+
+Answers to the question in order:
+True; True; True; False; False; True; True; False
+
+---
