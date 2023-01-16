@@ -384,3 +384,36 @@ Lowering its frequency would lower the team's ability to inspect and adapt.
 
 Answers to the question in order:
 False; True; False; True; True; False; False; True
+
+---
+
+Sprint Review
+
+Question
+. The Increment is the sum of all the Done work during a Sprint
+. The Increment must be usable
+. If there are no organizational guidelines, the Scrum Team defines its own Definition of Done
+. Items that are not Done may be included in the Increment if the Product Owner approves
+. The Sprint Reveiw involves the Scrum Team and key Stakeholders
+. The Sprint Review is a formal status-meeting
+. For a two-week Sprint, the timebox of the Sprint Review is four hours
+
+Throughout the Sprint, the Developers implement Product Backlog items from their Sprint Backlog to achieven the Sprint Goal. All the work of the Sprint is integrated into what is called the Increment. The Increment is one of the Scrum Artifacts and possesses the following three key attributes:
+
+. The Increment is the sum of all the work that is Done, meaning complying with the Definition of Done (see below), integrated with the previous Sprint's increment
+. The Increment is delivered by the Developers as a result of its work towared the Sprint Goal
+. The Increment must be "usable", meaning that if the Product Owner chooses to release it, it must be releasable without a large delayor effort and work for the user.
+
+The Definition of Done is a tool for transparancy. It defines the criteria, whihch every implemented Product Backlog item must fulfill to bo included in the Increment. The Definition of Done is either provided by the standards of the organization in which the product is being developed, often referring to guidelines of an internal Quality Assureance department or defined by the Scrum Team, if no such standards exists. The Definition of Done covers both functional and non-functional requirements.
+
+Before the Sprint Review, all the Done work is included in the Increment. Work that is not Done is not included but rather returns to tthe Product Backlog. It is then left to the Product Owner to device how to proceed with it, e.g. include it in the next Sprint. This ensures that the entire Increment complies with the Definition fo Done, allowing a transparent minimal quality standard, both towards the Scrum Team internally, as well as towards stakeholders, e.g., during the Sprint Review.
+
+The Sprint Review is an event during which the Scrum Teams meets with key stakeholders, who are invited by the Product Owner, to inspect the Increment. This meeting is intended to be informal and conducted as a workshop rather than a status-meeting; stakeholders, Product Owner and Developers inspect the Increment together, often by trying it out together. The goal of of the meeting is to gather feedback from the stakeholders about the current state of the product. This feedback is incorporated by the Product Owner into the Product Backlog, which provides the next steps for the product development.
+
+Other issues that may be addressed during the Sprint Review are projected release dates as weel as discussions about timeline, budget, and marketplace changes. A common topic is whether or not the Increment should be released into the market. Releasing an Increment must always be possible but does not have to take place every Sprint. The decision to release is up to the Product Owner.
+
+The even is timeboxed to four hours. For Sprints shorter than one month, if is usually shorter; however, the timebox always remains four hours.
+
+Answers to the questions in order:
+True; True; True; False; True; False; True
+
