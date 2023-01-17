@@ -417,3 +417,28 @@ The even is timeboxed to four hours. For Sprints shorter than one month, if is u
 Answers to the questions in order:
 True; True; True; False; True; False; True
 
+---
+
+Sprint Retrospective
+
+Question
+. The Sprint Retrospective is the last event to tke place in a Sprint
+. The Definition of Done may be adjusted during the Sprint Retrospective
+. At least one high-priority item from the Sprint Retrospective is included in the Sprint Backlog of the next Sprint
+. The timebox of the Sprint Retrospective is three hours
+
+The Sprint ends with the Sprint Retrospective. This event provides a formal opportunity for inspection and adaptation. The entire Scurm Team collaborates to inspect the current Sprint. All aspects are considered; most commonly cited in secondary literature in secondary literature are people, processes, and practices.
+Together, they try to identify possible improvements, aiming towards making the next Sprint more effective and more enjoyable.
+
+The Scrum Master facilitates the Sprint Retrospective if needed or requested, otherwise, they participate as a fellow Scrum Team member. They are responsible, though, to encourage the rest of the team to continually improve.
+
+A common subject of inspection and possible adaptation in the SPrint Retrospective is the Definition of Done. During the Sprint Retrospective, the Product Owner and the Developers have the chance to dicusess the requirements necessary for the producte to be of high quality. Over time, the quality is expected to increase; therefore, the Definition of Done may become more stringent over time.
+
+To ensure that the outputs of the Sprint Retrospective are implemented, the Scrum Guide used to prescribe that at least on high-priority item from the Sprint Retrospective be included in the next Sprint Backlog.
+In the most recent update, this is no longer mandatory.
+
+The event is timeboxed to three hours. For Sprints shorter than one month, it is usually shorter; however, the timebox always remains three hours.
+
+Answers to the questions in order:
+True; True; False; True
+
