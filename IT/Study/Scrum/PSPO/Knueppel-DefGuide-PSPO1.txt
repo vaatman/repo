@@ -540,4 +540,99 @@ As product development is a complex problem, the onyl way to determine how much 
 Answers to the quesiont in order:
 True; False; True; True; True; True; True; False; False; True; False
 
+---
 
+The Product Owner in Scurm Events
+
+Question
+? During the Sprint Planning, the Product Owner explains how the upcoming Sprint can help the product gain value.
+? The Product Owner decides on the Sprint Goal
+? The Product Owner activelt participates in the Daily Scrum
+? One of the responsibilities of the Product Owner is tracking the work of the Developers and updating their metrics
+? The Sprint Review may lead to changes being made to the Product Backlog
+? Failing to adhere to the Definition of Done will result in lower transparency of the Increment
+? Technical debt is a purely technical issue and therefore does not need to be considered in the Sprint Review
+? The Product Owner particiaptes in the Sprint Retrospective as a peer Scrum Team member
+
+Sprint Planning
+
+The Sprint Planning happens at the beginning of the Sprint and seeks to clarify what the goal for the Sprint, called the Sprint Goal, should be and to construct an inital plan for hwo to achieve it, called the Sprint Backlog.
+The Product Owner attends the Sprint Planning as a value maximizer, understanding the capacity of the Developers and collaborating with them to find the best way in which the product cna be increased in value throughout the Sprint.
+
+Initially, the Product Owner present how they believe the next Sprint cna help the product gain value in the current Sprint. This serves as a key input into the discussion beteen Product Owner and Developers about what the Sprint Goal should be. The second input is the capacity forecast of the Developers.
+Throughout the Sprint Planning, the Product Owner helps the Develoeprs to understand requirements and to evaluate different possible approaches to realizing solutions. Together, the entire Scurm Team defines the Sprint Goal.
+
+Daily Scrum
+
+The Product Owner does not actively participate in the Daily Scrum. If the Product Owner happens to be a Product Owner and Developer at the same time, their attendance happens as a peer Developer, not as a Product Owner.
+The Product Owner may attend without participation, but this may not lead to the Daily Scrum becoming a status update for the Product Owner, rather, tahn an inspect-and-adapt meeting of, for and by the Developers.
+Likewise, the Prodcut Owner does not track the work of the Developers and does not update any of their metrics.
+
+Sprint Review
+
+The Sprint Review offers the possibility for the whole Scrum Team to inspect the Increment together with key stakeholders. These are usually invited by the Product Owner.
+The goal of the event is to get an understanding of the current state of the producte and to discuss about the next steps, which may result in chagnes (.i.e., adaptations) to the Product Backlog.
+For the Inspection of the Increment to be effective, it is necessary that the Increment is transparent. This transparency is affected by the following key factors:
+
+Active, open perticipation in the Sprint Review
+ by the Scrum Team and the key stakeholders. If either party does not make their wishes, feelings or desires transparent, the inspection and subsequenst adaptation cannot be fully effective. This may lead to stakeholdes, who are upset with the direction in which the prodcut development is going.
+
+Adherence to th Definition of Done (DoD)
+ is essential for transparency. The DoD creates a common understanding of what the Developers mean when they claim that an aspect of the product is "done". The specific requirements in the DoD vary widely based on the field of the product, the professional maturity of the Developers and how long the prodcut has been in development. All DoDs share in common, however, that they must assure that the Increment is usable - or "potentially releasble" in the 2017 Scrum Guide - meaning that the Product Owner may choose to release it into the market.
+When Developers don't adhere to the Definition of Done, two key problems for the Product Owner and stakeholders arise:
+1. The Definition of Done serves as a commonly understood quality standard. The Product Owner and stakeholders will assume that all aspects of the product are in accordance with it. Thus, lack of adherence will lead to wrong assumptions about the current state of the product, which leads to the subsequent plans to be based on (partly) incorrect information.
+2. The Definition of Done creates transparency about rhe sustainable progress of the team. Only items that are Done become part of the Increment, creating a clearly understandable metric. Thus, lack of adherence will lead to wrong assumtions about the speed of development, which leads to subsequent plans being too ambitious and can lead to the Scrum Team potentially disappointing stakeholders as a result.
+
+Management of technical debt
+ is import to understand how fast development can be done to create features, similarily to the Definition fo Done. Developers may build an Increment that fulfills all requirements and the Definition of Done quickly, if they build up technical debt. This leads to the Product Owner and stakeholders to always expect this speed. Furthermore, if technical debt accumulates, it will slwo down the speed of development. Rather than focus on development, more resources will have to be spent on maintenance.
+
+Once the current state of the Product is understood, all participants of the Sprint Review collaborate to determince what next steo could add the most value to the product and support the Product Goal. THis typically involves the Product Owner presenting the current Product Backlog, which represents the current plans for the next steps. Should the Product Owner be influenced by the discussions, they may choose to incorporate the feedback from the Sprint Review into the Product Backlog. In this way, the product is constantly developed with stakeholder feedback in mind.
+
+Sprint Retrospective
+The Product Owner attends the Sprint Retrospective as a peer Scrum Team member. The focus of the Sprint Retrospective is on improving the process of value delivery, including all relevant apsects. The Product Owner contributes whatever they can to this.
+
+Answers to the questions in order:
+True; False; False; Fasle; True; True; False; True
+
+	--- End Context ---
+
+---
+
+Common Misconceptions
+
+Scrum offers a new way to approach problems that is very different from currently commond ways. Thus, many people have misconceptions about Scrum, which are the result of applying conventional thinking to situations in the Scrum environment. In the following table, I will compare approahces fomr conventional project/product management with Scrum:
+
+hv: T = Topic, C = Conventional approach, S = Scrum
+
+--
+T: Sprint progress update
+C: Management updates the metrics about the progress of the developers' work throughout the development
+S: The Sprint Backlog is a tool of, for and by the Developers. Updating the metrics is part of the self-management of the Developers
+--
+T: Task Ownership
+C: Individual items are often assigned to individual people, who are individually responsible for finishing
+S: The Developers are collectively responsible for the creation of the Increment during the Sprint and every item in the Sprint Backlog. No Developers owns any item individually
+--
+T: Hardening phase
+C: Phase of feature development may be followed by hardening phases, in which the undone work of the feature development is taken care of, e.g., non-functional requirements such as scalibility
+S: Every Sprint delivers an increment that is Done. Thus, there is no hardening phase. "Hardening Sprints", as they are sometimes called, are not a valid construct in Scrum
+--
+T: Crunch time
+C: When a deadline needs to be met or a quota fulfilled, it often happens that developers are ordered to work overtime.
+S: Scrum aims for sustainable development. When plans, which in Scrum are merely forecasts, cannont be met, the need to be adjusted, and this change must be transparent
+--
+T: Coordinate across teams
+C: When multiple teams work together, the managers of these teams coordinate the collaboration
+S: When multiple teams work together, all members of all Developers are responsible for finding a proper way to collaborate
+--
+T: Dev. launch
+C: The first weeks of a project are often spent gathering all requirements, establishing a static plan and creating the architecture for the entire project
+S: The first Sprint is just like any other Sprint. Requirements are gathered as more is learned, plans change over time, and architecture emerges throughout the development. Thus, the first SPrint delivers a Done increment of at least one piece of new functionality. There is alos no such thing as a "Sprint 0", taking place before the start of the development!
+--
+T: Role of management
+C: Management superices activities of those they are responsible for. This often includes measuring the work and directing individuals
+S: Scurm Teams are self-managing, they measure their own outputs and organize their work on their own. Management's role shift woards supporting the Scrum Team and fostering more and better self-management
+
+Finally, the perhaps greatest misconception about Scurm is that it can be partially adopted. When a company starts to work in Sprints but, for example, does not have a Scrum Master or conducts no Sprint Retrospectives, this is not Scrum. It may still be better than their previous approach, but it is not Scrum.
+
+Likewise, Scrum's vocabulary must be adopted. A company may clain to adopt Scrum but remains with the old non-Scrum terminology. Introducing Scrum is supposed to change things, to make existing problems transparent; refusing the terminology may make things easier for those involved, especially the management, but ultimately undermine the ability to detect change or for change to even happen.
