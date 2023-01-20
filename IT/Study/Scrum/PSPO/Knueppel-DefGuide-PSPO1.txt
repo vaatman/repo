@@ -442,3 +442,55 @@ The event is timeboxed to three hours. For Sprints shorter than one month, it is
 Answers to the questions in order:
 True; True; False; True
 
+---
+Scrum Values
+
+The Scrum Guide defines a set of values. Living and embodying the values help a Scrum Team to conduct its work better, among other things, by creating greater transparency, allowing for better inspection and adaptation.
+
+The five Scrum Values are:
+. Commitment, to the goals of the Scrum Team
+. Courage, to tackle difficult problems
+. Focus, on the goals of the Scrum Team
+. Openness, within the Scrum Team and between Scrum Team and stakeholders
+. Respect, towards each other
+
+Scuccessfully living out these values will not only lead to a better Scrum application but also towards trust within the Scrum Team and between the Scrum Team and its stakeholders.
+
+---
+Product Owner vs. Project Manager
+	--- Context: This part is not part of the Scrum Guide, but explains the role of the Product Owner in a Scrum environment ---
+
+Question
+? A Product Owner is essentially the same thing as a Project Manager
+? The Product Owner is the boss of the Developers
+
+To begin to understand the role of the Product Owner, it is important to differntiate it against that of a more conventional Project Manager. The key differences are the scope of their responsibilities and the subsequent effect on hierarchical authority.
+
+A Project Manager (PM) leads a project and is in charge of the developers. The PM is authorized by the organization to distribute tasks to individual developers and give orders that must be followed. If the PM deems i necessary, they can micro-manage the developers. A typical part of PM work is monitoring the work of the developers.
+
+In contrast, a Product Owner (PO) is a lateral leader, meaning they take a leadership position by providing the Scrum Team with direction, but are not formally in charge. The PO and the Developers exist on eye-level, with neither being in charge of the other. Responsibilities within the scope of the Developers are made by the Developers; the PO may assist if necessary but has no formal authority over the Developers. Therefore, the Product Owner does not track the work of the Developers, but instead focusses on their own work and measures metrics within the file of their own responsibilities.
+
+The distinction between PM and PO is reflected in their respective title. A Project Manager manages a project, which by definition includes all aspects relevant to the achievement of a project goal. The Product Owner on hte other hand "owns" the product. Ownership in this context means taking an active stake in the product, understanding it in its larger context and taking on he responsibility for its further improvement.
+
+Answers to the questions in order:
+False; False
+
+---
+
+What is a Product and what is Value?
+
+The role of the Product Owner is inherently tied to a product. The Scrum Guide defines a product as follows:
+
+"A product is a vehicle to deliver value. It has a clear boundary, known stakeholders, well-defined users or customers. A product could be a service, a physical product, or something more abstract."
+
+This opens up the question of what "value" is. In the Scrum context, value is generally understood as providing an outcome, which leads to a positive impact.
+
+Imagine there is a restaurant in you neighbourhood that you enjoy eating at. The product of this restaurant is the service of meal preparation and it had a certain value, because going there lets you ejnoy their food (outcome), which makes you feekl happy (positive impact).
+Now imagine that you love the food, but you are after not in the mood to go there after a long day of work, when you'd rather spend time at home. The restaurant notices that many people feel that way and decides to offer a delivery service.
+The value of the product has increase, because you can get the food without having to leave the house, which lets you enjoy the food you like in the comfort of your own home (outcome), which makes you happy (positive impact).
+
+Value is not an absolute metric; something that is valuable for one person, may not be considered valuable for another. The art of Product Ownership is understanding the product, the marketplace within it exists, the stakeholders i is supposed to delvier value to and how to maximize the value delivered overall.
+
+The Product Owner is often described as a value maximizer or value optimizer. They work with the limited resources the have, e.g., in terms of money and development time of the Developers, and maximize the value that van be delivered with them.
+
+
