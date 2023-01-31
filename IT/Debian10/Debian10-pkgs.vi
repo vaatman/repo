@@ -5,7 +5,7 @@
 sudo apt-get install \
 	apt-transport-https software-properties-common wget \
 	aptitude apt-file icewm icewm-common gmrun \
-	xterm rsync git \
+	xterm tmux rsync git strace \
 	wmaker wmaker-data wmaker-common wmbattery wmcalclock \
 	wicd-gtk wpagui ethtool \
 	qjackctl patchage \
@@ -20,7 +20,7 @@ sudo apt-get install \
 	evince \
 	filezilla pcmanfm lxrandr\
 	ufraw ufraw-batch rawtherapee scrot \
-	kino openshot shotwell coriander ristretto handbrake vlc \
+	kino openshot shotwell ristretto handbrake vlc \
 	dosbox bchunk pwgen \
 	libmodplug-dev \
 	libfreetype6-dev libclthreads-dev libclxclient-dev libcairo2-dev libasound2-dev \
