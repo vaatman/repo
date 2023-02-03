@@ -100,11 +100,11 @@ Scrum Events
 - mandatory events
 - to ensure empiricism takes place
 - 5 events
-1: Sprint
-2: Sprint Planning
-3: Daily Scrum
-4: Sprint Review
-5: Sprint Retrospective
+1: Sprint,
+2: Sprint Planning,
+3: Daily Scrum,
+4: Sprint Review,
+5: Sprint Retrospective.
 - a Sprint acts as a container in which the other events take place
 - all events have a maximum duration
 - co called timeboxing
@@ -124,9 +124,9 @@ Sprint
 
 Sprint Planning
 - clarifies 3 questions:
-1: why is the Sprint valuable?
-2: what is the product supposed to deliver at the end of the Sprint that it cannot do now?
-3: how will this be achieved?
+1: why is the Sprint valuable?,
+2: what is the product supposed to deliver at the end of the Sprint that it cannot do now?,
+3: how will this be achieved?,
 - Product Owner proposes backlog items
 - Developers choose items for Sprint Backlog
 - entire team crafts a Sprint Goal
@@ -138,7 +138,7 @@ Daily Scrum
 - Developers inspect and adapt Sprint Backlog
 - timeboxed to 15 minutes
 - every day, same place, same time
-- make achievement fo Sprint Goal more likely
+- make achievement of Sprint Goal more likely
 - NOT intended as status update
 - only Developers participate actively
 - possible outcome: revised Sprint Backlog
@@ -162,11 +162,11 @@ Sprint Retrospective
 - timeboxed to 3 hours
 
 Scrum Values
-1: commitment		- to goals of the Sprint
-2: courage		- to tackle problems
-3: focus		- on goals of Scrum Team
-4: openness		- with team and between team and stakeholders
-5: respect		- towards each other
+1: commitment		- to goals of the Sprint,
+2: courage		- to tackle problems,
+3: focus		- on goals of Scrum Team,
+4: openness		- with team and between team and stakeholders,
+5: respect		- towards each other,
 
 Product
 - a product is vehicle to deliver value
@@ -185,5 +185,5 @@ Product Owner
 - only ONE product goal at a time
 - gathered requirements are placed in the Product Backlog
 - true impact of implemented Backlog items comes from product release
-- PO suppders developers by clarifying requirements
+- PO supports developers by clarifying requirements
 
