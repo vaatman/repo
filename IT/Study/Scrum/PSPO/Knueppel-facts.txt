@@ -51,11 +51,11 @@ Share Ownership
 - team as whole responsible for the outcome
 - no titles/subteams
 - everbody collectively responsible
-- Product Owner and Scrum Master share responsibility that team as w whole produces a valuable product
+- Product Owner and Scrum Master share responsibility that team as a whole produces a valuable product
 
 Product Owner
 - value maximizer
-- value optimizet
+- value optimizer
 - determines direction of product development
 - concerned with WHAT the developers work on
 - manages the product backlog
