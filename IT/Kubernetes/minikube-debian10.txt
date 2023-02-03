@@ -14,7 +14,14 @@ $ sudo apt install curl wget apt-transport-https -y
 
 --- Step 2)
 Install KVM hypervisor
-To create virtual machines, we will need to have a hypervisor installed. In this guide, we are using KVM hypervisor. Check out this guide for more on  how to install KVM hypervisor in Debian 10
+To create virtual machines, we will need to have a hypervisor installed. In this guide, we are using KVM hypervisor. Check out this guide for more on  how to install KVM hypervisor in Debian 10 ( https://www.linuxtechi.com/install-configure-kvm-debian-10-buster/ )
+$ sudo apt install qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virtinst libvirt-daemon virt-manager -y
+$ sudo virsh net-start default
+$ sudo virsh net-autostart default
+$ sudo modprobe vhost_net
+$ echo "vhost_net" | sudo  tee -a /etc/modules
+$ sudo adduser hennie libvirt
+$ sudo adduser hennie libvirt-qemu
 
 --- Step 3)
 Install Minikube
