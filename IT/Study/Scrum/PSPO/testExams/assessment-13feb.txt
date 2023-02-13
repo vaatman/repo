@@ -1,0 +1,44 @@
+Question 1 of 15: True or False: The Sprint Review is the only time at which stakeholder feedback is taken into account.
+A Product Owner engages actively and regularly with stakeholders. However, to limit the disturbance to the development progress and keep focus high, the stakeholders have a formal role in the process at the Sprint Review only.
+
+Question 2 of 15: What is a Product Backlog?
+The Product Backlog is an ordered list of everything that might be needed in the product and it is the single source of work undertaken by the Scrum Team. The Product Backlog evolves as the product and the environment in which it will be used evolves. As long as a product exists, its Product Backlog also exists.
+
+Question 3 of 15: What phrases best describe the relationship of the Product Owner and the Developers?
+The Product owner clearly expresses Product Backlog items, ensuring the Developers understand items in the Product Backlog to the level needed for developing them and creating the value the Product Owner envisions. Scope may be re-negotiated if the effort grows much higher than anticipated.
+
+Question 4 of 15: In order to make investment decisions, the Product Owner is likely to look at the Total Cost of Ownership (TCO) of the product being built. What costs will a Product Owner take into account?
+The Product Owner is not only accountable for development and release of a product, but also the cost of maintaining and operating the product over its lifetime.
+
+Question 5 of 15: What should Developers do if the Product Owner is unavailable?
+The Scrum framework consists of Scrum Teams and their associated roles, events, artifacts, and rules. Each component within the framework serves a specific purpose and is essential to Scrum's success and usage. The Scrum Team consists of a Product Owner, the Developers, and a Scrum Master. The Product Owner is responsible for maximizing the value of the product and the work of the Scrum Team. In the absence of a Product Owner, the latter accountability is not performed.
+
+Question 6 of 15: Adaptation requires regular inspection. In what ways does the Product Owner contribute to the results achieved by inspection ?
+Scrum users must frequently inspect Scrum artifacts and progress to detect undesirable variances. The primary tool for the Product Owner to uphold transparency is the Product Backlog. Product Backlog is a living artifact that is actively maintained and updated to reflect reality. At the Sprint Review, attendees collaborate on the next things that could be done to optimize value, which is processed into an updated Product Backlog.
+
+Question 7 of 15: When can the Product Backlog be updated?
+The Product Backlog is dynamic; it constantly changes to identify what the product needs in order to be appropriate, competitive, and useful. Product Backlog items can be updated at any time by the Product Owner or a delegate. Even if the responsibility is delegated the Product Owner remains accountable for the Product Backlog.
+
+Question 8 of 15: True or False: The value delivered by a product can only be determined by revenue.
+Value is likely to vary across products and organizations.
+
+Question 9 of 15: What is the Product Owner accountable for in Scrum?
+In addition to being accountable for maximizing the value of the product and the work of the Scrum Team, the Product Owner is accountable for effective Product Backlog management, communicating the Product Goal, ordering the Product Backlog, and making the Product Backlog transparent. The Product Owner may do these things or may delegate the responsibility to others. Even if the responsibility is delegated the Product Owner remains accountable.
+
+Question 10 of 15: How does an organization know that a product built using Scrum is successful?
+Scrum Teams deliver products iteratively and incrementally, maximizing opportunities for feedback. If a product is not released, the opportunity to capture user and market feedback is lost.
+
+Question 11 of 15: True or False: A Product Owner is essentially the same thing as a traditional Project Manager?
+A traditional project manager is responsible for all aspects of a project; costs, resources, execution, release, planning, capacity. Scrum is a framework for complex product development, regardless of whether the work is organized in projects. The Product Owner is accountable for maximizing the value of the product and the work performed, this is complemented by the specific accountabilities of the Developers and the Scrum Master.
+
+Question 12 of 15: What best describes the relationship of the Product Owner and the stakeholders?
+The Product Owner represents the stakeholders to the Scrum Team, which includes representing their desired requirements in the Product Backlog. The Product Owner is accountable for maximizing the value of the product resulting from the work of the Scrum Team. The Product Owner is also accountable for effective Product Backlog management.
+
+Question 13 of 15: Who creates the Definition of Done?
+If the Definition of Done for an Increment is part of the standards of the organization, all Scrum Teams must follow it as a minimum. If it is not an organizational standard, the Scrum Team must create a Definition of Done appropriate for the product.
+
+Question 14 of 15: What two things best help the Product Owner manage the value of a product?
+The Product Owner manages Product Backlog against the assumption that value will be generated. Indications of value on Product Backlog are useful but are only a prediction until validated against users and market.
+
+Question 15 of 15: What is the principal value of releasing an Increment?
+Releasing the Increment to customers/users is the only way to validate assumptions about value.
