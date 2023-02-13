@@ -1,0 +1,10 @@
+. download debian10 package from:
+  https://www.veracrypt.fr/en/Downloads.html
+
+. install it
+  $ sudo dpkg -i veracrypt-1.25.9-Debian-10-amd64.deb
+
+. fix some issues
+  $ sudo apt install libwxgtk-media3.0-gtk3-0v5
+  $ sudo apt --fix-broken install
+

@@ -1,0 +1,33 @@
+1. Install and configure the necessary dependencies
+sudo apt-get update
+sudo apt-get install -y curl openssh-server ca-certificates perl
+
+
+Next, install Postfix to send notification emails. If you want to use another solution to send emails please skip this step and configure an external SMTP server after GitLab has been installed.
+sudo apt-get install -y postfix
+
+
+During Postfix installation a configuration screen may appear. Select 'Internet Site' and press enter. Use your server's external DNS for 'mail name' and press enter. If additional screens appear, continue to press enter to accept the defaults.
+2. Add the GitLab package repository and install the package
+curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash
+
+
+Next, install the GitLab package. Make sure you have correctly set up your DNS, and change https://gitlab.example.com to the URL at which you want to access your GitLab instance. Installation will automatically configure and start GitLab at that URL.
+For https:// URLs, GitLab will automatically request a certificate with Let's Encrypt, which requires inbound HTTP access and a valid hostname. You can also use your own certificate or just use http:// (without the s ).
+If you would like to specify a custom password for the initial administrator user ( root ), check the documentation. If a password is not specified, a random password will be automatically generated.
+sudo EXTERNAL_URL="https://gitlab.example.com" apt-get install gitlab-ee
+
+
+3. Browse to the hostname and login
+Unless you provided a custom password during installation, a password will be randomly generated and stored for 24 hours in /etc/gitlab/initial_root_password . Use this password with username root to login.
+See our documentation for detailed instructions on installing and configuration.
+https://docs.gitlab.com/omnibus/README.html#installation-and-configuration-using-omnibus-package
+
+4. Set up your communication preferences
+Visit our email subscription preference center to let us know when to communicate with you. We have an explicit email opt-in policy so you have complete control over what and how often we send you emails.
+Twice a month, we send out the GitLab news you need to know, including new features, integrations, docs, and behind the scenes stories from our dev teams. For critical security updates related to bugs and system performance, sign up for our dedicated security newsletter.
+Important note: If you do not opt-in to the security newsletter, you will not receive security alerts.
+
+5. Recommended next steps
+After completing your installation, consider the recommended next steps, including authentication options and sign-up restrictions.
+https://docs.gitlab.com/ee/install/next_steps.html

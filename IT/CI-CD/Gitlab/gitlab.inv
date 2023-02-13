@@ -1,0 +1,5 @@
+[gitlabserver]
+rhel8-node1.local
+
+[gitlabrunner]
+rhel8-node2.local

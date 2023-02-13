@@ -1,0 +1,63 @@
+Copy photos from iPhoneSE in folder on cmdline
+----------------------------------------------
+
+. connect iPhone by usb
+
+. if Caja file browser opens
+  umount iPhone
+
+- in xterm browse to folder
+
+. some informational commands:
+$ gphoto2 --list-ports
+Devices found: 10
+Path                             Description
+--------------------------------------------------------------
+ptpip:                           PTP/IP Connection               
+serial:/dev/ttyS0                Serial Port 0                   
+serial:/dev/ttyS1                Serial Port 1                   
+serial:/dev/ttyS2                Serial Port 2                   
+serial:/dev/ttyS3                Serial Port 3                   
+serial:                          Serial Port Device              
+usb:002,004                      Universal Serial Bus            
+usb:002,003                      Universal Serial Bus            
+usb:002,005                      Universal Serial Bus            
+usb:001,003                      Universal Serial Bus  
+
+ gphoto2 --auto-detect
+Model                          Port                                            
+----------------------------------------------------------
+Apple iPhone 5 (PTP mode)      usb:002,005     
+
+$ gphoto2 --summary
+Camera summary:                                                                
+Manufacturer: Apple Inc.
+Model: Apple iPhone
+  Version: 16.1.2
+  Serial Number: FFMDQE1KPLK2
+Vendor Extension ID: 0x6 (15.20)
+Vendor Extension Description: ICPE^0&CPLS^0
+PTP Standard Version: 1.10
+
+Capture Formats: Association/Directory JPEG PNG TIFF
+Display Formats: Undefined Type, Association/Directory, Script, AIFF, MS Wave, MP3, MS AVI, MPEG, ASF, Apple Quicktime, JPEG, PNG, TIFF, Unknown(b401), Unknown(b402), Unknown(b421)
+.....
+
+$ gphoto2 --list-files
+There is no file in folder '/'.                                                
+There is no file in folder '/store_00010001'.
+There is no file in folder '/store_00010001/DCIM'.
+There are 2 files in folder '/store_00010001/DCIM/202101__'.
+#1     IMG_0003.JPG               rd  4448 KB 3024x4032 image/jpeg
+#2     UFJH0787.JPG               rd    57 KB  640x640  image/jpeg
+There are 4 files in folder '/store_00010001/DCIM/202102__'.
+#3     IMG_0012.JPG               rd  5068 KB 3024x4032 image/jpeg
+#4     IMG_0013.AAE               rd     1 KB application/x-unknown
+#5     IMG_0013.JPG               rd  5882 KB 3024x4032 image/jpeg
+#6     IMG_E0013.JPG              rd  5330 KB 2891x4029 image/jpeg
+There are 2 files in folder '/store_00010001/DCIM/202104__'.
+
+. sync all files
+  $ gphoto2 --get-all-files
+
+source: http://www.gphoto.org/doc/manual/using-gphoto2.html

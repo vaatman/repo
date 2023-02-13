@@ -1,0 +1,12 @@
+. install snapd
+  $ sudo apt install snapd
+  $ sudo snap install core
+
+. install whatsdesk
+  $ sudo snap install whatsdesk
+
+. run it
+  $ snap run whatsdesk
+
+. enable app icon in mate
+  $ cp /var/lib/snapd/desktop/applications/whatsdesk_whatsdesk.desktop ~/.local/share/applications/

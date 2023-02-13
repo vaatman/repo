@@ -1,0 +1,46 @@
+. install debian9 via USB stick
+
+. enable sudo rights
+	# su -
+	# vi /etc/group, set:
+	sudo:x:27:hennie
+
+	re-login
+
+. install xterm rsync git
+	$ sudo apt-get install xterm rsync git
+
+. add IceWM
+	$ sudo apt-get install icewm icewm-common
+	copy .icewm/ dir from backup
+
+. install applications
+	$ sudo apt-get install jkmeter jnoisemeter japa jaaa meterbridge \
+	calf-ladspa calf-plugins \
+	qjackctl patchage totem \
+	alsamixergui ffado-mixer-qt4 \
+	zita-at1 zita-rev1 zita-bls1 zita-mu1 \
+	soundconverter sox \
+	ardour audacity jamin jack-mixer \
+	asunder \
+	mousepad vlc kino openshot handbrake k3b \
+	ristretto shotwell gwenview mirage rawtherapee inkscape ufraw \
+	scribus 
+
+. set session and login wallpaper
+	cd .icewm/wallpaper
+	inkscape -z -e 1280x800.png /usr/share/wallpapers/SoftWavesLockScreen/contents/images/1280x800.svg
+	cd /etc/lightdm
+	sudo cp ~/.icewm/wallpaper/1280x800.png .
+	sudo vi lightdm-gtk-greeter.conf, under [greeter] set:
+	background=/etc/lightdm/1280x800.png
+
+. blacklist the pc.speaker
+	$ sudo vi /etc/modprobe.d/blacklist.conf
+	blacklist pcspkr
+	: update initramfs
+	$ sudo su -
+	# cd /boot
+	# cp -p initrd.img-4.9.0-4-amd64 initrd.img-4.9.0-4-amd64.<date>
+	# update-initramfs -ut
+	: reboot

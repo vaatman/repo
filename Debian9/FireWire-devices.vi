@@ -1,8 +1,0 @@
-Presonus FP10	000A9200C9030142
-AudioFirePre8	001486069d5cacb3
-AudioFire4	00148607d99bc435
-
-Working DaisyChains:
-Laptop	-> AudioFirePre8	-> FP10 
-Laptop	-> AudioFirePre8	-> AudioFire4
-Laptop	-> AudioFire4		-> FP10

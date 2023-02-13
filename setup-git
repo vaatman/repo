@@ -1,16 +1,27 @@
 . clone
+  $ mkdir -p GIT/vaatman
+  $ cd $_
+  $ git clone https://github.com/vaatman/repo
+
 . copy local id_rsa.pub on GitHub
+  $ ssh-keygen
   > github.com > SSH and GPG keys > SSH keys > New SSH key
-  paste your local key
+  paste your local key [ ~/.ssh/id_rsa.pub ]
+
+. set your identity
+  $ git config --global user.name "Hennie Vaatstra"
+  $ git config --global user.email hennievaatstra@gmail.com
 
 . add dir/files
   $ git add <dir>
+  $ vi <file>
+  :wq
 
 . commit dir/files
   $ git commit -am "some message"
 
 . set remote url to use ssh
-  $ git remote set-url origin git@github.com:hennievaatstra/hennievaatstra.git
+  $ git remote set-url origin git@github.com:vaatman/repo.git
 
 . push 
   $ git push

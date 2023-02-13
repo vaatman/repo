@@ -1,0 +1,8 @@
+. download availabled formats
+$ youtube-dl -F https://www.youtube.com/watch?v=pxglIARyI4UB > list
+
+. see what's available:
+$ less list
+
+. download the file you want:
+$ youtube-dl -f 248 https://www.youtube.com/watch?v=pxglIARyI4UB
