@@ -1,0 +1,16 @@
+Replacement M2800 had extremely bright display
+
+fix:
+. set grub param
+# vi /etc/default/grub
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash acpi_backlight=vendor"
+# update-grub
+# reboot
+: didn't work on it's own
+
+. use xrandr to change brightness
+. get display name
+$ xrandr|grep " connected"|cut -f1 -d " "
+eDP-1
+$ xrandr --output eDP-1 --brightness 0.3
+: then use Fn and arrows Up/Down
