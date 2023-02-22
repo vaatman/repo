@@ -47,10 +47,10 @@ Self-management
 - Developers decide on the how
 - good practice to have long-lived teams
 - team composition does not change frequently if not needed
-Share Ownership
+Shared Ownership
 - team as whole responsible for the outcome
 - no titles/subteams
-- everbody collectively responsible
+- everybody collectively responsible
 - Product Owner and Scrum Master share responsibility that team as a whole produces a valuable product
 
 Product Owner
@@ -107,7 +107,7 @@ Scrum Events
 5: Sprint Retrospective.
 - a Sprint acts as a container in which the other events take place
 - all events have a maximum duration
-- co called timeboxing
+- so called timeboxing
 - participation in events is mandatory
 
 Sprint
@@ -158,7 +158,7 @@ Sprint Review
 Sprint Retrospective
 - entire team inspects the Sprint
 - how to make next Sprint more succesful / enjoyable
-- a commond subject is the definition of done
+- a common subject is the definition of done
 - timeboxed to 3 hours
 
 Scrum Values
@@ -172,7 +172,7 @@ Product
 - a product is vehicle to deliver value
 - has clear boundary
 - has known stakeholders
-- has well-definde users/customers
+- has well-defined users/customers
 - could be a service or s physical product
 
 Value
