@@ -1,0 +1,91 @@
+Feedback
+A Sprint could be cancelled if the Sprint Goal becomes obsolete. Only the Product Owner has the authority to cancel the Sprint.
+--
+Feedback
+If the Definition of Done for an Increment is part of the standards of the organization, all Scrum Teams must follow it as a minimum. If it is not an organizational standard, the Scrum Team must create a Definition of Done appropriate for the product.
+--
+Feedback
+The product Increment should be usable and releasable at the end of every Sprint, but it does not have to be released.
+--
+Feedback
+A new Sprint starts immediately after the conclusion of the previous Sprint.
+--
+Feedback
+Scrum is founded on empirical process control theory, or empiricism. Empiricism asserts that knowledge comes from experience and making decisions based on what is observed.
+--
+Feedback
+The heart of Scrum is a Sprint, which is one month or less during which a done, usable, valuable product Increment is created. This applies to every Sprint.
+--
+Feedback
+The Developers use the Daily Scrum to inspect progress toward the Sprint Goal and to inspect how progress is trending toward completing the work in the Sprint Backlog.
+--
+Feedback
+The heart of Scrum is a Sprint, a timebox of one month or less during which a done, useful, and valuable working product Increment is created.
+--
+Feedback
+Scrum Teams typically go through some steps before achieving a state of increased performance. Changing membership typically reduces cohesion, affecting performance and productivity in the short term.
+--
+Feedback
+A Scrum Team is small enough to remain nimble and large enough to complete significant work within a Sprint, typically 10 or fewer people. Generally smaller teams communicate better and are more productive
+--
+Feedback
+During the Sprint, scope may be clarified and re-negotiated between the Product Owner and the Developers as more is learned. It is important to be transparent when challenges arise since ultimately the entire Scrum Team is accountable for creating a valuable, useful Increment.
+--
+Feedback
+The Sprint Backlog makes visible all of the work that the Developers identify as necessary to meet the Sprint Goal. The Developers modify the Sprint Backlog throughout the Sprint, and the Sprint Backlog emerges during the Sprint.
+--
+Feedback
+Scrum is founded on empirical process control theory, or empiricism. Empiricism asserts that knowledge comes from experience and making decisions based on what is known.
+--
+Feedback
+The Product Owner is accountable for effective Product Backlog management. The Product Backlog is an emergent, ordered list of what is needed to improve the product. It is the single source of work undertaken by the Scrum Team.
+--
+Feedback
+Scrum is meant to be implemented as prescribed in the Scrum Guide. For example, the five events in the Scrum Guide are mandatory, each event has a specific purpose.
+Scrum does not eliminate the complexity that is inherent in delivering a product in today’s world, instead it offers a framework for dealing with complexity. By regularly delivering Increments of value teams gain the ability to inspect and rapidly adapt based on the feedback received.
+Project Managers are not simply replaced by self-managing teams. Scrum is a framework for optimizing decision making based on the knowledge and experience of the entire team.
+--
+Feedback
+The Product Owner is the sole person responsible for ordering the Product Backlog.
+--
+Feedback
+The items selected for a Sprint have been selected as most valuable with the Product Owner. The items serve the Sprint's goal. No changes should be made that endanger the Sprint Goal. No one external to the Scrum Team can force changes on the Developers.
+--
+Feedback
+All members of the Scrum Team share in the accountability for creating value every Sprint.
+--
+Feedback
+The Sprint is a container for the following timeboxed events: Sprint Planning, Daily Scrum, Sprint Review, and Sprint Retrospective. Sprints are fixed length events of one month or less to create consistency, and a new Sprint starts immediately after the conclusion of the previous Sprint.
+--
+Feedback
+The Daily Scrum is a 15-minute event for the Developers of the Scrum Team. The Scrum Master serves the Scrum Team by ensuring that all Scrum events take place and are positive, productive, and kept within the timebox.
+--
+Feedback
+Management has no official role or accountability on a Scrum Team. However, management external to the Scrum Team is relevant in setting the vision and strategy to guide the overall direction of the organization.
+--
+Feedback
+The Increment must be valuable and useful. This means that when many Scrum Teams are working on a single product, they are expected to adhere to a single Definition of Done for the Increment.
+--
+Feedback
+Sprint Planning is timeboxed to a maximum of eight hours for a one-month Sprint. For shorter Sprints, the event is usually shorter.
+--
+Feedback
+The Scrum Master only ensures that all Scrum events take place and are positive, productive, and kept within the timebox.
+--
+Feedback
+The Scrum Team consists of one Scrum Master, one Product Owner, and Developers.
+--
+Feedback
+The Product Owner is accountable for maximizing the value of the product and the work of the Scrum Team.
+--
+Feedback
+The Scrum Master ensures that the Developers have the event, but the Developers are responsible for conducting the Daily Scrum. The Scrum Master teaches the Developers to keep the Daily Scrum within the 15-minute timebox. The Scrum Master enforces the rule that only members participate in the Daily Scrum.
+--
+Feedback
+Every event in Scrum, besides the Sprint, which is a container for the other events, is an opportunity to Inspect and Adapt.
+--
+Feedback
+The purpose of each Sprint is to deliver useful and valuable Increments that adhere to the Scrum Team's current Definition of Done.
+--
+Feedback
+Timeboxed events are events that have a maximum duration.

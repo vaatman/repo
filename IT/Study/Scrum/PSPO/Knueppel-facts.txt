@@ -1,0 +1,189 @@
+Scrum PSPO
+----------
+
+a problem is complex: relationship between action and reaction cannot be known in advance
+
+a problem can be adaptive: relationship between action and reaction changes over time
+
+Scrum is based on empiricism
+- empiricism in scrum is: knowledge comes from experience
+- empiricism requires 3 factors:
+  - transparancy:	see/understand what is relevant
+  - inspection:		frequently take a look at things that effect the work
+  - adaptation:		adjust if inspection gains insight on better approach
+
+Scrum is a framework
+- teams are free to choose whatever approach they think is appropriate
+- how the development takes place is up to the team
+
+Scrum develops products in Sprints
+- incremental approach
+
+Sprints last at most 1 month
+
+A Scrum team has a maximum of 10 members
+A Scrum team has 3 roles:
+- ProductOwner
+- Scrum Master
+- Developers
+
+Product Owner manages product backlog
+Product Owner determines direction of product development
+Scrum Master supports Product Owner, Developers and Organization by spreading Scrum
+Developers turn product backlog items in a working piece of product
+
+3 Crucial aspects
+- cross-functionality
+- self-management
+- shared ownership
+
+Cross-functionality:
+- ability to deliver a done product increment
+- whithout external help
+- all skills must be present in the team
+Self-management
+- ability and empowerment to determine what to work on and how to do it
+- Product Owner determines the what
+- Developers decide on the how
+- good practice to have long-lived teams
+- team composition does not change frequently if not needed
+Shared Ownership
+- team as whole responsible for the outcome
+- no titles/subteams
+- everybody collectively responsible
+- Product Owner and Scrum Master share responsibility that team as a whole produces a valuable product
+
+Product Owner
+- value maximizer
+- value optimizer
+- determines direction of product development
+- concerned with WHAT the developers work on
+- manages the product backlog
+
+Backlog
+- list of items
+- reflects what is currently known about the product
+- is NOT static
+- evolves as more is learned
+- constantly updated and reordered
+- the order reflects the product goal
+- product goal is desired future state of the product
+
+Developers
+- turn product backlog items in working product increment
+- all work done WITHIN the team
+- no external help
+- chosen items fill Sprint Backlog
+- owned exclusively by Developers
+- Daily Scrum for Developers
+- to inspect progress
+- to plan next steps
+- Daily scrum is NOT a status meeting
+- Developers estimate effort needed for implementation of items
+
+Scrum Master
+- stance of a 'servant-leader'
+- enables and empowers others
+- teaches Scrum
+- coaches the Product Owner
+- removes impediments
+- facilitates some or all Scrum Events
+- rarely makes decisions
+- provides advice, support and or guidance
+- tries to coach developers towards self-management
+- an impediment in Scrum is an issue that goes beyond self-management
+- internal impediment: must be resolved by the team
+- structural impediment: must be resolved by Scrum Master
+- Scrum Master manages the Scrum process
+
+Scrum Events
+- mandatory events
+- to ensure empiricism takes place
+- 5 events
+1: Sprint,
+2: Sprint Planning,
+3: Daily Scrum,
+4: Sprint Review,
+5: Sprint Retrospective.
+- a Sprint acts as a container in which the other events take place
+- all events have a maximum duration
+- so called timeboxing
+- participation in events is mandatory
+
+Sprint
+- maximum 1 month length
+- timeboxed to 1 month
+- should be as short as possible
+- shorter sprint is higher risk
+- sprint length should remain constant over time
+- begins with Sprint Planning
+- ends with Sprint Review
+- outcome of Sprint is an increment
+- the product before the Sprint PLUS at least one added useful outcome
+- only Product Owner can decide to END or CANCEL the Sprint
+
+Sprint Planning
+- clarifies 3 questions:
+1: why is the Sprint valuable?,
+2: what is the product supposed to deliver at the end of the Sprint that it cannot do now?,
+3: how will this be achieved?,
+- Product Owner proposes backlog items
+- Developers choose items for Sprint Backlog
+- entire team crafts a Sprint Goal
+- Sprint Goal is purpose of the Sprint
+- Sprint planning is timeboxed to 8 hours
+- may be shorter is Sprint is shorter
+
+Daily Scrum
+- Developers inspect and adapt Sprint Backlog
+- timeboxed to 15 minutes
+- every day, same place, same time
+- make achievement of Sprint Goal more likely
+- NOT intended as status update
+- only Developers participate actively
+- possible outcome: revised Sprint Backlog
+
+Sprint Review
+- sum of all work that is 'done'
+- integrated with previous increment
+- delivered by Developers as result of work towards Sprint Goal
+- must be usable
+- definition of done defines criteria which every implemented Product Backlog item must fulfill to be included in Increment
+- all 'Done' work included in increment
+- all 'not Done' work returned to Product Backlog
+- Scrum Teams meet with stakeholders
+- inspect increment
+- release increment or not?
+
+Sprint Retrospective
+- entire team inspects the Sprint
+- how to make next Sprint more succesful / enjoyable
+- a common subject is the definition of done
+- timeboxed to 3 hours
+
+Scrum Values
+1: commitment		- to goals of the Sprint,
+2: courage		- to tackle problems,
+3: focus		- on goals of Scrum Team,
+4: openness		- with team and between team and stakeholders,
+5: respect		- towards each other,
+
+Product
+- a product is vehicle to deliver value
+- has clear boundary
+- has known stakeholders
+- has well-defined users/customers
+- could be a service or s physical product
+
+Value
+- providing an outcome
+- leads to positive impact
+- no absolute metric
+
+Product Owner
+- needs to understand the requirements of the stakeholders
+- only ONE product goal at a time
+- gathered requirements are placed in the Product Backlog
+- true impact of implemented Backlog items comes from product release
+- PO supports developers by clarifying requirements
+
