@@ -1,0 +1,44 @@
+Zabbix 6 I Infrastructure Monitoring
+Cookbook
+Second Edition
+Nathan Liefting | Brian van Baekel
+
+These notes follow the RedHat based examples
+
+Chapter 1: Installing Zabbix and getting start using the frontend
+
+How to do it:
+1. add Zabbix 6.0 repository to the server
+    rpm -Uvh <https://repo>
+    dnf clean all
+2. add the MariaDB repository to the server
+    wget <https://repo_setup>
+    chmod +x <repo_setup>
+    ./ <repo_setup>
+3. install and enable mariadb
+    dnf install mariadb-server
+    systemctl enable--now mariadb
+4. secure the mariadb installation
+    /usr/bin/mariadb-secure-installation
+5. install Zabbix server with MySQL support
+    dnf install zabbix-server-mysql zabbix-sql-scripts
+6. create Zabbix database
+    mysql -u root -p
+    create database zabbix character set utf8mb4 collate utf8mb4_bin;
+    create user zabbix@localhost identified by 'password';
+    grant all privileges on zabbix.* to zabbix@localhost identified by 'password';
+    flush privileges;
+    quit
+7. import Zabbix database scheme
+    zcat /usr/share/doc/zabbix-sql-scripts/mysql/server.sql.gz | mysql -u root -p zabbix
+
+Configuring the Zabbix server
+1. set db settings:
+    vi /etc/zabbix/zabbix_server.conf
+    DBName=zabbix
+    DBUser=zabbix
+    DBPassword=password
+2. start Zabbix server
+    systemctl enable --now zabbix-server
+3. check status
+    systemctl status zabbix-server
