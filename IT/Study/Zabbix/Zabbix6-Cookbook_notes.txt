@@ -42,3 +42,44 @@ Configuring the Zabbix server
     systemctl enable --now zabbix-server
 3. check status
     systemctl status zabbix-server
+
+A complete Zabbix stack consists of at least:
+- a database [MySQL, PostgreSQl or Oracle]
+- a Zabbix server
+- Apache or Nginx running the frontend with PHP7.2+ [php8 not supported]
+
+Configuring the Zabbix frontend
+1. install required packages
+    dnf install zabbix-web-mysql zabbix-apache-conf
+2. restart and enable zabbix components
+    systemctl enabled httpd php-fpm
+    systemctl restart zabbix-server httpd php-fpm
+3. browse to frontend
+    http://<your_server_ip>/zabbix
+
+Enabling Zabbix server high availability
+- cannot do loadbalancing yet
+- setting up cluster nodes in same way as any new zabbix server
+- will need some new config parameters:
+  HANodeName=<node1>
+  NodeAddress=<node1 IP>
+  HANodeName=<node2>
+  NodeAddress=<node2 IP>
+
+Setting up Apache for HighAvailability
+- is basically 'keepalived'
+  dnf install keepalived
+  vi /etc/keepalived/keepalived.conf
+
+TIP:
+When using HTTP/LDAP/SAML for authentication:
+- it's still needed to add useraccount internally
+- use same username as the 'remote' username
+
+Chapter 2: Getting things ready with Zabbix User Management
+
+The entire permission system is based on what user group(s0 and user role(s0 you are part of
+- first create group
+- then create user, added to the group
+
+Chapter 3: Setting up Zabbix monitoring
