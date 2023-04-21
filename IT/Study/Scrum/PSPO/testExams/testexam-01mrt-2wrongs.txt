@@ -1,0 +1,21 @@
+Question 4 of 30
+The length of a Sprint should be:
+
+(choose the best answer)
+A.  Short enough to keep the business risk acceptable to the Product Owner.
+B.  Short enough to be able to synchronize the development work with other business events.
+C.  One month or less.
+!!D.  All of the above.
+Feedback
+All of these choices are appropriate considerations in determining the length of a Sprint.
+Question 17 of 30
+What are two ways a Scrum Master serves to enable effective Scrum Teams?
+
+(choose the best two answers)
+A.  By starting and ending the meetings at the proper time.
+!!B.  By facilitating Developer decision-making.
+C.  By keeping high value features high in the Product Backlog.
+:D.  By removing impediments that hinder the Scrum Team.
+You did not select all available correct options.
+Feedback
+The Scrum Master serves the Scrum Team in several ways. Facilitation and removing impediments are examples of ways a Scrum Master helps a team become more effective.
