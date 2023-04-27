@@ -1,0 +1,8 @@
+--chatGPT
+
+# Capture audio from the default soundcard and route it to the USB soundcard
+alsa_in -j "default" -d hw:0 -q 1 -c 2 | alsa_out -j "usb" -d hw:1 -q 1
+
+# Play audio from the USB soundcard and route it to the default soundcard
+alsa_in -j "usb" -d hw:1 -q 1 | alsa_out -j "default" -d hw:0 -q 1
+
