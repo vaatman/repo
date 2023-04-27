@@ -21,3 +21,6 @@ Install avidemux on Debian10
 . install
   $ cd debs
   $ sudo dpkg -i *.deb
+
+. run
+  $ avidemux3_qt5

@@ -29,14 +29,14 @@ Empiricism
 
 Scrum and Empiricism
 - Scrum is a FRAMEWORK
-	- teams are free to choose whatever apporach they think is appropriate
+	- teams are free to choose whatever approach they think is appropriate
 	- 'how' the development takes place is left to the teams
 - built upon the idea of empiricism
 - prescribes rules/roles/values/events/artifacts
-- which are designed to maximize oppotunities for empiricism
+- which are designed to maximize opportunities for empiricism
 - every aspect
 	- aims toward fostering transparancy
-	- allows for freqeunt inspection
+	- allows for frequent inspection
 	- empowers adaptation
 - Scrum is NOT a process
 - Scrum is NOT a methodology
@@ -83,10 +83,10 @@ Scrum Team
 		- all team members equally responsible for the outcome
 			- no 'tech leads'
 			- no 'junior-senior' hierarchy
-		- ProductOwner & ScrumMaster & Developers share responsibility that the team as a whoel produces a valuable product
+		- ProductOwner & ScrumMaster & Developers share responsibility that the team as a whole produces a valuable product
 		
 	note:
-	- self-management takes place within the limits set by the organization within which de development takes place
+	- self-management takes place within the limits set by the organization within which the development takes place
 
 Product Owner
 - often described as value maximizer or value optimizer
@@ -108,9 +108,9 @@ Product Owner
 	- product goal == desired future state of the product
 
 Developers
-- responsible for turning requirements [form product backlog] into a working product increment
+- responsible for turning requirements [from product backlog] into a working product increment
 - all done WITHIN the team [no external help]
-- Sprint Backlog list of items developers belive they can implement in the sprint
+- Sprint Backlog list of items developers believe they can implement in the sprint
 - owned exclusively by the developers
 - Daily Scrum exclusively for the developers
 - to inspect progress
@@ -130,7 +130,7 @@ Scrum Master
 - tries to coach developers towards self-management
 - 'impediment' in ScrumMaster context: issues that go beyond developers self-management
 	- internal conflicts: resolved by the team
-	- structural confilcts: impedement s ScrumMaster should deal with
+	- structural conflicts: impedement s ScrumMaster should deal with
 - "manager of the Scrum process"
 
 Scrum Events
@@ -144,7 +144,7 @@ Scrum Events
 - in which all other events take place
 - all events have maximium duration
 - so called 'timeboxing'
-- participation in events in mandatory
+- participation in events is mandatory
 - many teams have 'product backlog refinements'
 	- not a formal event
 	- not in form of meeting
@@ -153,7 +153,7 @@ Scrum Events
 
 The Sprint
 - in product development we're dealing with problems
-	- that can only learn about through experimentation
+	- that we can only learn about through experimentation
 	- and which can change over time
 - therefore we need to inspect and adapt repeatedly
 - that is the FOUNDATION for the iterative and incremental approach of Scrum
@@ -189,7 +189,7 @@ The Sprint
 Sprint Planning
 - clarifies 3 questions:
 	1. why is the sprint valuable?
-	2. what is the product at the end of the Sprint supposed to deliver that is cannot do now?
+	2. what is the product at the end of the Sprint supposed to deliver that it cannot do now?
 	3. how will this be achieved?
 - ProductOwner proposes how product could gain value through work in the Sprint
 - Dev's & PO discuss how much they believe to be able to deliver
@@ -253,7 +253,7 @@ Daily Scrum
 - not supposed for in-depth technical discussions
 - possible output of Daily Scrum:
 	- revised plan in SprintBacklog
-	- insight that not all items in SprintBacklog will likel be achieved in Sprint
+	- insight that not all items in SprintBacklog will likely be achieved in Sprint
 	: this insight is shared with ProductOwner
 	  - together work towards reducing scope of SprintBacklog
 	  - by removing lowe prioriy items
@@ -280,7 +280,7 @@ Sprint Review
 	- 'not Done' work is returned to ProductBacklog
 	- left to PO to decide how to proceed with it [eg. include in next Sprint]
 - entire Increment complies with 'Definition of Done'
-	- allowin a minimal quality standard
+	- allowing a minimal quality standard
 - Sprint Review
 	- event Scrum Teams meets key stakeholders
 	- invited by PO
@@ -336,7 +336,7 @@ Scrum Values
 	4. openness		- with team and between team and stakeholders
 	5. respect		- towards each other
 
-Procut Owner vs. Project Manager
+Product Owner vs. Project Manager
 	! not part of the Scrum Guide !
 - key difference with ProjectManager are
 	- scope of their responsibilities
