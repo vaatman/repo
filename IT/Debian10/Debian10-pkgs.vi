@@ -5,7 +5,7 @@
 sudo apt-get install \
 	apt-transport-https software-properties-common wget \
 	aptitude apt-file icewm icewm-common gmrun \
-	xterm tmux rsync git strace \
+	xterm tmux rsync git strace jq \
 	wmaker wmaker-data wmaker-common wmbattery wmcalclock \
 	wicd-gtk wpagui ethtool \
 	qjackctl patchage \
