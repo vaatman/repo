@@ -1,5 +1,5 @@
 [gitlabserver]
-centos8_01.local
+alma8_01.local
 
 [gitlabrunner]
-centos8_02.local
+alma8_02.local
