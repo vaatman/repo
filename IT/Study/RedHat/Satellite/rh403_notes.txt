@@ -39,9 +39,209 @@ Ch1 - Planning and deploying
     # systemctl enable --now chronyd
     . install sos
     # yum install sos
-    . configure Satellite server
+  . configure Satellite server
+    . check options
     # satellite-installer --help
+    . run installer
+    # satellite-install --scenario satellite --foreman-initial-admin-username admin --foreman-initial-admin-password redhat
+  . configure Satellite server using an answer file
+    . copy /etc/foreman-install/scenarios.d/satellite-answers.yml
+    . edit the copy for you custom settings
+      . reference module params
+        # rpm -ql foreman-install | grep params.pp
+    . set :answer_file in the answers file
+    . run installer
+    # satellite-install --scenario satellite --foreman-initial-admin-username admin --foreman-initial-admin-password redhat
+  - verifying status of Satellite services
+    . display status of Satellite services
+    # satellite-maintain service list
+    . run various health checks
+    # satellite-maintain health check
+    . additionaly checks
+      . ports
+      # firewall-cmd --list-all
+      . time sync
+      # systemctl status chronyd
+      . DNS
+      # [ping|host|nslookup] localhost
+      # [ping|host|nslookup] <satellite server>
+      # ping <satellite server IP address>
 
+- Organizations can represent departments such as Finance, Marketing and Sales
+- Locations are physical places of system installation
+  - high-level like Countries
+  - low-level like Cities
+- Capsule servers can be assigned either by Organization of by Location
+- Content related functions [mgt of products, repos, contentviews] are specific to Organizations
 
-. Verifying a Red Hat Satellite installation
+- Managing subscriptions and content
+  - Subscription management provides organizations a method to manage their RedHat subscription information
+  - Content management provides organizations a method to manage the software installed on systems
+  - One of the major roles of Satellite Server is to synchronize content from the RedHat CDN to provide a local software repository of Red Hat content to subscripbed hosts
+  - Satellite Server access to Red Hat Network content is governed by a subscription manifest
+
+  - creating a Manifest
+    - login to customer portal
+    - navigate to Subscriptions
+    - click Subscription Allocations
+    - click New Subscription Allocation
+      - create name
+      - select type
+      - select version
+      - add Subscriptions
+    - export Manifest
+  - Importing Manifest
+    - Satellite UI
+    - Content > Subscriptions > Manifest
+    - > Browse
+
+  - Use the hammer command to verify Organization and Locations
+    # hammer --output json organization list
+    # hammer --output json location list
+  - Use the hammer command to verify taht only Boston location is associated with Operations organization
+    # hammer --output json location list -- organization "Operations"
+
+--------------------------------------------------------------------------------
+Ch2 - Managing Software Life Cycles
+
+- Content refers to software on hosts managed by Satellite
+- Includes base OS, middleware services, user applications
+- A Product in Satellite groups related repos together
+- The correct Product is automatically enabled when you enable a Red Hat source repository
+- Satellite use content synchronization to maintain an exact copy of CDN repos
+- A sync plan can help automate repo synchronization
+- Download policies control downloading content during content synchronization
+  - On Demand	- download only metadata, packages downloaded when hosts need them
+  - Immediate	- downloads metadata and packages during content synchronization
+  # hammer repository list
+  3 hammer repository synchronize --id 5
+  3 hammer repository synchronize --id 5 --organization myorg
+
+- A Software Development Life Cycle is composed of a number of clearly defined and distinct work phases
+- like plan, desing, test, build, deliver
+- these phases are called environments
+- To align compute resources to environments, specify the lifecycle environment when registering each host in Satellite
+- Each environment path begins with the Library environment that syncs content from available sources
+- Managing Lifecycle environments from commandline
+  # hammer lifecycle-environment create --organization myorg --name Dev --description "Dev env" --prior Library
+  # hammer lifecycle-environment list --organization myorg
+  # hammer lifecycle-environment delete -- name Deploy --organization myorg
+- Content is collected in the Library lifecycle environment and the distributed directly next stages
+
+- Publishing and Promoting Content Views
+- A Content View is a defined subset of content
+- made available to environments
+- Deploying content from Satellite begins with the publication of the content into the Library
+- A newly created content view has no content associated
+- To populate the content view associate it with the repos that contain/provide the required content
+- You can associate more than one repo with a content view
+- Content views include repos and filters that define the content of the content view
+- Any customization to the content view repos/filters requires the publication of a new version of the content view to make the chagne available
+- This new version then needs to be promoted [= being deployed] to the intended lifecycle environment
+
+--------------------------------------------------------------------------------
+Ch3 - Registering hosts
+
+- Satellite 5	: rhn_register, rhnreg_ks	; content driven
+- Satellite 6	: subscription-manger		; certificate-based and subscription driven
+
+- subscription-manager is a useful tool to manually register a newly installed system
+- use an Activation Key to apply additional configuration settings
+- or a bootstrap script designed to standardize a host's software config after registration
+
+- Preparing hosts for Satellite registration 
+  . updates
+  # yum update subscription-manager yum
+  . download and install consumer certificate RPM from satellite server
+  # yum localinstall http://satellite.example.com/pub/katello-ca-consumer-latest.noarch.rpm
+- Register a host to Satellite
+  . clean old registration [if any]
+  # subscription-manager clean
+  . register
+  # subscription-manager register --org <org.label>
+  - install katello-agent on the managed host
+    # yum install katello-agent
+- Configure the new Content Host in the Satellite GUI
+- after changing the Content Host settings, force a refresh on the managed hosts to see the changes
+  # subscription-manager refresh
+
+- You can create a logical group of hosts called Host Collections
+- Rather than performing actions on individual host, you can run them on a host collection
+
+- Automating Registration of Content Hosts
+- Activiation keys provide a method for automating system registration and attaching subscriptions
+- You can create multiple keys and associate them with different environments and Content Views
+- Activation keys can define the following properties to content hosts:
+  - associated subscriptions and subscription behavior
+  - available products and repos
+  - a lifecycle environment and a content view
+  - host collection membership
+- Activation keys are only used when hosts are registered
+- changes to activation keys only apply to hosts using the key in the future
+  - create activiation key on command line
+  # hammer activation-key create --name "Activation_Key" --unlimited-hosts --description "blah" --lifecycle-environment "Dev" \
+    --content-view "Example" --organization "org"
+- Associate Subscription with activiation keys so that hosts that use the activation keys are automatically attached to the associated subscriptions when they register with Satellite
+  # hammer activation-key add-subscription --name "Activation_Key" --subscription-id <id> --organization "org"
+- You can associate host collections with activation keys
+- so that hosts that use those activation keys are automatically added to the associated host collections when they register to Satellite
+- You can associate a host with multiple activation keys
+- which are combined to define the host settings
+
+- Registering a host with an Activation Key
+  . prepare
+  # rpm -q subscription-manager yum
+  . download consumer certificate from satellite
+  # yum localinstall http://satellite.example.com/pub/katello-ca-consumer-latest.noarch.rpm
+  . register using an activation key
+  # subscription-manager register --org "My Organization" --activationkey AK_Testkey
+  . install the katello agent on the managed host
+    # yum install katello-agent
+
+--------------------------------------------------------------------------------
+Ch4 - Deploying software to hosts
+- Content Views define which software versions a particular environment uses
+- After you create/edit a Content View, it must be published to the Library so hosts can see it
+- Each publication creates a new version of the Content View
+- it can then be Promoted to the first lifecycle environment in the lifecycle path
+- all associated software is the released to the environment
+- content view can ONLY be promoted sequentially through an environment path
+
+- Creating Content View filters
+  - by default Content Views display all repo content
+  - you can use filters to limit the range of content that is displayed
+  - several filter available
+    - package name or package groupname
+    - erratum ID, date, type
+  - you can use inclusion or exclusion logic
+
+- Composite Content Views
+- content views made up of other content views
+- allows for reuse of content views and simplify content management
+- a composite content view CANNOT include content views that have overlapping repos
+
+- Managing Module Streams for RHEL8 hosts
+- rhel8 brings additions in package management capabilities
+  - modules
+  - streams
+  - profiles
+- A module is a collection of packages that are installed together
+- Modules resolvce dependency issues between earlier an later versions
+- A module can include on or more streams, which are different versions of the software provided by the module
+- A module has just one stream active at a time, by default the latest
+- Modules also include profiles, which are lists of packages that suppoer a use case, eg. to deploy a minimal install
+- Installing a stream wholly replaces the proviously installed stream [whether up/downgrade]
+- Module Naming convention
+  name:stream:version:context:architecture/profile
+  - shorter versions possible
+  # yum module list container-tools
+  # yum module install container-tools:rhel8
+- to apply the available errata for the rhel8 stream of the container-tools module:
+  # yum update @container-tools:rhel8
+- to find the module stream for an errata:
+  # hammer erratum info --id RHSA-2019:45776
+
+--------------------------------------------------------------------------------
+Ch5 - Deploying Custom Software
+
 
