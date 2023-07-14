@@ -1,0 +1,47 @@
+Ch1 - Planning and deploying
+. Installing Red Hat Satellite
+  - meet requirements
+  - open ports
+    TCP: 80,443,5000,5646,5647,5671,8000,8140,9090
+    UDP/TCP: 7,53
+    UDP: 67,68,69
+  - have DNS setup and working
+  - installing from CDN
+    . determine if subscriptions are available
+    # subscription-manager list --available --all
+    . enable the subscription
+    # subscription-manager attach --pool=<poolid>
+    . disable all exisiting repos to ensure NO unexpected software will be installed
+    # subscription-manager repos --disable "*"
+    . enable necessary repos
+    subscription-manager repos --enable=rhel7-server-rpms \
+	--enable=rhel-server-rhscl-7-rpms \
+	--enable=rhel-server-7-satellite-6-rpms \
+	--enable=rhel-7-server-satellite-maintenance-6-rpms \
+	--enable=rhel-7-server-ansible-2.8.rpms
+    . update all packages
+    # yum update
+    . install the satellite package
+    # yum install satellite
+  - installing from ISO media
+    . import the GPG key
+    # rpm --import /etc/pki/rpm-gpg/RPM-GPG/KEY-redhat-release
+    . download RedHat Satellite 6 ISO from CUstomer Portal
+    . mount the iso image
+    # mount -o loop <cd.iso> <mountpoint>
+    . run the installer
+    # cd <mountpoint>
+    # ./install_packages
+
+  - Satellite initial config
+    . ensure timesync
+    # yum install chrony
+    # systemctl enable --now chronyd
+    . install sos
+    # yum install sos
+    . configure Satellite server
+    # satellite-installer --help
+
+
+. Verifying a Red Hat Satellite installation
+
