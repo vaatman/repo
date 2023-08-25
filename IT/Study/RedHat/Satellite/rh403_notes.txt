@@ -364,3 +364,97 @@ Managing Subcriptions to non-RedHat Products and Repositories
 
 --------------------------------------------------------------------------------
 Ch.6 - Deploying Satellite Capsule Servers
+- Satellite Capsule server should be provisioned on a clean system
+- dedicated to only hosting Capsule
+- this ensures no other function will compete for resources
+- or cause dependency conflicts during installations/upgrades
+
+- hardware/software requirements are identical to satellite Server
+- Capsule requires multiple ports for traffic
+  - Capsule to Satellite:
+    port  protocol      services
+    ----  --------      --------
+    5646  tcp           amqp
+
+  - Host to Capsule:
+    port  protocol      services
+    ----  --------      --------
+    80    tcp           http
+    443   tcp           https
+    5647  tcp           amqp
+    8000  tcp           https
+    8140  tcp           https
+    8443  tcp           https
+    9090  tcp           https
+    53    udp&tcp       dns
+    67    udp           dhcp
+    69    udp           tftp
+    5000  tcp           https
+
+Installing Satellite Capsule Server
+. download and install CA certificate
+  # yum localinstall http://...../katello-ca-consumer-latest.noarch.rpm
+. register the server that will host Capsule Server to Satellite
+  # subscription-manager register  --org="<organization>" --activationkey=<key>
+. locate the 'Pool ID' for the Satellite Infrastructure subscription
+  # subscription-manager list --all --available --matches 'Red Hat Satellite Infrastructre Subscription'
+    > look for 'Pool ID'
+. use the Pool ID to attacht the subscription to Capsule Server
+  # subscription-manager attache --pool=<string from Pool ID above>
+. verify that all repositories are disabled
+  # subscription-manager repos --disable "*"
+. enable relevant repositories
+  # subscription-manager repos --enable=rhel7-server-rpms \
+    --enable=rhel7-server-satellite-capsule-6.6.rpms \
+    --enable=rhel7-server-satellite-maintenance-6.rpms \
+    --enable=rhel7-server-satellite-tools-6.6.rpms \
+    --enable=rhel7-server-rhscl-7-rpms \
+    --enable=rhel7-server-ansible-2.8.rpms
+. clear cache and verify all packages are uptodate
+  # yum clean all
+  # yum update
+. install satellite-capsule package
+  # yum install satellite-capsule
+. on SATELLITE server: generate needed SSL certificates
+  # capsule-certs-generate --foreman-proxy-fqdn capsule.example.com --certs-tar /root/capsule_SSL.tar
+    ! supply correct filename and hostname
+. copy SSL tar file to Capsule Server
+  # scp <file.tar> root@<capsule>
+. on CAPSULE server: use the entire satellite-installer command provided by the previous 'capsule-certs-generate' command
+
+- once Capsule Server is installed
+. verify that the capsule is assigned to the correct organization within the WebUI:
+  > 'Any Organization'
+  > Infrastructure > Capsules
+  @ new Capsule > Edit 
+    @tab Organizations
+    > assign correct Organization to Capsule
+    > Submit
+
+Configuring Satellite Capsule Server Services
+- when Capsule has content functionality enabled, you MUST assign a Lifecycle Environment
+- in order to sync repositories
+  > Infrastructure > Capsules > click Capsule > Edit > tab Lifecycle Environment > assign
+- assing Locations
+  > Infrastructure > Capsules > click Capsule > Edit > tab Locations > assign
+ 
+ Configuring Satellite Services
+ - configuring services is handled on the commandline of the capsule server
+ - use 'satellite-installer --scenario capsule --help' to view all available options
+  - see p193 for the very long command example using --foreman-proxy-<service> options
+
+Publishing Content Views to a Satellite Capsule Server
+- to provide content ot hosts from a Capsule Server you MUST FIRST create a/the Content View on Satellite Server
+- publish promote the Content View
+- add a Lifecycle Environment to the Capsule server
+- synchronize content to Capsule Server
+  > tab Overview > Synchronize > Optimized/Complete
+
+Describing Capsule Download Policies
+- the download policy set WHEN Capsule server download packages
+- similar to Satellite Server
+- exception: 'immediate' will cause SATELLITE to download all packages AS WELL
+  - regardless of its own settings
+
+--------------------------------------------------------------------------------
+Ch.7 - Running Remote Execution
