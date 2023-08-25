@@ -243,5 +243,124 @@ Ch4 - Deploying software to hosts
 
 --------------------------------------------------------------------------------
 Ch5 - Deploying Custom Software
+- when adding RedHat content to Satellite, repositories and parent RedHat products are automatically created
+- Satellite also supports storing/distributing NON-RedHat content
+- Satellite can manage repos that contain:
+  - RPM packages
+  - Kickstart trees
+  - Puppet modules
+  - Files
+  - Iso and KVM images
+  - Containers
+  - OSTrees [deprecated]
+- repositories can be secure with GPG keys
+
+- to host custom/3rdparty content, you must create new repositories and products
+- !! Products are collections of repositories grouped to suit software relationships
+- ALL repos/products are created in an organizational context
+- and only 'visible' to that organization
+- 2 methods for creating non-RedHat repositories:
+  - manually creating custom producs and associated repositories
+  - by repository discovery
+
+- Creating Custom Products
+  - Satellite contains custom/3rdparty packages in repositories
+  - those repositories must be associated with a product
+  - therefore: you must fist create a product
+  >  Organization > Content > Product > Create Product
+  - to use a GPG key, this has to be imported before [as Content Credential]
+- Creating Custom Repositories
+  - to add a repo in you custom Product:
+  > Organization > Content > Products > select your Product
+  - @ Repositories tab > New Repository
+  - to enable removal of packages from custom repo that are not in upstream repo:
+    - select 'Mirror on Sync'
+  - packages added/removed by 'Upload Package' / 'Remove Packages'
 
 
+- Creating Products using Repository Discovery
+  - supply a URL to Satellite
+  - Satellite scans through the URL's content
+  - to discover all repositories accessible
+  - results are used to create desired repositories
+  > Organization > Products > Repository Discovery
+
+- Extending existing Product Repositories using Repository Discovery
+  > Organization > Content > Products
+    > check box existing Product > Repo Discovery
+    select Repository Type, enter URL > Discover
+    select desired repositories > Create selected
+  @ Create Repositories > Existing Product
+    add selected repositories > Run Repository Creation
+
+Administering Custom Products and Repositories
+- when using non-RedHat products you can specify the PGP public key
+- if NO key specified, the repository configuration on the managed host has gpgchech option disabled
+- if GPG key IS specified, the managed hosts has gpgcheck enabled
+  - Satellite makes GPG public key available to hosts
+  - which then use the key to verify the origin/integriey of packages during install
+- packages in a repository specified with a GPG Key pair MUST be signed with the correct GPG private key to be able to be loaded to that repository
+- you configure a PGP key pair on a Product, ALL repositories within that Product use the same GPG public key
+- a GPG key pair for a repository on a product overrides the GPG key pair for the product
+
+- Add GPG Key Pair
+> Organization > Content > Content Credentials > Create Content Credentials
+
+Digitally sign RPM packages
+- to CREATE a signing key
+  . install rpmsign tool
+    $ sudo yum install rpm-sign
+  . generate GPG key
+    $ sudo rngd -r /dev/urandom
+    $ gpg --full-generate-key
+      !! requires graphical session !!
+  . find the username and emailaddress in the key
+    - look in output previous gpg cmd, or:
+    $ gpg --fingerprint
+  . export an 'ASCII armor version' of the public key
+    $ gpg --armor --export <username@some.domain> > <file>
+- to IMPORT a GPG keypair
+    $ gpg --import <keypairfile>
+      !! requires passphrase
+- to override system-wide macros create/edit ~/.rpmmacros, eg:
+%__os_install_post %{nil}
+%_topdir    %(echo $HOME)/rpmbuild
+%_tmppath   %(echo $HOME)/rpmbuild/rpm
+%_signature gpg
+%_gpg_name  RWSBUILD-08-2022
+  - adding your username and emailaddress allows rpm/rpmbuild commands to scan this ~/.rpmmacros file for the value of %_gpg_name
+  - and use that key for signing the RPM packages
+- you can now SIGN packages using this GPG key
+  $ rpmsign --addsign <rpm.rpm>
+- check signature:
+  $ rpm --checksig <rpm.rpm>
+
+Synchronizing Custom/3rdParty software repositories
+- as with RedHat content
+- you can manually synchronize
+- or associate an existing sync plan [created upfront]
+- specifying a URL for the source reposotiry [while create a repository] is optional
+- when NO source repository is specified, the repository becomes 'standalone'
+- sync controls ARE still available, but sync fails due to absence of sync source
+
+Managing Subcriptions to non-RedHat Products and Repositories
+- when you create a non-RedHat product
+- a corresponding subcriptions automatically appears under > Content > [Red Hat] Subscriptions
+- because subscriptions control the content that hosts have access to
+  - you must add desired subscriptions to a custom product
+  - which is then assigned to a host profile before the host can access its content
+
+- Enabling Host Subscription to Custom Repositories
+  > Hosts > Content Hosts
+    > tab Subscriptions > Add
+    select > Add selected
+    > check Enabled by default [not present in Sat 6.10]
+- Enabling Acitvation Key Subscription to Custom Repositories
+  > Content > Activation keys
+    > click Name to add subscription to
+    > tab Subscriptions > Add
+      > select Subscription > Add Selected
+    > check Enabled by default [not present in Sat 6.10]
+
+--------------------------------------------------------------------------------
+Ch.6 - Deploying Satellite Capsule Servers
