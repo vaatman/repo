@@ -6,3 +6,15 @@ $ less list
 
 . download the file you want:
 $ youtube-dl -f 248 https://www.youtube.com/watch?v=pxglIARyI4UB
+
+21jul2023 errors:
+$ youtube-dl -F "https://www.youtube.com/watch?v=--z4TJW-ADI" 
+[youtube] --z4TJW-ADI: Downloading webpage
+ERROR: Unable to extract uploader id; please report this issue on https://yt-dl.org/bug . Make sure you are using the latest version; type  youtube-dl -U  to update. Be sure to call youtube-dl with the --verbose flag and include its complete output.
+
+FIX:
+. install/use yt-dlp
+
+$ sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
+$ sudo chmod a+rx /usr/local/bin/yt-dlp # Make executable
+$ yt-dlp -F "https://www.youtube.com/watch?v=--z4TJW-ADI" > list

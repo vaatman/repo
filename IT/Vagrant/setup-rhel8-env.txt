@@ -1,0 +1,25 @@
+. create working are
+  $ cd Vagrant
+	$ mkdir rhel8-node1
+	$ cd $_
+
+. initiate a Vagrantfile
+	$ vagrant init generic/rhel8
+
+. mod the default
+	$ sudo vi Vagrantfile
+add line 5:
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
+uncomment:
+config.vm.box_check_update = false
+
+. up the vagrant
+	$ vagrant up
+
+. to clone this VM to more VM's
+  $ cd ..
+	$ mkdir rhel8-master
+  $ cd $_
+  $ cp ../rhel8-node1/Vagrantfile .
+  $ vagrant up
+  
