@@ -1,5 +1,5 @@
 [gitlabserver]
-rhel8-node1.local
+alma8_01.local
 
 [gitlabrunner]
-rhel8-node2.local
+alma8_02.local

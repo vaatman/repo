@@ -1,0 +1,460 @@
+Ch1 - Planning and deploying
+. Installing Red Hat Satellite
+  - meet requirements
+  - open ports
+    TCP: 80,443,5000,5646,5647,5671,8000,8140,9090
+    UDP/TCP: 7,53
+    UDP: 67,68,69
+  - have DNS setup and working
+  - installing from CDN
+    . determine if subscriptions are available
+    # subscription-manager list --available --all
+    . enable the subscription
+    # subscription-manager attach --pool=<poolid>
+    . disable all exisiting repos to ensure NO unexpected software will be installed
+    # subscription-manager repos --disable "*"
+    . enable necessary repos
+    subscription-manager repos --enable=rhel7-server-rpms \
+	--enable=rhel-server-rhscl-7-rpms \
+	--enable=rhel-server-7-satellite-6-rpms \
+	--enable=rhel-7-server-satellite-maintenance-6-rpms \
+	--enable=rhel-7-server-ansible-2.8.rpms
+    . update all packages
+    # yum update
+    . install the satellite package
+    # yum install satellite
+  - installing from ISO media
+    . import the GPG key
+    # rpm --import /etc/pki/rpm-gpg/RPM-GPG/KEY-redhat-release
+    . download RedHat Satellite 6 ISO from CUstomer Portal
+    . mount the iso image
+    # mount -o loop <cd.iso> <mountpoint>
+    . run the installer
+    # cd <mountpoint>
+    # ./install_packages
+
+  - Satellite initial config
+    . ensure timesync
+    # yum install chrony
+    # systemctl enable --now chronyd
+    . install sos
+    # yum install sos
+  . configure Satellite server
+    . check options
+    # satellite-installer --help
+    . run installer
+    # satellite-install --scenario satellite --foreman-initial-admin-username admin --foreman-initial-admin-password redhat
+  . configure Satellite server using an answer file
+    . copy /etc/foreman-install/scenarios.d/satellite-answers.yml
+    . edit the copy for you custom settings
+      . reference module params
+        # rpm -ql foreman-install | grep params.pp
+    . set :answer_file in the answers file
+    . run installer
+    # satellite-install --scenario satellite --foreman-initial-admin-username admin --foreman-initial-admin-password redhat
+  - verifying status of Satellite services
+    . display status of Satellite services
+    # satellite-maintain service list
+    . run various health checks
+    # satellite-maintain health check
+    . additionaly checks
+      . ports
+      # firewall-cmd --list-all
+      . time sync
+      # systemctl status chronyd
+      . DNS
+      # [ping|host|nslookup] localhost
+      # [ping|host|nslookup] <satellite server>
+      # ping <satellite server IP address>
+
+- Organizations can represent departments such as Finance, Marketing and Sales
+- Locations are physical places of system installation
+  - high-level like Countries
+  - low-level like Cities
+- Capsule servers can be assigned either by Organization of by Location
+- Content related functions [mgt of products, repos, contentviews] are specific to Organizations
+
+- Managing subscriptions and content
+  - Subscription management provides organizations a method to manage their RedHat subscription information
+  - Content management provides organizations a method to manage the software installed on systems
+  - One of the major roles of Satellite Server is to synchronize content from the RedHat CDN to provide a local software repository of Red Hat content to subscripbed hosts
+  - Satellite Server access to Red Hat Network content is governed by a subscription manifest
+
+  - creating a Manifest
+    - login to customer portal
+    - navigate to Subscriptions
+    - click Subscription Allocations
+    - click New Subscription Allocation
+      - create name
+      - select type
+      - select version
+      - add Subscriptions
+    - export Manifest
+  - Importing Manifest
+    - Satellite UI
+    - Content > Subscriptions > Manifest
+    - > Browse
+
+  - Use the hammer command to verify Organization and Locations
+    # hammer --output json organization list
+    # hammer --output json location list
+  - Use the hammer command to verify taht only Boston location is associated with Operations organization
+    # hammer --output json location list -- organization "Operations"
+
+--------------------------------------------------------------------------------
+Ch2 - Managing Software Life Cycles
+
+- Content refers to software on hosts managed by Satellite
+- Includes base OS, middleware services, user applications
+- A Product in Satellite groups related repos together
+- The correct Product is automatically enabled when you enable a Red Hat source repository
+- Satellite use content synchronization to maintain an exact copy of CDN repos
+- A sync plan can help automate repo synchronization
+- Download policies control downloading content during content synchronization
+  - On Demand	- download only metadata, packages downloaded when hosts need them
+  - Immediate	- downloads metadata and packages during content synchronization
+  # hammer repository list
+  3 hammer repository synchronize --id 5
+  3 hammer repository synchronize --id 5 --organization myorg
+
+- A Software Development Life Cycle is composed of a number of clearly defined and distinct work phases
+- like plan, desing, test, build, deliver
+- these phases are called environments
+- To align compute resources to environments, specify the lifecycle environment when registering each host in Satellite
+- Each environment path begins with the Library environment that syncs content from available sources
+- Managing Lifecycle environments from commandline
+  # hammer lifecycle-environment create --organization myorg --name Dev --description "Dev env" --prior Library
+  # hammer lifecycle-environment list --organization myorg
+  # hammer lifecycle-environment delete -- name Deploy --organization myorg
+- Content is collected in the Library lifecycle environment and the distributed directly next stages
+
+- Publishing and Promoting Content Views
+- A Content View is a defined subset of content
+- made available to environments
+- Deploying content from Satellite begins with the publication of the content into the Library
+- A newly created content view has no content associated
+- To populate the content view associate it with the repos that contain/provide the required content
+- You can associate more than one repo with a content view
+- Content views include repos and filters that define the content of the content view
+- Any customization to the content view repos/filters requires the publication of a new version of the content view to make the chagne available
+- This new version then needs to be promoted [= being deployed] to the intended lifecycle environment
+
+--------------------------------------------------------------------------------
+Ch3 - Registering hosts
+
+- Satellite 5	: rhn_register, rhnreg_ks	; content driven
+- Satellite 6	: subscription-manger		; certificate-based and subscription driven
+
+- subscription-manager is a useful tool to manually register a newly installed system
+- use an Activation Key to apply additional configuration settings
+- or a bootstrap script designed to standardize a host's software config after registration
+
+- Preparing hosts for Satellite registration 
+  . updates
+  # yum update subscription-manager yum
+  . download and install consumer certificate RPM from satellite server
+  # yum localinstall http://satellite.example.com/pub/katello-ca-consumer-latest.noarch.rpm
+- Register a host to Satellite
+  . clean old registration [if any]
+  # subscription-manager clean
+  . register
+  # subscription-manager register --org <org.label>
+  - install katello-agent on the managed host
+    # yum install katello-agent
+- Configure the new Content Host in the Satellite GUI
+- after changing the Content Host settings, force a refresh on the managed hosts to see the changes
+  # subscription-manager refresh
+
+- You can create a logical group of hosts called Host Collections
+- Rather than performing actions on individual host, you can run them on a host collection
+
+- Automating Registration of Content Hosts
+- Activiation keys provide a method for automating system registration and attaching subscriptions
+- You can create multiple keys and associate them with different environments and Content Views
+- Activation keys can define the following properties to content hosts:
+  - associated subscriptions and subscription behavior
+  - available products and repos
+  - a lifecycle environment and a content view
+  - host collection membership
+- Activation keys are only used when hosts are registered
+- changes to activation keys only apply to hosts using the key in the future
+  - create activiation key on command line
+  # hammer activation-key create --name "Activation_Key" --unlimited-hosts --description "blah" --lifecycle-environment "Dev" \
+    --content-view "Example" --organization "org"
+- Associate Subscription with activiation keys so that hosts that use the activation keys are automatically attached to the associated subscriptions when they register with Satellite
+  # hammer activation-key add-subscription --name "Activation_Key" --subscription-id <id> --organization "org"
+- You can associate host collections with activation keys
+- so that hosts that use those activation keys are automatically added to the associated host collections when they register to Satellite
+- You can associate a host with multiple activation keys
+- which are combined to define the host settings
+
+- Registering a host with an Activation Key
+  . prepare
+  # rpm -q subscription-manager yum
+  . download consumer certificate from satellite
+  # yum localinstall http://satellite.example.com/pub/katello-ca-consumer-latest.noarch.rpm
+  . register using an activation key
+  # subscription-manager register --org "My Organization" --activationkey AK_Testkey
+  . install the katello agent on the managed host
+    # yum install katello-agent
+
+--------------------------------------------------------------------------------
+Ch4 - Deploying software to hosts
+- Content Views define which software versions a particular environment uses
+- After you create/edit a Content View, it must be published to the Library so hosts can see it
+- Each publication creates a new version of the Content View
+- it can then be Promoted to the first lifecycle environment in the lifecycle path
+- all associated software is the released to the environment
+- content view can ONLY be promoted sequentially through an environment path
+
+- Creating Content View filters
+  - by default Content Views display all repo content
+  - you can use filters to limit the range of content that is displayed
+  - several filter available
+    - package name or package groupname
+    - erratum ID, date, type
+  - you can use inclusion or exclusion logic
+
+- Composite Content Views
+- content views made up of other content views
+- allows for reuse of content views and simplify content management
+- a composite content view CANNOT include content views that have overlapping repos
+
+- Managing Module Streams for RHEL8 hosts
+- rhel8 brings additions in package management capabilities
+  - modules
+  - streams
+  - profiles
+- A module is a collection of packages that are installed together
+- Modules resolvce dependency issues between earlier an later versions
+- A module can include on or more streams, which are different versions of the software provided by the module
+- A module has just one stream active at a time, by default the latest
+- Modules also include profiles, which are lists of packages that suppoer a use case, eg. to deploy a minimal install
+- Installing a stream wholly replaces the proviously installed stream [whether up/downgrade]
+- Module Naming convention
+  name:stream:version:context:architecture/profile
+  - shorter versions possible
+  # yum module list container-tools
+  # yum module install container-tools:rhel8
+- to apply the available errata for the rhel8 stream of the container-tools module:
+  # yum update @container-tools:rhel8
+- to find the module stream for an errata:
+  # hammer erratum info --id RHSA-2019:45776
+
+--------------------------------------------------------------------------------
+Ch5 - Deploying Custom Software
+- when adding RedHat content to Satellite, repositories and parent RedHat products are automatically created
+- Satellite also supports storing/distributing NON-RedHat content
+- Satellite can manage repos that contain:
+  - RPM packages
+  - Kickstart trees
+  - Puppet modules
+  - Files
+  - Iso and KVM images
+  - Containers
+  - OSTrees [deprecated]
+- repositories can be secure with GPG keys
+
+- to host custom/3rdparty content, you must create new repositories and products
+- !! Products are collections of repositories grouped to suit software relationships
+- ALL repos/products are created in an organizational context
+- and only 'visible' to that organization
+- 2 methods for creating non-RedHat repositories:
+  - manually creating custom producs and associated repositories
+  - by repository discovery
+
+- Creating Custom Products
+  - Satellite contains custom/3rdparty packages in repositories
+  - those repositories must be associated with a product
+  - therefore: you must fist create a product
+  >  Organization > Content > Product > Create Product
+  - to use a GPG key, this has to be imported before [as Content Credential]
+- Creating Custom Repositories
+  - to add a repo in you custom Product:
+  > Organization > Content > Products > select your Product
+  - @ Repositories tab > New Repository
+  - to enable removal of packages from custom repo that are not in upstream repo:
+    - select 'Mirror on Sync'
+  - packages added/removed by 'Upload Package' / 'Remove Packages'
+
+
+- Creating Products using Repository Discovery
+  - supply a URL to Satellite
+  - Satellite scans through the URL's content
+  - to discover all repositories accessible
+  - results are used to create desired repositories
+  > Organization > Products > Repository Discovery
+
+- Extending existing Product Repositories using Repository Discovery
+  > Organization > Content > Products
+    > check box existing Product > Repo Discovery
+    select Repository Type, enter URL > Discover
+    select desired repositories > Create selected
+  @ Create Repositories > Existing Product
+    add selected repositories > Run Repository Creation
+
+Administering Custom Products and Repositories
+- when using non-RedHat products you can specify the PGP public key
+- if NO key specified, the repository configuration on the managed host has gpgchech option disabled
+- if GPG key IS specified, the managed hosts has gpgcheck enabled
+  - Satellite makes GPG public key available to hosts
+  - which then use the key to verify the origin/integriey of packages during install
+- packages in a repository specified with a GPG Key pair MUST be signed with the correct GPG private key to be able to be loaded to that repository
+- you configure a PGP key pair on a Product, ALL repositories within that Product use the same GPG public key
+- a GPG key pair for a repository on a product overrides the GPG key pair for the product
+
+- Add GPG Key Pair
+> Organization > Content > Content Credentials > Create Content Credentials
+
+Digitally sign RPM packages
+- to CREATE a signing key
+  . install rpmsign tool
+    $ sudo yum install rpm-sign
+  . generate GPG key
+    $ sudo rngd -r /dev/urandom
+    $ gpg --full-generate-key
+      !! requires graphical session !!
+  . find the username and emailaddress in the key
+    - look in output previous gpg cmd, or:
+    $ gpg --fingerprint
+  . export an 'ASCII armor version' of the public key
+    $ gpg --armor --export <username@some.domain> > <file>
+- to IMPORT a GPG keypair
+    $ gpg --import <keypairfile>
+      !! requires passphrase
+- to override system-wide macros create/edit ~/.rpmmacros, eg:
+%__os_install_post %{nil}
+%_topdir    %(echo $HOME)/rpmbuild
+%_tmppath   %(echo $HOME)/rpmbuild/rpm
+%_signature gpg
+%_gpg_name  RWSBUILD-08-2022
+  - adding your username and emailaddress allows rpm/rpmbuild commands to scan this ~/.rpmmacros file for the value of %_gpg_name
+  - and use that key for signing the RPM packages
+- you can now SIGN packages using this GPG key
+  $ rpmsign --addsign <rpm.rpm>
+- check signature:
+  $ rpm --checksig <rpm.rpm>
+
+Synchronizing Custom/3rdParty software repositories
+- as with RedHat content
+- you can manually synchronize
+- or associate an existing sync plan [created upfront]
+- specifying a URL for the source reposotiry [while create a repository] is optional
+- when NO source repository is specified, the repository becomes 'standalone'
+- sync controls ARE still available, but sync fails due to absence of sync source
+
+Managing Subcriptions to non-RedHat Products and Repositories
+- when you create a non-RedHat product
+- a corresponding subcriptions automatically appears under > Content > [Red Hat] Subscriptions
+- because subscriptions control the content that hosts have access to
+  - you must add desired subscriptions to a custom product
+  - which is then assigned to a host profile before the host can access its content
+
+- Enabling Host Subscription to Custom Repositories
+  > Hosts > Content Hosts
+    > tab Subscriptions > Add
+    select > Add selected
+    > check Enabled by default [not present in Sat 6.10]
+- Enabling Acitvation Key Subscription to Custom Repositories
+  > Content > Activation keys
+    > click Name to add subscription to
+    > tab Subscriptions > Add
+      > select Subscription > Add Selected
+    > check Enabled by default [not present in Sat 6.10]
+
+--------------------------------------------------------------------------------
+Ch.6 - Deploying Satellite Capsule Servers
+- Satellite Capsule server should be provisioned on a clean system
+- dedicated to only hosting Capsule
+- this ensures no other function will compete for resources
+- or cause dependency conflicts during installations/upgrades
+
+- hardware/software requirements are identical to satellite Server
+- Capsule requires multiple ports for traffic
+  - Capsule to Satellite:
+    port  protocol      services
+    ----  --------      --------
+    5646  tcp           amqp
+
+  - Host to Capsule:
+    port  protocol      services
+    ----  --------      --------
+    80    tcp           http
+    443   tcp           https
+    5647  tcp           amqp
+    8000  tcp           https
+    8140  tcp           https
+    8443  tcp           https
+    9090  tcp           https
+    53    udp&tcp       dns
+    67    udp           dhcp
+    69    udp           tftp
+    5000  tcp           https
+
+Installing Satellite Capsule Server
+. download and install CA certificate
+  # yum localinstall http://...../katello-ca-consumer-latest.noarch.rpm
+. register the server that will host Capsule Server to Satellite
+  # subscription-manager register  --org="<organization>" --activationkey=<key>
+. locate the 'Pool ID' for the Satellite Infrastructure subscription
+  # subscription-manager list --all --available --matches 'Red Hat Satellite Infrastructre Subscription'
+    > look for 'Pool ID'
+. use the Pool ID to attacht the subscription to Capsule Server
+  # subscription-manager attache --pool=<string from Pool ID above>
+. verify that all repositories are disabled
+  # subscription-manager repos --disable "*"
+. enable relevant repositories
+  # subscription-manager repos --enable=rhel7-server-rpms \
+    --enable=rhel7-server-satellite-capsule-6.6.rpms \
+    --enable=rhel7-server-satellite-maintenance-6.rpms \
+    --enable=rhel7-server-satellite-tools-6.6.rpms \
+    --enable=rhel7-server-rhscl-7-rpms \
+    --enable=rhel7-server-ansible-2.8.rpms
+. clear cache and verify all packages are uptodate
+  # yum clean all
+  # yum update
+. install satellite-capsule package
+  # yum install satellite-capsule
+. on SATELLITE server: generate needed SSL certificates
+  # capsule-certs-generate --foreman-proxy-fqdn capsule.example.com --certs-tar /root/capsule_SSL.tar
+    ! supply correct filename and hostname
+. copy SSL tar file to Capsule Server
+  # scp <file.tar> root@<capsule>
+. on CAPSULE server: use the entire satellite-installer command provided by the previous 'capsule-certs-generate' command
+
+- once Capsule Server is installed
+. verify that the capsule is assigned to the correct organization within the WebUI:
+  > 'Any Organization'
+  > Infrastructure > Capsules
+  @ new Capsule > Edit 
+    @tab Organizations
+    > assign correct Organization to Capsule
+    > Submit
+
+Configuring Satellite Capsule Server Services
+- when Capsule has content functionality enabled, you MUST assign a Lifecycle Environment
+- in order to sync repositories
+  > Infrastructure > Capsules > click Capsule > Edit > tab Lifecycle Environment > assign
+- assing Locations
+  > Infrastructure > Capsules > click Capsule > Edit > tab Locations > assign
+ 
+ Configuring Satellite Services
+ - configuring services is handled on the commandline of the capsule server
+ - use 'satellite-installer --scenario capsule --help' to view all available options
+  - see p193 for the very long command example using --foreman-proxy-<service> options
+
+Publishing Content Views to a Satellite Capsule Server
+- to provide content ot hosts from a Capsule Server you MUST FIRST create a/the Content View on Satellite Server
+- publish promote the Content View
+- add a Lifecycle Environment to the Capsule server
+- synchronize content to Capsule Server
+  > tab Overview > Synchronize > Optimized/Complete
+
+Describing Capsule Download Policies
+- the download policy set WHEN Capsule server download packages
+- similar to Satellite Server
+- exception: 'immediate' will cause SATELLITE to download all packages AS WELL
+  - regardless of its own settings
+
+--------------------------------------------------------------------------------
+Ch.7 - Running Remote Execution
