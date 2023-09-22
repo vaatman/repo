@@ -1,0 +1,21 @@
+. new box won't start, because of following error:
+==> default: Removing domain...         
+The following SSH command responded with a non-zero exit status.                                                         
+Vagrant assumes that this means the command failed!                                                                      
+                                                            
+mount -o vers=3,udp 192.168.121.1:/home/hennie/Vagrant/rocky91-01 /vagrant                                               
+                                                                                                                         
+Stdout from the command:                                                                                                 
+                                                            
+                                                                                                                         
+                                                                                                                         
+Stderr from the command:                                    
+
+mount.nfs: an incorrect mount option was specified
+
+. FIX - apparently mounting with udp option doesn't work [anymore]
+$ vi Vagrantfile, add a line for the nfs synced_folder:
+50    # config.vm.synced_folder "../data", "/vagrant_data"
+51    config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false
+
+. vagrant up
