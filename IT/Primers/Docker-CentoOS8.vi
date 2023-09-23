@@ -1,0 +1,166 @@
+Install Docker CE on centos8
+============================
+
+. enable Docker CE repo
+	# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+
+. verify available version
+	# dnf list docker-ce
+
+. install
+	# dnf install docker-ce --nobest -y
+
+. start and enable docker
+	# systemctl enable --now docker
+
+. check
+	# docker --version
+Docker version 19.03.8, build afacb8b
+
+. test Docker CE engine
+	:spin up 'hello world' container
+	# docker run hello-world
+	# docker ps -a
+	# docker images
+
+--------------------------------------------------------------------------------
+Install docker compose
+. download
+	# curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+. make executable
+	# chmod +x  /usr/local/bin/docker-compose 
+. create a symlink [optional]
+	# ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+. check
+	# docker-compose  --version
+docker-compose version 1.25.5, build 8a1c60f6
+--------------------------------------------------------------------------------
+Build a simple Python web application running on Docker Compose. The application uses the Flask framework and maintains a hit counter in Redis.
+. create a project dir
+	# mkdir composetest
+	# cd composetest
+
+. create file for our app
+	# vi app.py
+-----
+import time
+
+import redis
+from flask import Flask
+
+app = Flask(__name__)
+cache = redis.Redis(host='redis', port=6379)
+
+
+def get_hit_count():
+    retries = 5
+    while True:
+        try:
+            return cache.incr('hits')
+        except redis.exceptions.ConnectionError as exc:
+            if retries == 0:
+                raise exc
+            retries -= 1
+            time.sleep(0.5)
+
+
+@app.route('/')
+def hello():
+    count = get_hit_count()
+    return 'Hello World! I have been seen {} times.\n'.format(count)
+-----
+
+. create another file 'requirement.txt':
+	# vi requirements.txt
+flask
+redis
+
+. create a Dockerfile
+	# vi Dockerfile
+FROM python:3.7-alpine
+WORKDIR /code
+ENV FLASK_APP app.py
+ENV FLASK_RUN_HOST 0.0.0.0
+RUN apk add --no-cache gcc musl-dev linux-headers
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["flask", "run"]
+
+. define services in a compose file
+	# vi docker-compose.yml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+  redis:
+    image: "redis:alpine"
+
+. build and run your app with Compose
+	:in the project dir start the app
+	# docker-compose up
+	 : Compose pulls a Redis image, builds an image for your code, and starts the services you defined. In this case, the code is statically copied into the image at build time.
+
+. access the app
+	: direct you [pc] browser to:
+	http://10.128.16.9:5000 
+	: refresh the page, the number should increase
+
+-- optional
+
+. add a bind mount
+	:The new 'volumes' key mounts the project directory (current directory) on the host to /code inside the container, allowing you to modify the code on the fly, without having to rebuild the image.
+	. stop the app
+	# Ctrl+C
+	# vi docker-compose.yml, add betwen 5000:5000 and redis:
+    volumes:
+      - .:/code
+    environment:
+      FLASK_ENV: development
+
+. rebuild and run the app
+	# docker-compose up
+	: now you can edit 'app.py' [in another terminal] and see changes take place online!
+
+. to run the same app in the background:
+	# docker-compose up -d
+
+. to find info about the running container:
+	# docker inspect  nginx-test
+
+. to attach to a running 'alpine' container:
+	# docker attach alpine
+. to detach:
+	# Ctrl+P Ctrl+q
+	 do NOT exit, it will stop the container
+
+--------------------------------------------------------------------------------
+. dockerize a server
+	# cd /
+	# vi Dockerfile
+FROM centos
+COPY / /
+RUN dnf remove httpd -y
+RUN dnf install httpd -y
+
+	# vi .dockerignore
+/dev
+/proc
+/sys
+/tmp
+/run
+lost+found
+/mnt
+/media
+/var/lib/docker
+/etc/docker
+/Dockerfile
+/.dockerignore
+
+	# docker build -t hv-repo/hv-project:hv-tag .
+
+. run it
+	# docker run hv-repo/hv-project:hv-tag

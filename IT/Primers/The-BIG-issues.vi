@@ -1,0 +1,27 @@
+FIXES - undocumented issues
+===========================
+
+NetApp
+	. NDMP backups very slown with CommVault
+	  > DAR doesn't work properly
+
+	. NFS client cannot mount a share, when member of netgroup
+	  > switch options in export policy
+
+IPA
+	. ns-slapd runs OOM
+	  > restart ns-slapd
+	:confirmed by RedHat
+
+	. ns-slapd max.number of group members
+	  : RHEL7.4 ipa-server-4.5.0-20.el7.x86_64
+See '/usr/share/doc/slapi-nis-0.56.0/nis-configuration.txt' :
+
+"* nis-max-dgram-size
+   This sets the maximum size of a response that the server will attempt
+   to send to clients which issued a query over UDP.  The default value
+   is 1024 bytes."
+
+
+Raising the value to 8192 results in the NIS client responding properly.
+

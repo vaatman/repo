@@ -1,0 +1,90 @@
+Run a redis server on docker
+============================
+
+source: Hussein Nasser @YT
+
+. kickstart centos8 node
+. run ansible-playbook to install docker
+	# ssh crdlxvm052
+	# cd ansible
+	# ansible-playbook lxhv02-docker.yml
+
+. run redis server on docker
+	# docker run --name rdg -p 6397:6397 redis
+Unable to find image 'redis:latest' locally
+latest: Pulling from library/redis
+d121f8d1c412: Pull complete 
+2f9874741855: Pull complete 
+d92da09ebfd4: Pull complete 
+bdfa64b72752: Pull complete 
+e748e6f663b9: Pull complete 
+eb1c8b66e2a1: Pull complete 
+Digest: sha256:1cfb205a988a9dae5f025c57b92e9643ec0e7ccff6e66bc639d8a5f95bba928c
+Status: Downloaded newer image for redis:latest
+1:C 22 Sep 2020 14:20:18.175 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 22 Sep 2020 14:20:18.175 # Redis version=6.0.8, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 22 Sep 2020 14:20:18.175 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+1:M 22 Sep 2020 14:20:18.176 * Running mode=standalone, port=6379.
+1:M 22 Sep 2020 14:20:18.176 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+1:M 22 Sep 2020 14:20:18.176 # Server initialized
+1:M 22 Sep 2020 14:20:18.176 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo madvise > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled (set to 'madvise' or 'never').
+1:M 22 Sep 2020 14:20:18.177 * Ready to accept connections
+
+. connect to redis docker images on another terminal
+	# docker exec -it rdb redis-cli
+
+. interact with redis
+127.0.0.1:6379> ?
+redis-cli 6.0.8
+To get help about Redis commands type:
+      "help @<group>" to get a list of commands in <group>
+      "help <command>" for help on <command>
+      "help <tab>" to get a list of possible help topics
+      "quit" to exit
+
+To set redis-cli preferences:
+      ":set hints" enable online hints
+      ":set nohints" disable online hints
+Set your preferences in ~/.redisclirc
+127.0.0.1:6379> set name "Hennie"
+OK
+127.0.0.1:6379> get name
+"Hennie"
+127.0.0.1:6379> set nametemp "Edmond" EX 10
+OK
+127.0.0.1:6379> get nametemp
+"Edmond"
+127.0.0.1:6379> get nametemp
+"Edmond"
+127.0.0.1:6379> get nametemp
+(nil)
+127.0.0.1:6379> exists name
+(integer) 1
+127.0.0.1:6379> exists nametemp
+(integer) 0
+127.0.0.1:6379> del name
+(integer) 1
+127.0.0.1:6379> append name "Hennie"
+(integer) 6
+127.0.0.1:6379> get name
+"Hennie"
+127.0.0.1:6379> append name "John"
+(integer) 10
+127.0.0.1:6379> get name
+"HennieJohn"
+127.0.0.1:6379> SUBSCRIBE newvideos
+Reading messages... (press Ctrl-C to quit)
+1) "subscribe"
+2) "newvideos"
+3) (integer) 1
+1) "message"
+2) "newvideos"
+
+. connect another terminal to the redis server
+	# docker exec -it rdb redis-cli
+	: publish in newvideos:
+127.0.0.1:6379> PUBLISH newvideos "REDIS CRASH COURSE ISUP!"
+
+	: on the previous terminal (#2) you'll see:
+3) "REDIS CRASH COURSE ISUP!"
+

@@ -1,0 +1,55 @@
+Ansible
+=======
+
+. install ansible on all wanted nodes
+	Centos7: # yum install ansible
+	RHEL7:	 # yum install ansible --enablerepo=epel
+
+	CentOS8: # dnf install epel-release
+		 # yum install ansible --enablerepo=epel
+		 :python2 bindings for RPM are not default installed
+		 :dnf is built on python3
+		 # dnf install python2-devel
+		 # dnf install python3
+		 :still didn't work completely!
+		 :rhel7 ansible master is on python2 - centos8's dnf is on python3
+
+. configure on master [crdlx022]
+	# vi /etc/ansible/hosts
+
+[testpcs]
+crdlxhv01
+crdlxhv02
+
+. test single ['ad-hoc'] command
+	# ansible testpcs -a hostname
+
+. create simple playbook
+	# vi test.yml
+- hosts: testpcs
+  become: true
+  tasks:
+  - name: Check if PHP is installed
+    register: php_installed
+    command: php -v
+    ignore_errors: true
+
+. run playbook
+	# ansible-playbook test.yml
+
+PLAY [testpcs] *****************************************************************************************************************
+
+TASK [Gathering Facts] *********************************************************************************************************
+ok: [crdlxhv02]
+ok: [crdlxhv01]
+
+TASK [Check if PHP is installed] ***********************************************************************************************
+fatal: [crdlxhv01]: FAILED! => {"changed": false, "cmd": "php -v", "msg": "[Errno 2] No such file or directory", "rc": 2}
+...ignoring
+fatal: [crdlxhv02]: FAILED! => {"changed": false, "cmd": "php -v", "msg": "[Errno 2] No such file or directory", "rc": 2}
+...ignoring
+
+PLAY RECAP *********************************************************************************************************************
+crdlxhv01                  : ok=2    changed=0    unreachable=0    failed=0   
+crdlxhv02                  : ok=2    changed=0    unreachable=0    failed=0   
+

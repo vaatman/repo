@@ -1,0 +1,71 @@
+Differences in RHEL's : 6,7,8
+
+description	RHEL6		RHEL7		RHEL8
+-----------	-----		-----		-----
+Bootloader	GRUB		GRUB2		GRUB2
+Runlevel	runlevel0	runlevel0.target -> poweroff.target
+		runlevel1	runlevel1.target -> rescue.target
+		runlevel2	runlevel2.target -> multi-user.target
+		runlevel3	runlevel3.target -> multi-user.target
+		runlevel4	runlevel4.target -> multi-user.target
+		runlevel5	runlevel5.target -> multi-user.target
+		runlevel6	runlevel6.target -> reboot.target
+view runl.	runlevel	systemctl get-default
+change runl.	init [runl]	systemctl isolate [name.target]
+conf.default	/etc/inittab	systemctl set-default [name.target]
+SU mode		append 1 or S	append rd.break or init/bin/bash
+
+Major package changes
+
+description		RHEL6			RHEL7		RHEL8
+-----------		-----			-----		-----
+system manager		upstart			systemd		systemd
+service manager		service			systemctl	systemctl
+enable service @boot	chkconfig		systemctl 	systemctl
+network timesync	ntp			chrony & ntp	only ntp
+network bonding		bonding			teamd		teamd
+view ports/sockets	netstat/ss/lsof		ss/lsof		ss/lsof
+cluster resource mgr	Rgmanager		Pacemaker	Pacemaker
+GUI			Gnome2			Gnome3		Gnome3.28
+displayserver		X.ORG			X.Org		Wayland
+default DB		MySQL			MariaDB		MySQL,MariaDB,PostgreSQL,Redis
+default firewall	iptables		firewalld	firewalld [nftables backend]
+tempfiles mgt		tmpwatch		systemd-tmpfiles system-tmpfiles
+loadbalancer		piranha			keepalived,haproxy keepalived,haproxy
+Python			2.0			2.7.5		3
+PHP			5.3			5.4		7.2
+compiler		GVV4.4			GCC4.8.2	GCC8.2.1
+
+
+FileSystem related changes
+
+description		RHEL6		RHEL7		RHEL8
+-----------		-----		-----		-----
+default FS		EXT4		XFS		XFS
+fsck			e2fsck		xfs_repair	xfs_repair
+extend FS		resize2fs	xfs_growfs	xfs_growfs
+
+
+Other changes
+
+description		RHEL6		RHEL7		RHEL8
+-----------		-----		-----		-----
+owner first PID		init		systemd		systemd
+NIC name		eth0		enpXXX		enpXXX
+change hostname		/etc/sysconfig/network		/etc/hostname	/etc/hostname
+UID allocation		0-499		0-999		0-999 for sys/app users
+max File&FS size	16TB&16TB	500TB&500Tb	500TB&1024TB
+mount options		manually	user_xattr and acl default [7&8]
+
+default repos		rhel6-server	rhel7-server	Appstream,BaseOS
+package mgt		yum 		yum/dnf		dnf
+max RAM			12TB		12TB		24TB
+
+logging			rsyslog		rsyslog,journal	rsyslog,journal
+
+minimum req.HDD		1GB		10GB		10GB
+recommended HDD		5GB		20GB		20GB
+
+upgrade possible	yes		yes		yes
+			to 6.10/7.7	to 7.7/8
+VM mgt			virt-mamanger	virt-manager	cockpit

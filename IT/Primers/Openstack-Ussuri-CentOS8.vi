@@ -1,0 +1,144 @@
+Install and Configure OpenStack Ussuri on CentOS 8
+==================================================
+
+source: https://computingforgeeks.com/install-and-configure-openstack-on-centos/
+
+. preparations
+
+sudo dnf install -y network-scripts
+sudo systemctl disable --now firewalld NetworkManager
+sudo systemctl enable network && sudo systemctl start network
+
+sudo touch /etc/sysconfig/disable-deprecation-warnings
+
+sudo setenforce 0
+sed -i 's/^SELINUX=.*/SELINUX=permissive/g' /etc/sysconfig/selinux
+
+dnf -y install vim wget curl telnet bash-completion network-scripts dnf-utils
+
+. install Packstack packages
+
+sudo dnf config-manager --enable PowerTools
+sudo dnf install -y centos-release-openstack-ussuri
+sudo dnf -y update
+
+sudo dnf install -y openstack-packstack
+sudo dnf -y module enable virt
+
+sudo dnf update -y
+sudo systemctl reboot
+
+. deploy Openstack with packstack
+	method1: simple single node OpenStack deployment - default values
+
+sudo packstack --allinone
+Welcome to the Packstack setup utility
+
+The installation log file is available at: /var/tmp/packstack/20200918-153450-1ir5vu_m/openstack-setup.log
+Packstack changed given value  to required value /root/.ssh/id_rsa.pub
+
+Installing:
+Clean Up                                             [ DONE ]
+Discovering ip protocol version                      [ DONE ]
+Setting up ssh keys                                  [ DONE ]
+Preparing servers                                    [ DONE ]
+Pre installing Puppet and discovering hosts' details [ DONE ]
+Preparing pre-install entries                        [ DONE ]
+Setting up CACERT                                    [ DONE ]
+Preparing AMQP entries                               [ DONE ]
+Preparing MariaDB entries                            [ DONE ]
+Fixing Keystone LDAP config parameters to be undef if empty[ DONE ]
+Preparing Keystone entries                           [ DONE ]
+Preparing Glance entries                             [ DONE ]
+Checking if the Cinder server has a cinder-volumes vg[ DONE ]
+Preparing Cinder entries                             [ DONE ]
+Preparing Nova API entries                           [ DONE ]
+Creating ssh keys for Nova migration                 [ DONE ]
+Gathering ssh host keys for Nova migration           [ DONE ]
+Preparing Nova Compute entries                       [ DONE ]
+Preparing Nova Scheduler entries                     [ DONE ]
+Preparing Nova VNC Proxy entries                     [ DONE ]
+Preparing OpenStack Network-related Nova entries     [ DONE ]
+Preparing Nova Common entries                        [ DONE ]
+Preparing Neutron API entries                        [ DONE ]
+Preparing Neutron L3 entries                         [ DONE ]
+Preparing Neutron L2 Agent entries                   [ DONE ]
+Preparing Neutron DHCP Agent entries                 [ DONE ]
+Preparing Neutron Metering Agent entries             [ DONE ]
+Checking if NetworkManager is enabled and running    [ DONE ]
+Preparing OpenStack Client entries                   [ DONE ]
+Preparing Horizon entries                            [ DONE ]
+Preparing Swift builder entries                      [ DONE ]
+Preparing Swift proxy entries                        [ DONE ]
+Preparing Swift storage entries                      [ DONE ]
+Preparing Gnocchi entries                            [ DONE ]
+Preparing Redis entries                              [ DONE ]
+Preparing Ceilometer entries                         [ DONE ]
+Preparing Aodh entries                               [ DONE ]
+Preparing Puppet manifests                           [ DONE ]
+Copying Puppet modules and manifests                 [ DONE ]
+Applying 10.128.16.82_controller.pp
+10.128.16.82_controller.pp:                          [ DONE ]         
+Applying 10.128.16.82_network.pp
+10.128.16.82_network.pp:                             [ DONE ]      
+Applying 10.128.16.82_compute.pp
+10.128.16.82_compute.pp:                             [ DONE ]      
+Applying Puppet manifests                            [ DONE ]
+Finalizing                                           [ DONE ]
+
+ **** Installation completed successfully ******
+
+Additional information:
+ * Parameter CONFIG_NEUTRON_L2_AGENT: You have chosen OVN Neutron backend. Note that this backend does not support the VPNaaS or FWaaS services. Geneve will be used as the encapsulation method for tenant networks
+ * A new answerfile was created in: /root/packstack-answers-20200918-153451.txt
+ * Time synchronization installation was skipped. Please note that unsynchronized time on server instances might be problem for some OpenStack components.
+ * File /root/keystonerc_admin has been created on OpenStack client host 10.128.16.82. To use the command line tools you need to source the file.
+ * To access the OpenStack Dashboard browse to http://10.128.16.82/dashboard .
+Please, find your login credentials stored in the keystonerc_admin in your home directory.
+ * The installation log file is available at: /var/tmp/packstack/20200918-153450-1ir5vu_m/openstack-setup.log
+ * The generated manifests are available at: /var/tmp/packstack/20200918-153450-1ir5vu_m/manifests
+
+. get login password
+	# grep OS_PASSWORD keystonerc_admin
+	export OS_PASSWORD='f5eda2aad39c42c4'
+
+. login
+	http://10.128.16.82/dashboard
+
+. configure networking
+sudo vi /etc/sysconfig/network-scripts/ifcfg-ens3
+ Generated by dracut initrd
+#NAME="ens3"
+DEVICE="ens3"
+ONBOOT=yes
+#NETBOOT=yes
+#UUID="9ae22e5d-e866-49bd-9cd3-75393d8c47ee"
+#IPV6INIT=yes
+#BOOTPROTO=static
+#IPADDR0=10.128.16.82
+#PREFIX0=21
+#TYPE=Ethernet
+#DNS1="10.128.16.76"
+#GATEWAY0="10.128.16.245"
+#NOZEROCONF=yes
+#
+TYPE=OVSPort
+DEVICETYPE=ovs
+OVS_BRIDGE=br-ex
+
+sudo vi /etc/sysconfig/network-scripts/ifcfg-br-ex
+DEVICE=br-ex
+BOOTPROTO=none
+ONBOOT=yes
+TYPE=OVSBridge
+DEVICETYPE=ovs
+USERCTL=yes
+PEERDNS=yes
+IPV6INIT=no
+IPADDR=10.128.16.82
+NETMASK=255.255.255.248
+GATEWAY=10.128.16.245
+DNS1=10.128.16.76
+
+. add the network physical interface to the br-ex bridge in Open vSwitch
+

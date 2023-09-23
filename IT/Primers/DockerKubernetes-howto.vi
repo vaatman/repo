@@ -1,0 +1,224 @@
+Installing Docker & Kubernetes on CentOS76
+==========================================
+
+. kickstart minimal VM
+. extend /usr
+	# lvextend -L +4G /dev/vg00_crdlxhv02/usr
+	# resize2fs /dev/vg00_crdlxhv02/usr
+. groupinstall "Server with GUI"
+	# yum groupinstall 'Server with GUI"
+	# systemctl set-default graphical.target
+. install epel
+	# yum install epel-release
+. groupinstall "MATE Desktop"
+	# yum groupinstall "MATE Desktop"
+
+. install Kubernetes and Docker
+	# yum install kubernetes kubernetes-cockpit kubernetes-master
+
+. start & enable docker
+	# systemctl start docker
+	# systemctl enable docker
+
+. add user to docker group
+	# vi /etc/group
+docker:x:990:hennie
+	:on replay on crdlxhv01, also needed:
+	# vi /etc/group
+	replace geoclue:x:990:for docker:x:990:hennie
+	# chgrp docker /var/run/docker.sock
+
+. some commands
+	.show all images
+	 # docker images -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+270b8b41846c        hello-world         "/hello"            47 minutes ago      Exited (0) 47 minutes ago                       distracted_hermann
+
+	:this image was installed prior to this procedure on docker-ce
+	:docker-ce and docker-ce-cli must be removed for kubernetes
+
+	.stop the image
+	# docker stop 270b8b41846c
+	270b8b41846c
+
+	.remove the image
+	# docker rm 270b8b41846c
+	270b8b41846c
+	
+	.see also:
+	https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes
+
+.some user stuff
+
+	.install test image
+	$ docker run hello-world
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+
+	$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
+b9a8a41f9aa3        hello-world         "/hello"            5 seconds ago       Exited (0) 4 seconds ago                       lucid_allen
+
+--------------------------------------------------------------------------------
+Setup a simple Apache webserver in a Docker container
+ - following example we will instantiate an Apache 2.4 container named tecmint-web, detached from the current terminal. We will use an image called httpd:2.4 from Docker Hub
+ -  requests made to our public IP address on port 8080 be redirected to port 80 on the container
+
+. get and run the docker image
+	$ sudo docker run -dit --name tecmint-web -p 8080:80 -v /home/user/website/:/usr/local/apache2/htdocs/ httpd:2.4
+
+. check
+	$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+9eaba2365c32        httpd:2.4           "httpd-foreground"       3 minutes ago       Up 3 minutes        0.0.0.0:8080->80/tcp     tecmint-web
+628bb4885ff4        bulletinboard:1.0   "docker-entrypoint..."   6 days ago          Up 6 days           0.0.0.0:8000->8080/tcp   bb
+
+. create simple webpage
+	# sudo vi /home/user/website/docker.html
+	:sudo was needed, because the dir/file was owned by root
+
+. direct browser to the dockered webserver
+	http://10.128.16.11:8080/docker.html
+
+. stop the container
+	$ docker stop tecmint-web
+. start the container
+	$ docker start tecmint-web
+
+. remove the container
+	$ docker rm tecmint-web
+
+. delete the image that was used IN the container
+	$ docker images
+	$ docker image remove httpd:2.4
+. remove ALL images
+	$ docker rmi $(docker images -a -q)
+
+--------------------------------------------------------------------------------
+same procedure, now running 5 containers:
+	$ for I in {1..5}; do docker run -dit --name tecmint-web-0${I} -p 808${I}:80 -v /home/user/website-0${I}/:/usr/local/apache2/htdocs/ httpd:2.4;done
+	.create docker.html for each containered webserver
+--------------------------------------------------------------------------------
+
+Install Kubernetes on CentOS7
+	:docker images running on crdlxhv02
+	:install kubernetes master on crdlxhv01
+
+. edit hosts file on both nodes
+10.128.16.9             crdlxhv01.son.catena.nl crdlxhv01 crdlxhv01.
+10.128.16.11             crdlxhv02.son.catena.nl crdlxhv02 crdlxhv02.
+
+. disable SElinux
+	# setenforce 0
+	# sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+	:selinux was already disabled by kickstart
+
+. enable br_netfilter module on kubmaster
+	:The br_netfilter module is required for kubernetes installation. Enable this kernel module so that the packets traversing the bridge are processed by iptables for filtering and for port forwarding, and the kubernetes pods across the cluster can communicate with each other.
+
+	# modprobe br_netfilter
+	# echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+. turn off swap
+	# swapoff -a
+	# vi /etc/fstab, comment swap entry
+
+. install docker [see above]
+
+. install kubernetes tools
+	# vi /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+	:note last line - both keys on SINGLE line
+
+	. remove previously install kubernetes packages
+		# yum remove kubernetes-node kubernetes-client
+
+	.install tools
+	# yum install kubelet kubeadm kubectl
+	# reboot
+
+	-on KUBE master
+	.check for docker and kubelet running
+	# systemctl status -l docker
+	# systemctl status -l kubelet
+
+	.turn off swap [if not already]
+	 # swapoff -a
+	 # vi /etc/fstab, comment swap entry
+
+. intialize cluster
+	# kubeadm init --apiserver-advertise-address=10.128.16.9 --pod-network-cidr=10.244.0.0/16
+	:user kube master's IPaddress to advertise
+	:this takes a while - wait and see
+	: somewhere in the output it should show
+	"Your Kubernetes control-plane has initialized successfully!"
+
+. copy the kubeadm join command to a text editor
+	kubeadm join 10.128.16.9:6443 --token 5pszzu.bk6303upsv3m49ze \
+    --discovery-token-ca-cert-hash sha256:0594b712c0757eca586192d7fc87c7409c8f83d3d4d4bf41b7ff19b2457a4751
+
+. create new '.kube' config and copy the admin.conf
+	# mkdir -p $HOME/.kube
+	# cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+	# chown $(id -u):$(id -g) $HOME/.kube/config
+
+. deploy the 'flannel' network to the cluster
+	# kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+podsecuritypolicy.policy/psp.flannel.unprivileged created
+clusterrole.rbac.authorization.k8s.io/flannel created
+clusterrolebinding.rbac.authorization.k8s.io/flannel created
+serviceaccount/flannel created
+configmap/kube-flannel-cfg created
+daemonset.apps/kube-flannel-ds-amd64 created
+daemonset.apps/kube-flannel-ds-arm64 created
+daemonset.apps/kube-flannel-ds-arm created
+daemonset.apps/kube-flannel-ds-ppc64le created
+daemonset.apps/kube-flannel-ds-s390x created
+
+. wait for a minute and check some commands
+	# kubectl get nodes
+NAME        STATUS   ROLES    AGE     VERSION
+crdlxhv01   Ready    master   4m32s   v1.18.2
+
+	# kubectl get pods --all-namespaces
+NAMESPACE     NAME                                READY   STATUS    RESTARTS   AGE
+kube-system   coredns-66bff467f8-cz6qv            1/1     Running   0          4m26s
+kube-system   coredns-66bff467f8-fn2pk            1/1     Running   0          4m26s
+kube-system   etcd-crdlxhv01                      1/1     Running   0          4m34s
+kube-system   kube-apiserver-crdlxhv01            1/1     Running   0          4m34s
+kube-system   kube-controller-manager-crdlxhv01   1/1     Running   0          4m34s
+kube-system   kube-flannel-ds-amd64-2f96n         1/1     Running   0          34s
+kube-system   kube-proxy-4s9tz                    1/1     Running   0          4m26s
+kube-system   kube-scheduler-crdlxhv01            1/1     Running   0          4m34s
+
+. adding node crdlxhv02 to the cluster
+	.connect to node crdlxhv02
+	.copy and execute 'kubeadm join' command from above
+	.kubelet.service should NOT be running
+

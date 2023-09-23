@@ -1,0 +1,89 @@
+Proxy sysadmin puzzle 2020, oplossing
+-------------------------------------
+
+. download docker image
+	# docker pull proxynl/sysadminday2020
+
+. run the image
+	# docker run proxynl/sysadminday2020
+	:there's a webserver at 8043, run again with portforwarding for access
+	# docker  run -d -p 80:8043 proxynl/sysadminday2020
+
+. check this site
+	# http://10.128.16.9
+
+	:and also under
+	/var/lib/docker/overlay2/016dd11b5bdfb602d37c5a9aa4251596e0232ca3e63fb42dadc54382c3efce62/merged
+
+	: found a binary 'sad' there
+
+. run that binary
+
+	# docker exec dazzling_mahavira '/sad'            
+Argument or url required
+  -d    encode or decode
+  -k string
+        The default key is wrong (default "70726f78792e6e6c2044656c667477656720325e372c20526f7474657264616d")
+  -u string
+        url to read
+	# 
+
+---> Here's where I got stuck
+	1. what to do with the key
+	2. what url to read
+
+---> Answers:
+	1. decrypt this /wrong/ default key:
+	# echo -n 70726f78792e6e6c2044656c667477656720325e372c20526f7474657264616d | xxd -r -p
+proxy.nl Delftweg 2^7, Rotterdam[root@crdlxhv01 ~]# 
+
+	HINT: 2^7 == 128
+	SO: that's the wrong address
+
+	# echo -n proxy.nl Delftweg 128, Rotterdam|xxd -p -c32
+70726f78792e6e6c2044656c6674776567203132382c20526f7474657264616d
+	
+	2. apparently the url is http://:8043/CTF.xx
+
+---> SOLUTION:
+
+[root@crdlxhv01 ~]# docker exec dazzling_mahavira /sad -d -k 70726f78792e6e6c2044656c6674776567203132382c20526f7474657264616d -u http://:8043/CTF.xx
+888888888888  88                                d8'                                                 88  88  
+     88       88                         ,d    d8'                                                  88  88  
+     88       88                         88   ""                                                    88  88  
+     88       88,dPPYba,   ,adPPYYba,  MM88MMM  ,adPPYba,      ,adPPYba,   ,adPPYba,    ,adPPYba,   88  88  
+     88       88P'    "8a  ""     `Y8    88     I8[    ""     a8"     ""  a8"     "8a  a8"     "8a  88  88  
+     88       88       88  ,adPPPPP88    88      `"Y8ba,      8b          8b       d8  8b       d8  88      
+     88       88       88  88,    ,88    88,    aa    ]8I     "8a,   ,aa  "8a,   ,a8"  "8a,   ,a8"  88  aa  
+     88       88       88  `"8bbdP"Y8    "Y888  `"YbbdP"'      `"Ybbd8"'   `"YbbdP"'    `"YbbdP"'   88  88 
+
+That's cool!
+
+Je hebt de challenge opgelost, top! De winnaar van de challenge is degene die het kortste script/statement maakt om deze tekst te tonen
+Bij gelijke lengte wint de eerste inzending.
+
+De volgende regels gelden:
+
+- alleen standaard tools gebruiken die voor iedere open source engineer beschikbaar zijn
+- geen downloads, eigen images, preconfigs of andere truuk om een oplossing klaar te zetten
+
+Stuur je oplossing en je naam, voor 31 augustus 2020 naar
+
+sysadminday@proxy.nl
+
+                                      `...`                                                         
+                                    .:/++++-                                                        
+                                  `:+++++++-                                                        
+                                 ./++++++/.  ..`                                                    
+  `....`.---.``   `....``.---.  .++++++/-`    -/:.`   `....` `.....  .....`  `.....`  `.-`    .--`  
+  :osssssoooss+-  :ooss+osooss-`/+++++/`       ./+/.  :osss+`-sssso``ossss/` :ossso-  :sso   `oss-  
+   `/ss/.```.:ss:  `.sss/-``..`.++++++.         `-++-  `-+ss+oso/.`  `.oso.  `+ss-`   `--.    .-.`  
+    /ss.     `oy+   `ys:       .+++++/`          `/+/`   .ossss:`      `oso.`/ss-                   
+    /sss/:--/oso. ..-ss:....`  `/+++++.          `/++..-+ss+.:sso/-`    `+so+ss.      `::-    -/:`  
+    /ss/+ooo+/-` .ooossooooo-   `/++++/.`       ./++:`+ssss/`.ossso:     `+sso.       -sso   `oss-  
+    /ss`````      ``````````     `-/++++/:-..--/+++:` `````   ``````     `oso.         ```    ```   
+  -+ssso++`                        `.:/++++++++//-`                  :+++osso+:                     
+  .::::::-                             ``.....``                     .::::::::.    
+
+
+

@@ -1,0 +1,34 @@
+Install NginX as loadblanacer for ETX
+=====================================
+
+. kickstart CnetOS8
+
+. install nginx
+	# dnf install nginx
+
+. configure nginx as layer 4 proxy
+	# cd /etc/nginx
+	# cp -p nginx.conf nginx.conf.org
+
+	# vi nginx.conf
+----------
+stream {
+        upstream etxfrontend {
+                server 10.128.16.104:8443;
+                server 10.128.16.105:8443;
+        }
+
+        server {
+                listen 8443;
+                proxy_pass etxfrontend;
+        }
+}
+----------
+
+. run nginx
+	# systemctl start nginx
+
+: this proxy does loadbalances access to ETX login servers, that part works/
+: first login to the etx webfront works, but connection is broken, after that
+: not working anymore
+

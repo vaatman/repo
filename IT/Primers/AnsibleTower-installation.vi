@@ -1,0 +1,33 @@
+Install Ansible tower on CentOS 7.6
+===================================
+
+. download ansible tower
+	http://releases.ansible.com/ansible-tower/setup-bundle/ansible-tower-setup-bundle-latest.el7.tar.gz
+
+. resize /opt [optional]
+	# lvextend -L +7G /dev/vg00_crdlxhv02/opt
+	# resize2fs /dev/vg00_crdlxhv02/opt
+
+. unpack download
+	# cd /opt
+	# tar zxvf <ansible-tower.tar.gz>
+
+. configure
+	# cd ansible-tower-setup-bundle-3.6.4-1
+	# vi inventory
+admin_password='<password>'
+pg_password='<password>'
+rabbitmq_password='<password>'
+
+. install
+	# ./setup.sh
+	 -- lots of output
+....
+The setup process completed successfully.
+Setup log saved to /var/log/tower/setup-2020-05-08-11:25:48.log
+
+ .login to Ansible Tower frontend
+	http://10.128.16.11
+
+:Here you need to provide a license, which we didn't have
+:pity

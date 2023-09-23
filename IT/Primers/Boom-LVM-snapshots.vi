@@ -1,0 +1,85 @@
+Use BOOM to snapshot RHEL7 in upgrade
+=====================================
+
+BOOM is a utility available starting with RHEL 7.5, and we've covered this on the blog recently. This tool allows users to manage additional boot loader entries on the system. You can use it to create, delete, list, and modify auxiliary boot entries for system snapshots and images. The tool is provided by the lvm2-python-boom package. 
+
+source: https://www.redhat.com/en/blog/upgrading-rhel-7-rhel-8-leapp-and-boom
+
+. kickstart a RHEL7.4 node
+
+. register a subscription
+	# subscription-manager register
+Registering to: subscription.rhsm.redhat.com:443/subscription
+Username: catena-radio-design
+Password: 
+The system has been registered with ID: 2ac82239-41cf-429f-aeed-b4de011e84f4
+	:if you check here: https://access.redhat.com/management/systems
+	:you'll find the VM with a red block in front of the name
+
+. attach the subscription
+	# subscription-manager attach --auto
+Installed Product Current Status:
+Product Name: Red Hat Enterprise Linux Server
+Status:       Subscribed
+	:now there's a green dot in front of the hostname ['properly subscribed']
+	
+. first upgrade to RHE7.6
+	. set the release to 7.6
+	# subscription-manager release --set 7.6
+Release set to: 7.6
+	. update
+	# yum update
+	# systemctl reboot
+
+. enable optional en extras repositories
+	# subscription-manager repos --enable rhel-7-server-optional-rpms --enable rhel-7-server-extras-rpms
+Repository 'rhel-7-server-optional-rpms' is enabled for this system.
+Repository 'rhel-7-server-extras-rpms' is enabled for this system.
+
+. install required packages for boom and leap
+	# yum install -y leapp leapp-repository leapp-repository-deps lvm2-python-boom
+
+. install a sample httpd service to test with
+	# yum install -y httpd
+	# echo "Hello and welcome at ${HOSTNAME}" > /var/www/html/index.html
+	# systemctl enable --now httpd
+Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service to /usr/lib/systemd/system/httpd.service.
+	# curl http://localhost
+
+:-----> Creating snapshot and BOOM entry
+
+. create snapshot of the rootvolume
+	:this deviates from the webprocedure, the vm has multiple lvs
+	# lvcreate -s -L 3G -n rollback vg00_crdlxvm053/rootvol
+  Reducing COW size 3.00 GiB down to maximum usable size <1.01 GiB.
+  Logical volume "rollback" created.
+
+	# boom create --title "RHEL7.6 Snapshot - 02 oct 2020" --rootlv vg00_crdlxvm053/rollback
+WARNING - Boom configuration not found in grub.cfg
+WARNING - Run 'grub2-mkconfig > /boot/grub2/grub.cfg' to enable
+Created entry with boot_id a82e25f:
+  title RHEL7.6 Snapshot - 02 oct 2020
+  machine-id ee695fc56e0c4af6a855a1fc03c66a38
+  version 3.10.0-957.27.2.el7.x86_64
+  linux /vmlinuz-3.10.0-957.27.2.el7.x86_64
+  initrd /initramfs-3.10.0-957.27.2.el7.x86_64.img
+  options root=/dev/vg00_crdlxvm053/rollback ro rd.lvm.lv=vg00_crdlxvm053/rollback rhgb quiet
+
+. update GRUB2 as specified in previous command
+	# grub2-mkconfig > /boot/grub2/grub.cfg
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-957.27.2.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-957.27.2.el7.x86_64.img
+Found linux image: /boot/vmlinuz-3.10.0-693.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-693.el7.x86_64.img
+Found linux image: /boot/vmlinuz-0-rescue-ee695fc56e0c4af6a855a1fc03c66a38
+Found initrd image: /boot/initramfs-0-rescue-ee695fc56e0c4af6a855a1fc03c66a38.img
+done
+
+. check
+	# boom list
+BootID  Version                    Name                            RootDevice                   
+a82e25f 3.10.0-957.27.2.el7.x86_64 Red Hat Enterprise Linux Server /dev/vg00_crdlxvm053/rollback
+
+	:on reboot of the node, GRUB2 menu has an added entry 'Snapshots'
+	:under which you'll find you snapshot

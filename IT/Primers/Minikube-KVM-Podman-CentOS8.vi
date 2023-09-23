@@ -1,0 +1,273 @@
+Install minikube CentOS8 with KVM and podman
+============================================
+
+source: https://computingforgeeks.com/how-to-install-minikube-on-centos-linux-with-kvm/
+
+:make sure Virtualization is enabled in BIOS
+	.check
+	# egrep "vmx|svm" /proc/cpuinfo
+	# lsmod|grep kvm
+kvm_intel             290816  0
+kvm                   753664  1 kvm_intel
+irqbypass              16384  1 kvm
+
+. update
+	# dnf -y update
+
+. install podman
+	# dnf install podman
+
+. install kvm hypervisor
+	# dnf install @virt virt-top libguestfs-tools virt-manager
+	# vi /etc/libvirt/libvirtd.conf
+unix_sock_group = "libvirt"
+unix_sock_rw_perms = "0770"
+	::note: these are defaults
+
+. enable passwdless sudo for for group libvirt
+	# visudo
+%libvirt        ALL=(ALL)       NOPASSWD: ALL
+
+. start libvirtd
+	# systemctl enable --now libvirtd
+
+. install kubectl
+	# curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+	# chmod +x kubectl
+	# cp kubectl /usr/local/bin
+
+. install minikube
+	# curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 
+	# chmod +x minikube 
+	# cp minikube /usr/local/bin
+
+. disable SWAP
+	# swapoff -a
+	# sed -i '/swap/ s/^/#/' /etc/fstab
+
+. to access the dashboard - OPTIONAL
+	# su - kubeman
+	$ kubectl proxy --address='0.0.0.0' --disable-filter=true
+	http://10.128.16.9:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/#/namespace?namespace=default
+
+. switch user
+	# usermod -G wheel,libvirt kubeman
+	# su - kubeman
+
+. start kubernetes
+	: $ minikube start --driver=podman --container-runtime=cri-o
+	: this worked at some point, later it doesn't anymore
+
+	$ minikube start --driver=podman --container-runtime=containerd
+??  minikube v1.13.1 on Centos 8.2.2004
+?  The minimum required version for podman is "1.7.0". your version is "1.6.4". minikube might not work. use at your own risk. To insll latest version please see https://podman.io/getting-started/installation.html
+?  Using the podman (experimental) driver based on user configuration
+??  Starting control plane node minikube in cluster minikube
+??  Downloading Kubernetes v1.19.2 preload ...
+    > preloaded-images-k8s-v6-v1.19.2-containerd-overlay2-amd64.tar.lz4: 160.00
+    > preloaded-images-k8s-v6-v1.19.2-containerd-overlay2-amd64.tar.lz4: 895.99
+??  Creating podman container (CPUs=2, Memory=2200MB) ...
+??  Preparing Kubernetes v1.19.2 on containerd 1.3.3-14-g449e9269 ...
+??  Configuring CNI (Container Networking Interface) ...
+??  Verifying Kubernetes components...
+??  Enabled addons: default-storageclass, storage-provisioner
+??  Done! kubectl is now configured to use "minikube" by default
+
+
+. check
+	$ kubectl config view
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /home/kubeman/.minikube/ca.crt
+    server: https://10.88.0.2:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /home/kubeman/.minikube/profiles/minikube/client.crt
+    client-key: /home/kubeman/.minikube/profiles/minikube/client.key
+
+	$ kubectl get nodes
+NAME       STATUS   ROLES    AGE    VERSION
+minikube   Ready    master   105s   v1.18.3
+
+. create a pod
+	$ kubectl run nginx --image=nginx
+pod/nginx created
+	$ kubectl get pods
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   0          17s
+
+. create a deployment
+	$ kubectl create deployment nginx01 --image=nginx
+deployment.apps/nginx01 created
+
+	$ kubectl get pods
+NAME                    READY   STATUS    RESTARTS   AGE
+nginx                   1/1     Running   0          4m4s
+nginx-f89759699-csw6z   1/1     Running   0          5s
+
+. expose the deployment [= creating a service ]
+	$ kubectl expose deployment nginx01 --type=NodePort --port=8080 --target-port=80 --external-ip=10.128.16.9 
+service/nginx exposed
+
+-----> alternative
+. enable the Ingress controller
+	$ minikube addons enable ingress
+??  Verifying ingress addon...
+??  The 'ingress' addon is enabled
+
+. verify
+	$ kubectl get pods -n kube-system
+...
+ingress-nginx-controller-789d9c4dc-4n7zw   1/1     Running     0          2m27s
+...
+
+. expose a deployment
+	$ kubectl expose deployment nginx01 --type=NodePort --port=8080
+service/nginx01 exposed
+
+. verify
+	$ kubectl get service nginx01
+NAME      TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+nginx01   NodePort   10.104.94.169   <none>        8080:30393/TCP   46s
+
+. visit the service via NodePort
+	$ minikube service nginx01 --url
+http://10.88.0.12:30393
+
+-----> end alternative
+
+	$ kubectl get services -o wide
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP    PORT(S)          AGE   SELECTOR
+kubernetes   ClusterIP   10.96.0.1      <none>         443/TCP          17m   <none>
+nginx        NodePort    10.97.234.88   10.128.16.9   8080:31287/TCP   4s    app=nginx
+
+. try to access the deployment/service
+	$ minikube service nginx01 --url
+http://10.88.0.3:30130
+
+	$ curl $(minikube service nginx --url)
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+
+
+. start dashboard with remote access
+	# kubectl proxy --address='0.0.0.0' --disable-filter=true
+	http://10.128.16.9:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+
+
+----- similar procedure using KVM
+
+source: https://minikube.sigs.k8s.io/docs/start/
+
+. start
+	$ minikube start
+??  minikube v1.12.0 on Centos 8.2.2004
+?  Automatically selected the kvm2 driver
+??  Downloading driver docker-machine-driver-kvm2:
+    > docker-machine-driver-kvm2.sha256: 65 B / 65 B [-------] 100.00% ? p/s 0s
+    > docker-machine-driver-kvm2: 13.88 MiB / 13.88 MiB  100.00% 10.29 MiB p/s 
+??  Downloading VM boot image ...
+    > minikube-v1.12.0.iso.sha256: 65 B / 65 B [-------------] 100.00% ? p/s 0s
+    > minikube-v1.12.0.iso: 173.57 MiB / 173.57 MiB [] 100.00% 22.12 MiB p/s 8s
+??  Starting control plane node minikube in cluster minikube
+??  Downloading Kubernetes v1.18.3 preload ...
+    > preloaded-images-k8s-v4-v1.18.3-docker-overlay2-amd64.tar.lz4: 526.27 MiB
+??  Creating kvm2 VM (CPUs=2, Memory=2200MB, Disk=20000MB) ...
+??  Preparing Kubernetes v1.18.3 on Docker 19.03.12 ...
+??  Verifying Kubernetes components...
+??  Enabled addons: default-storageclass, storage-provisioner
+??  Done! kubectl is now configured to use "minikube"
+
+. interact with the cluster
+	$ kubectl get po -A
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-66bff467f8-xmzzc           1/1     Running   0          56s
+kube-system   etcd-minikube                      1/1     Running   0          56s
+kube-system   kube-apiserver-minikube            1/1     Running   0          56s
+kube-system   kube-controller-manager-minikube   1/1     Running   0          56s
+kube-system   kube-proxy-hk9gm                   1/1     Running   0          56s
+kube-system   kube-scheduler-minikube            1/1     Running   0          56s
+kube-system   storage-provisioner                1/1     Running   0          56s
+
+. Deploy applications
+. Create a sample deployment and expose it on port 8080:
+
+	$ kubectl create deployment hello-minikube --image=k8s.gcr.io/echoserver:1.4
+	$ kubectl expose deployment hello-minikube --type=NodePort --port=8080
+
+	:it may take a moment, but your deployment will soon show up when you run:
+	$ kubectl get services hello-minikube
+
+	:the easiest way to access this service is to let minikube launch a web browser for you:
+	$ minikube service hello-minikube
+
+	:alternatively, use kubectl to forward the port:
+	$ kubectl port-forward service/hello-minikube 7080:8080
+	Tada! Your application is now available at http://localhost:7080/
+
+. LoadBalancer deployments
+. To access a LoadBalancer deployment, use the "minikube tunnel" command.
+	:here is an example deployment:
+	$ kubectl create deployment balanced --image=k8s.gcr.io/echoserver:1.4  
+	$ kubectl expose deployment balanced --type=LoadBalancer --port=8000
+
+	:in another window, start the tunnel to create a routable IP for the ‘balanced’ deployment:
+	$ minikube tunnel
+
+. To find the routable IP, run this command and examine the EXTERNAL-IP column:
+
+	$ kubectl get services balanced
+	:your deployment is now available at <EXTERNAL-IP>:8000
+
+Manage your cluster
+. pause Kubernetes without impacting deployed applications:
+	$ minikube pause
+
+. halt the cluster:
+	$ minikube stop
+
+. increase the default memory limit (requires a restart):
+	$ minikube config set memory 16384
+
+. browse the catalog of easily installed Kubernetes services:
+	$ minikube addons list
+
+. create a second cluster running an older Kubernetes release:
+	$ minikube start -p aged --kubernetes-version=v1.16.1
+
+. delete all of the minikube clusters:
+	$ minikube delete --all

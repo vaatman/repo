@@ -1,0 +1,115 @@
+Install Puppet on CentOS 8
+==========================
+
+master: crdlxhv01
+client: crdlxvm052
+
+---> install puppet server on PUPPETMASTER
+. install puppet repo
+	# dnf install https://yum.puppetlabs.com/puppet-release-el-8.noarch.rpm
+
+	@crdlxhv01
+	# yum install puppetserver
+
+. update puppet to latest version
+	# /opt/puppetlabs/bin/puppet resource package puppetserver ensure=latest
+package { 'puppetserver':
+  ensure   => '6.11.1-1.el8',
+  provider => 'dnf',
+}
+
+. configure server
+	# cd /etc/puppetlabs/puppet
+	# vi puppet.conf, add:
+[master]
+ dns_alt_names=master.theskillpedia.com,puppet
+ 
+main]
+certname = master.theskillpedia.com
+server = master.theskillpedia.com
+environment = production
+runinterval = 1h
+
+. start and enable puppet service
+	# systemctl start puppetserver
+	# systemctl enable puppetserver
+
+---> install puppet client
+. install puppet repo
+	# dnf install https://yum.puppetlabs.com/puppet-release-el-8.noarch.rpm
+
+	crdlxvm052
+	# dnf install puppet
+
+. update puppet client
+	# /opt/puppetlabs/bin/puppet resource package puppet ensure=latest
+package { 'puppet':
+  ensure   => '6.15.0-1.el8',
+  provider => 'dnf',
+}
+
+. register client
+	# cd /etc/puppetlabs/puppet
+	# vi puppet.conf, add
+[main]
+certname = crdlxvm052.son.catena.nl
+server = crdlxhv01.son.catena.nl
+environment = production
+runinterval = 1h
+
+	# /opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
+service { 'puppet':
+  ensure   => 'running',
+  enable   => 'true',
+  provider => 'systemd',
+}
+
+. check cert on MASTER
+	# /opt/puppetlabs/bin/puppetserver ca list
+Requested Certificates:
+    crdlxvm052.son.catena.nl       (SHA256)  92:6D:81:5C:27:99:50:A0:F4:1D:A3:46:AC:0A:33:50:B3:9F:5F:2C:AC:C9:FB:90:FC:3D:12:AD:44:1F:08:1B
+. sing cert on MASTER
+	# /opt/puppetlabs/bin/puppetserver ca sign --certname crdlxvm052.son.catena.nl
+Successfully signed certificate request for crdlxvm052.son.catena.nl
+
+. start and enable puppet service
+	# systemctl start puppet
+	# systemctl enable puppet
+
+. check on CLIENT
+	# /opt/puppetlabs/bin/puppet agent --test
+Info: Using configured environment 'production'
+Info: Retrieving pluginfacts
+Info: Retrieving plugin
+Info: Retrieving locales
+Info: Caching catalog for crdlxvm052.son.catena.nl
+Info: Applying configuration version '1589794575'
+Notice: Applied catalog in 0.01 seconds
+
+
+. create manifest on MASTER
+	# cd /etc/puppetlabs/code/environments/production/manifests
+
+	# vi site.pp
+node 'agent.theskillpedia.com' {
+     package { 'httpd':
+         ensure  => "installed",
+     }
+     service { 'httpd':
+         ensure => running,
+     enable => true
+     }
+ }
+
+. execute the manifest on the client
+	# /opt/puppetlabs/bin/puppet agent --test
+Info: Using configured environment 'production'
+Info: Retrieving pluginfacts
+Info: Retrieving plugin
+Info: Retrieving locales
+Info: Caching catalog for crdlxvm052.son.catena.nl
+Info: Applying configuration version '1589794780'
+Notice: /Stage[main]/Main/Node[crdlxvm052.son.catena.nl]/Package[httpd]/ensure: created
+Notice: /Stage[main]/Main/Node[crdlxvm052.son.catena.nl]/Service[httpd]/ensure: ensure changed 'stopped' to 'running'
+Info: /Stage[main]/Main/Node[crdlxvm052.son.catena.nl]/Service[httpd]: Unscheduling refresh on Service[httpd]
+Notice: Applied catalog in 29.07 seconds

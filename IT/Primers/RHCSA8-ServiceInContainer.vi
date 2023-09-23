@@ -1,0 +1,60 @@
+RHCSA8 - Containers -- Run service INSIDE container
+===================================================
+
+To enable/run a service INSIDE a container, create a new image and add stuff
+ to enable the service
+
+. create image
+	# vi Dockerfile
+
+FROM registry.access.redhat.com/ubi8/ubi-init
+RUN yum -y install httpd; yum clean all; systemctl enable httpd
+RUN echo "Successfull Web Server Test" > /var/www/html/index.html
+RUN mkdir /etc/systemd/system/httpd.service.d/; echo -e '[Service]\nRestart=always' > /etc/systemd/system/httpd.service.d/httpd.conf
+EXPOSE 80
+
+	: what this does is:
+FROM the redhat registry pull a base image
+RUN yum commands to install httpd, cleanup [to stay lean] and enable httpd servie
+RUN the echo with stdio to file [httpd homepage]
+RUN mkdir to create dir for systemd service file, echo Service statement for the service to file
+EXPOSE the port on which the container listens for httpd
+
+. build the image
+	# podman build -t mysystemdhttp .
+
+STEP 1: FROM registry.access.redhat.com/ubi8/ubi-init
+Getting image source signatures
+Copying blob c4d668e229cd done
+.....
+STEP 2: RUN yum -y install httpd; yum clean all; systemctl enable httpd
+Updating Subscription Management repositories.
+.....
+STEP 3: RUN echo "Successfull Web Server Test" > /var/www/html/index.html
+1796d3c9d5fcf2cba53d25b59b2b049dc56e1d29ce00e6084b28431b494ff209
+STEP 4: RUN mkdir /etc/systemd/system/httpd.service.d/; echo -e '[Service]\nRestart=always' > /etc/systemd/system/httpd.service.d/httpd.conf
+STEP 5: EXPOSE 80
+STEP 6: COMMIT mysystemdhttpd
+66db0fd952d21c720895db4b0f4164f4dd616ee189d922c7874535cede2d933e
+
+. run the container
+	# podman run -d --name=mysystemdhttp -p 8080:80 mysystemdhttp
+
+. check image
+	# podman images
+REPOSITORY                                 TAG      IMAGE ID       CREATED          SIZE
+localhost/mysystemdhttpd                   latest   66db0fd952d2   50 seconds ago   248 MB
+
+	# podman inspect mysystemdhttpd |less
+
+. run the container
+	# podman run -d --name mysystemdhttpd -p 8282:80 mysystemdhttpd
+17a97f6298fd66123c1cf74dfcd29fd0acc353330afa38b32b2082f1e79d920d
+
+. check
+	# podman ps -a
+CONTAINER ID  IMAGE                            COMMAND           CREATED             STATUS                 PORTS                 NAMES
+17a97f6298fd  localhost/mysystemdhttpd:latest  /sbin/init        About a minute ago  Up About a minute ago  0.0.0.0:8282->80/tcp  mysystemdhttpd
+
+	# curl localhost:8282
+Successfull Web Server Test

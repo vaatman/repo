@@ -1,0 +1,37 @@
+Install jenkins on centos8
+==========================
+
+. install java
+	# dnf install java-11-openjdk-devel
+
+. check java
+	# java -version
+
+. install jenkins
+	# rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+	# cd /etc/yum.repos.d/
+	# curl -O https://pkg.jenkins.io/redhat-stable/jenkins.repo
+	# dnf install jenkins
+
+. start & enable jenkins
+	# systemctl start jenkins
+	# systemctl enable jenkins
+
+. additionally add firewall ports for jenkins
+	# firewall-cmd --add-port=8080/tcp --permanent
+	# firewall-cmd --reload
+
+. setup jenkins
+	browse to http://crdlxvm052:8080
+
+	. get the password in the terminal:
+	# cat /var/lib/jenkins/secrets/initialAdminPassword
+
+	. for now, install suggested plugins
+	click icon 'Install suggested plugins'
+	-- wait for this to finish --
+
+	. create first admin user
+	. continue
+	. start using jenkins
+

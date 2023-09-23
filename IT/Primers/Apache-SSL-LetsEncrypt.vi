@@ -1,0 +1,23 @@
+Install httpd & certbot for Let's Encrypt on CentOS8
+====================================================
+
+. kickstart CentOS8
+. add epel repo
+	# dnf install epel-release
+
+. install apache
+	# dnf install httpd
+
+. install certbot [following certbot documentation]
+	# wget https://dl.eff.org/certbot-auto
+	# mv certbot-auto /usr/local/bin/certbot-auto
+	# chown root /usr/local/bin/certbot-auto
+	# chmod 0755 /usr/local/bin/certbot-auto
+
+. get and install your certificates
+	:Run this command to get a certificate and have Certbot edit your Apache configuration automatically to serve it, turning on HTTPS access in a single step
+	# /usr/local/bin/certbot-auto --apache
+
+	. Or, just get a certificate
+	 :If you're feeling more conservative and would like to make the changes to your Apache configuration by hand, run this command
+	 # /usr/local/bin/certbot-auto certonly --apache

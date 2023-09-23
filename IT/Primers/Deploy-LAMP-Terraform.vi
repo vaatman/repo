@@ -1,0 +1,18 @@
+Deploy a LAMP stack using Terraform
+===================================
+
+source: https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-infrastructure-as-code-terraform
+
+. download & install Terraform
+	# wget https://releases.hashicorp.com/terraform/0.12.25/terraform_0.12.25_linux_amd64.zip
+	# unzip terraform_0.12.25_linux_amd64.zip
+	# cp terraform /usr/local/bin
+
+. clone sample config
+	@crdlxhv02
+	# dnf isntall git
+	# mkdir terraform-tmp
+	# cd terraform-tmp
+	# git clone https://github.com/IBM-Cloud/LAMP-terraform-ibm
+
+

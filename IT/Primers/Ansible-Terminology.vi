@@ -1,0 +1,52 @@
+Ansible terminology
+===================
+
+Control node	- any machine with Ansible installed
+Managed node	- the networked device[s] managed with Ansible [aka 'hosts']
+Inventory	- a list of managed nodes [aka 'hostfile']
+Modules		- the units of code Ansible executes
+Tasks		- the units of action in Ansible
+Play		- a mapping between selected host[s] and tasks to perform
+Playbooks	- ordered lists of tasks, or a list of plays
+
+Library		- a collection of modules made available to /usr/bin/ansible or any playbook
+Roles		- units of organization
+- assigning a role implies implementation of specific behavior to host[s]
+- ways of automatically loading certain vars_files, tasks and handlers
+- based on known file structure
+- grouping content by roles also allows easy sharing of roles with other users
+- expect files to be in certain directory names
+- must include at least ONE of these directories
+- it's perfectly fine to exclude any which are not being used
+- when in use each directory MUST contain a 'main.yml' file, which contains the relevant content:
+ .tasks - contains the main list of tasks to be executed by the role
+ .handlers - contains handlers, which may by user by this role or even anywhere outside this role
+ .defaults - default variables for the role
+ .vars - other variables for the role
+ .files - contains files which can be deployed by the role
+ .meta - defines some meta data for this role
+
+Role directory stucture
+	! can be created with ansible-galaxy, naming convention mandatory
+	$ ansible-galaxy init <identifier>.<rolename>
+
+Example project structure:
+
+site.yml
+webservers.yml
+fooservers.yml
+roles/
+ common/
+  tasks/
+  handlers/
+  files/
+  templates/
+  vars/
+  defaults/
+  meta/
+ webservers/
+  tasks/
+  defaults/
+  meta/
+
+source on roles: https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html

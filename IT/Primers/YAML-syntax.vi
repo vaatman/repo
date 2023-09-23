@@ -1,0 +1,48 @@
+YAML syntax
+===========
+
+For Ansible, nearly every YAML file starts with a list.
+Each item in the list is list of key/value pairs, commonly named 'hash' or 'dictionary'.
+
+All YAML files can optionally begin with --- and end with ...
+These eindicate the start and end of a [YAML] document.
+
+.All members of a list are lines beginning at the same indentation level starting with  "- " [a dash and a space]:
+---
+# A list of tasty fruits
+- Apple
+- Orange
+- Strawberry
+...
+
+.A dictionary is represented in a simple 'key: value' form [colon must be followed by a space!]:
+# An employee record
+martin:
+  name: Martin D'vloper
+  job: Developer
+  skill: Elite
+
+.More complicated data structures are possible [and common], such as lists of dictionaries, dictionaries whose values are lists or a mix of both
+
+.Dictionaries can be abbreviated if you really want to:
+---
+martin: {name: Martin D'vloper, job: Developer, skill: Elite}
+['Apple', 'Orange', 'Strawberry', 'Mango']
+
+.You can also specify boolean values in several forms:
+create_key: yes
+needs_agent: no
+knows_oop: True
+likes_emacs: TRUE
+uses_cvs: false
+
+.Values can span multiple lines using | or >
+ - '|' is a 'Literal Block Scalar' and will include newlines and any trailing spaces
+ - '>' is a 'Folded Block Scalar' and will fold newlines to spaces.
+
+Gotchas
+ - a colon followed by a space [or newline] is an indicator for a mapping
+ - a space followed by a # starts a comment
+ - use single quotes to use both 'literally'!
+ - if a value after a colon starts with a "{", it is a dictionary
+ - Ansible uses "{{ <var }}" for variables, so quotes are needed!

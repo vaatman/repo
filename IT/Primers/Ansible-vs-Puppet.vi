@@ -1,0 +1,30 @@
+Ansible vs Puppet - key differences
+===================================
+
+Puppet	- opensource, written in ruby, client-server, own declarative language
+Ansible	- opensource, written in python, agentless, SSH, YAML declarative language
+
+Management and Scheduling
+ puppet:	clients pull configuration FROM server
+		agent checks every 30 minutes
+ ansible:	server pushes configuration TO nodes
+		Ansible Tower needed for scheduling
+
+Availability
+ both highly scalable
+ considered easier in ansible
+
+Modules
+ puppet:	Puppet Forge repository/library
+		huge, can be marked as approved/supported by Puppet
+ Ansible:	Ansible Galaxy
+
+GUI
+ puppet:	highly developed GUI
+ ansible:	initially CLI
+		UI in enterprise version, by no means perfect
+
+So, which us better?
+ it depends - comes down to what you need
+ puppet: more complex or longer-term deployments
+ ansible: small, fast and/or temporary deployments

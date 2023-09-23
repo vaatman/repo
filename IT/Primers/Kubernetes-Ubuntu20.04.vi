@@ -1,0 +1,61 @@
+How to install Kubernetes on Ubuntu 20.04
+=========================================
+
+: we need two machines for this
+: tried it on a single U20.04 [centos8 with docker ready]
+
+. install Docker
+	$ sudo apt install docker.io
+	$ sudo systemctl enable docker
+	$ sudo systemctl start docker
+
+. install Kubernetes
+	$ sudo apt install apt-transport-https curl
+	$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+	$ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+	$ sudo apt install kubeadm kubelet kubectl kubernetes-cni
+
+. disable SWAP
+	$ sudo swapoff -a
+	$ sudo vi /etc/fstab, comment SWAP partition
+
+. initialize Kubernetes master server
+	$ sudo kubeadm init
+	: save the output with 'kubeadm join' to file [you'll need it]
+	
+	:The output from above also advises us to run several commands as a regular user to start using the Kubernetes cluster. Run those three commands on the master node:
+	$ mkdir -p $HOME/.kube
+	$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+	$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+. deploy a pod network
+	:The pod network is used for communication between hosts and is necessary for the Kubernetes cluster to function properly. For this we will use the Flannel pod network. Issue the following two commands on the master node:
+	$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+	$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
+
+. check if network is up
+	$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                                READY   STATUS              RESTARTS   AGE
+kube-system   coredns-66bff467f8-56wsn            0/1     ContainerCreating   0          4m
+kube-system   coredns-66bff467f8-5fb4j            0/1     ContainerCreating   0          4m
+kube-system   etcd-crdlxhv02                      1/1     Running             0          3m59s
+kube-system   kube-apiserver-crdlxhv02            1/1     Running             0          3m59s
+kube-system   kube-controller-manager-crdlxhv02   1/1     Running             0          3m59s
+kube-system   kube-flannel-ds-amd64-7cxbr         0/1     CrashLoopBackOff    2          48s
+kube-system   kube-proxy-m9l2r                    1/1     Running             0          4m
+kube-system   kube-scheduler-crdlxhv02            1/1     Running             0          3m59s
+
+	: this may take some time
+
+	Install kubernetes on CentOS8 node [docker was already installed and working]
+	# vi /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+	# dnf install kubeadm
+
+
