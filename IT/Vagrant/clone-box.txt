@@ -1,22 +1,22 @@
 . go to box-to-clone dir
-$ cd /home/Vagrant/rocky-91-01
+$ cd /home/Vagrant/rocky92-01
 
 . package the box
 $ vagrant package
 
 . copy the package to the images location
-$ sudo cp package.box /home/libvirt/images
+$ sudo cp package.box /var/lib/libvirt/images/rocky92_package.box
 
 . create new box dir
 $ cd /home/Vagrant
-$ mkdir rocky-91-02
+$ mkdir rocky92-101
 $ cd $_
 
 . setup new machine
 $ vagrant init
 
 . point to the new image
-  config.vm.box = "rocky-91_default.box"
+  config.vm.box = "rocky92-101.box"
   config.vm.box_url = "file:///home/libvirt/images/rocky-91_default.box"
 
 . start the box
