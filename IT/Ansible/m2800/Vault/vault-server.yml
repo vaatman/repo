@@ -1,0 +1,100 @@
+---
+- hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    hashirepo: /etc/yum.repos.d/hashicorp.repo
+    vaultinitfile: /etc/vault.d/init.file
+
+  tasks:
+    - name: instal yum-config-manager
+      yum:
+        name: yum-utils
+        state: present
+
+    - name: check for existing hashi repo
+      stat:
+        path: "{{ hashirepo }}"
+      register: hashicorprepo
+
+    - name: install HashiCorp Vault repo
+      command: yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+      when: not hashicorprepo.stat.exists
+
+    - name: install Vault
+      yum:
+        name: vault
+        state: present
+      when: hashicorprepo.stat.exists
+
+    - name: install consul
+      yum:
+        name: consul
+        state: absent
+
+    - name: enable autocompletion
+      shell: |
+        vault -autocomplete-install
+      ignore_errors: true
+
+    - name: open firewall for vault port 8200
+      firewalld:
+        port: 8200/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - name: replace vault.hcl
+      template:
+        src: vault.hcl.j2
+        dest: /etc/vault.d/vault.hcl
+        backup: yes
+      tags: listener
+      notify: restart vault
+
+    - name: enable and start vault
+      service:
+        name: vault
+        enabled: yes
+        state: started
+
+    - name: add VAULT_ADDR to root .bashrc
+      copy:
+        content: "export VAULT_ADDR=http://127.0.0.1:8200"
+        dest: /root/.bashrc
+
+    - name: create vault init file
+      shell: |
+        export VAULT_ADDR=http://127.0.0.1:8200
+        vault operator init > /etc/vault.d/init.file
+      tags: createinitfile
+
+    - name: fetch the keys for unseal and login
+      fetch:
+        src: "{{ vaultinitfile }}"
+        dest: "init.file.{{ inventory_hostname }}"
+        flat: yes
+
+    - name: unseal the vault
+      script: "./unseal.sh {{ vaultinitfile }}"
+
+    - block:
+      - name: report seal state
+        shell: |
+          set -o pipefail
+          export VAULT_ADDR="http://rhel86-2.local:8200"
+          vault status|grep ^Sealed|awk '{print $2}'
+        register: sealedstate
+      - name: print
+        debug:
+          msg: "Sealed state is: {{ sealedstate.stdout }}"
+      tags: unsealing
+
+  handlers:
+    - name: reloadsystemd
+      command: systemctl daemon-reload
+    - name: restart vault
+      command: systemctl restart vault
+...
+

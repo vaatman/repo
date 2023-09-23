@@ -1,0 +1,93 @@
+---
+- hosts: "{{ ev_host }}"
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: install epel
+      dnf:
+        name: epel-release
+        state: present
+
+    - name: install dependencies
+      dnf:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - git
+        - gcc
+        - gcc-c++
+        - ansible
+        - nodejs
+        - gettext
+        - device-mapper-persistent-data
+        - lvm2
+        - bzip2
+        - python3-pip
+
+    - name: install docker repo
+      command: sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: install docker
+      dnf:
+        name: docker-ce
+        state: present
+
+    - name: start docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: install docker-compose
+      command: sudo pip3 install docker-compose
+
+    - name: set python to be/user python3
+      command: sudo alternatives --set python /usr/bin/python3
+
+    - name: get AWX v17
+      get_url:
+        url: https://github.com/ansible/awx/archive/refs/tags/17.1.0.tar.gz
+        dest: /usr/local/17.1.0.tar.gz
+    - name: unpack AWX17
+      command: tar zxvf /usr/local/17.1.0.tar.gz -C /usr/local/
+    - name: create new inventory for awx17 deployment
+      copy:
+        src: inventory4awx17
+        dest: /usr/local/awx-17.1.0/installer/inventory
+        backup: yes
+
+    - name: create dir for Postgres
+      file:
+        path: /var/lib/pgdocker
+        state: directory
+        mode: 0755
+
+    - name: install AWX by running the installer playbook
+      shell: |
+        export PATH=$PATH:/usr/local/bin
+        ansible-playbook -i /usr/local/awx-17.1.0/installer/inventory /usr/local/awx-17.1.0/installer/install.yml
+
+    - name: disable SELinux
+      lineinfile:
+        path: /etc/sysconfig/selinux
+        regexp: '^SELINUX='
+        line: SELINUX=disabled
+
+    - name: add firewalld masquerade
+      firewalld:
+        masquerade: yes
+        state: enabled
+        permanent: yes
+        zone: public
+    - name: add firewalld rules
+      firewalld:
+        service: "{{ item }}"
+        state: enabled
+        permanent: yes
+        immediate: yes
+      loop:
+        - http 
+        - https
+
+...

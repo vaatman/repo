@@ -1,0 +1,32 @@
+---
+- hosts: "{{ ev_host }}"
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: configure YUM for gitlab
+      shell: |
+        curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+
+    - name: install gitlab-ce
+      dnf:
+        name: gitlab-ce
+        state: present
+
+    - name: configure gitlab server
+      shell: |
+        sudo gitlab-ctl reconfigure
+
+    - name: adjust firewall
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        state: enabled
+        immediate: yes
+      loop:
+        - http
+        - https
+
+# to set initial passwd: 
+# gitlab-rake "gitlab:password:reset[root]"
+...
