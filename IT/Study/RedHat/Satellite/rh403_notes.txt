@@ -458,3 +458,44 @@ Describing Capsule Download Policies
 
 --------------------------------------------------------------------------------
 Ch.7 - Running Remote Execution
+Remote execution
+- shell commands and scripts
+- Ansible ad-hoc commands, playbooks, roles
+- enabled by default on Satellite Server
+- must be enabled on Satellite capsule [disable by default]:
+  # satellite-installer --scenario capsule --enable-foreman-proxy-plugin-remote-execution-ssh
+- SSH must be enabled and running on target hosts
+
+Distributing SSH keys for remote execution
+- ssh keys for remote execution are created during capsule installation
+- must be manually distributed to target hosts
+- push capsule to target:
+   ssh-copy-id -i ~/foreman-proxy/.ssh/id_rsa_foreman_proxy.pub root@target_host.example.com
+- pull target from capsule
+   curl https://demo_capsule.example.com:9090/ssh/pubkey >> ~/.ssh/authorized_keys
+- in kickstart:
+  - modify 'Kickstart default finish' template to include:
+    <%= snippet 'remote_execution_ssh_keys' %>
+
+- commands to run on a target host must exist on Satellite as a job template
+- you can execute remote jobs on CLI using hammer
+  # hammer job-template list
+  # hammer job-template info --id <some ID>
+  # hammer job-invocation create --job-template <template> --inputs <key1>=<value>,<key2>=<value> --search-query query
+- to monitor a running job:
+  # hammer job-invocation output --id <jobID> --host <hostname>
+- to cancel a running job:
+  # hammer job-invocation cancel --id <jobID>
+
+- Global settings at: > Administer > Settings > Remote Execution
+
+- Create New Job template
+  > Hosts > Templates > New Job Template
+  - Satellite uses ERB [EmbeddedRuBy] among others
+    - syntax summary:
+      <% %>   encloses Ruby code in template
+      <%= %>  the code output is inserted into the template
+              eg. variable substitution: echo <%= @host.name %>
+      <%# %>  indicates a comment
+
+p.219 
