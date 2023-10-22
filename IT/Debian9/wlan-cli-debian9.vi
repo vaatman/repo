@@ -57,6 +57,16 @@ network={
         #psk="welkom@catena"
         psk=90215e5c2dc8ff7ee5d92f38e49d6060af14203e081bbeb8b28441a561b0acf2
 }
+	1a. alternative for Beffe:
+	# wpa_passphrase WiFi-2.4-8090 XuS6v59Vk2Np > wpa_supplicant.conf
+	# cat wpa_supplicant.conf
+network={
+	ssid="WiFi-2.4-8090"
+	#psk="XuS6v59Vk2Np"
+	psk=02abc09e1fab6cd600c943c4a0dad265bc2a752f3902d7cec7d444e8484e5a30
+}
+
+
 
 	2. run wpa_supplicant with this info
 # wpa_supplicant -B -D wext -i wlp12s0 -c /etc/wpa_supplicant.conf 

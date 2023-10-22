@@ -1,0 +1,37 @@
+Configure a wifi connection from CLI
+------------------------------------
+
+source: https://www.linuxbabe.com/debian/connect-to-wi-fi-from-terminal-on-debian-wpa-supplicant
+
+. find your wifi interface and network
+# iwconfig
+
+. set the interface up
+# ip link set dev wlp2s0 up
+
+	. on error 'RTNETLINK answers: Operation not possible due to RF-kill
+	# rfkill unblock wifi
+
+. find you wireless network name
+# iwlist wlp2s0 scan | grep EESID
+
+. create a wpa_supplicant config
+# cd /etc/wpa_supplicant
+# wpa_passphrase <your EESID> <your passphrase> > wpa_supplicant.conf
+
+. connect your wireless card
+# wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant.conf -i wlp2s0
+: this runs in the foreground
+
+	. NOTE: if you're using a Debian Desktop, stop NetworkManager
+	# systemctl stop NetworkManager
+	# systemctl disable NetworkManager
+
+. check
+# iwconfig
+
+. get an IP address
+# dhclient wlp2s0
+
+. check
+# ip addr show wlp2s0
