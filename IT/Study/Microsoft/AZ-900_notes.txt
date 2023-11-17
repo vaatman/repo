@@ -1,0 +1,7 @@
+Microsoft Azure Fundamentals
+
+Exam Ref AZ-900
+Third edition, Jim Cheshire
+
+Introduction
+The purpose of the AZ900 exam is to test you understanding of the fundamentals of Azure
