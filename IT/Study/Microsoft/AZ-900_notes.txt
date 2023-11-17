@@ -5,3 +5,52 @@ Third edition, Jim Cheshire
 
 Introduction
 The purpose of the AZ900 exam is to test you understanding of the fundamentals of Azure
+Like the exam, this book is geared towards giving you a broad understanding of Azure itself as well as many common services and components of Azure
+
+
+CHAPTER 1 - Describe Cloud Computing
+
+There are many reasons for moving to the cloud, but on of the primary benefits is removing some of the IT burden from your company
+The cloud allows you to take advantage of a cloud provider's infrastructure and investments and it makes it easier to maintain consistent access to you applications and data
+You'll also benefit of turnkey solutions for backup data, survive disasters an other availability problems
+Hosting data and applications in the cloud is often more cost effective than on-premises IT resources
+
+To decide the cloud move, you need to:
+- understand the different cloud models
+- and which is right for you
+- understand the different types of cloud services
+- the benefits and drawbacks of each
+
+Skill 1.1: describe cloud computing
+Wether you are operating on-premise or in the cloud, you'll likely be responsible for at least part of your application or system
+Cloud computing:
+- using computers and other infrastructure running applications that are accessible over the internet
+- there is a cloud provider involved
+Shared responsability model:
+When you move to the cloud, you share responsibility with you cloud provider. How much responsability you shift to the provider depends on what type of cloud service you're using, but the responsbility for any clod deployment is always shared you and the cloud provider
+Cloud models:
+3 different main models:
+ - public cloud
+ - private cloud
+ - hybrid cloud
+Public cloud:
+- most common
+- shared infrastructure accessible on a public network [;'multitenant environment']
+- network/storage/VMs used by applications are share between all customers
+- eg. Microsoft Azure, Amazon Web Services, Google Cloud
+- easy and fast to move to because infrastructure is already in place and configured
+- you only have to decide on the cloud service
+- pay as you go [pay for resources you are using]
+Private cloud:
+- many of the attractive benefits of the cloud in a private environment
+- dedicated to a single company ['single tenant environment']
+- can be hosted on-premise on a third-party hosting provider [so, not necessarily owned by the company]
+- difference with Public cloud is the privacy of infrastructure and data
+Hybrid cloud:
+- mixture of public and private clouds
+- eg. application running in public cloud
+- and accessing data securely stored on-premise
+- often a company's foray into the cloud
+Consumption-based model:
+- only use those computing resources you require at any particular time
+Comparing cloud models:
