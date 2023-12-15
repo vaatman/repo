@@ -1,0 +1,187 @@
+Microsoft Azure Fundamentals Exam Ref AZ-900 3rd Edition
+
+Introduction
+
+The purpose of the AZ-900 exam is to test your understanding of the fundamentals of Azure.
+Like the exam, this book is geared toward giving you a broad understanding of Azure itself as well as many common service and components in Azure.
+
+Chapter 1 - Describe cloud computing
+  -- chapter summary
+- Increased control over your resources means a larger responsibility on your part
+  Decreased control results in more responsibility on the cloud provider's part
+  This is called: SHARED RESPONSIBLITY MODEL
+- The PUBLIC cloud model is sometimes referred to as a MULTITENANT ENVIRONMENT.
+  Multiple companies share the same infrastructure.
+  VMs and other infrastructure are allocate to user as they need them, and when they no longer need them, they are returned to the pool to be used by other users.
+  The network is available publicly over the internet, but you du have the ability to put security methods in place to control access to you resources.
+- The PRIVATE cloud model is sometimes referre to as a SINGLE-TENANA ENVIRONMENT.
+  All infrastructure is private to an individual/company, the network is only available within the private cloud itself.
+  It is not exposed to the internet.
+  In many cases, the infrastructure is owned by the company, but not always.
+  It's possible to host a private cloud in a third-party datacenter.
+- A HYBRID cloud model is a mixture of public and private cloud models.
+  Often used when a company needs to use on-premises resources in a cloud application.
+- Moving to the cloud can help avoid downtime
+  It can also help to diagnose problems with an application
+  or problems with an external system that you application uses.
+- You can scale up (or 'vertically') when you want to add additional CPUs or more memory (hv: in fact creating a more powerful VM)
+- You can scale out (or 'horizontally') if you want to add more VMs to handle additional load
+- Cloud providers give you ways to automatically scale based on usage patterns, resource utilization, times of data
+  This is referred to ELASTICITY.
+- Cloud providers monitor the health of the infrastructure.
+  When a VM becomes 'unhealthy', the cloud provider can automatically move you to a healthy VM without you having to anything.
+  This is referred to FAULT TOLERANCE
+- Cloud providers also operate across multiple data centers in defferent regions of the world.
+  If a natural/any disaster happens in one region, you can switch to another, assuming you have replicated your environment in multiple regions.
+  This kind of planning is called 'Business Continuity and Disaster Recovery Planning'.
+  Cloud providers often have features in place to make implementing a plan easy.
+  This is often referred to as DISASTER RECOVERY.
+- Cloud providers monitor the cloud infrastructure to detect threats and keep you resources safe and secure.
+- Cloud providers offer governance features to allow you control over who can access your resources and what the can do with them
+- Cloud providers offer tools that make it easy to monirot and manage your cloud resources
+- Infrastructure-as-a-Service (IaaS) offers infrastructure running in the cloud
+  but you must maintain the OS and what's installed on that infrastructure.
+  IaaS offers the most control in the cloud
+  also carry the largest management burden
+- Platform-as-a-Service (Paa) offloads the management of the infrastructure
+  also offloads the OS and components installed on the VM's.
+  You are responsible for your application.
+  PaaS also offers features to add functionality to you application without having to write code.
+  Development teams have a wide variety of deployment methods available
+  cloud povider often automates much of that proces.
+- Software-as-a-Service (SaaS) provides a hosted application
+  most commonly accessed using a web browser.
+  In a SaaS service, the cloud provider manages everything for you.
+  You are essentially renting the software from the cloud providers.
+  A big benefit of SaaS is that is makes applications easily accessible by employees in the field on any device.
+  
+Chapter 2 - Describe Azure architecture and services
+  -- chapter summary
+- Azure is organized in geographies and regions
+- Regions have a region pair for high availability
+- Sovereign regions account for the requirements of governments and countries
+- Availability zones ensure high availability if a problem is encountered in a datacenter
+- An enabled regions has at least THREE availability zones
+- An Azure datacenter is a physical building in a region with its own power, water, cooling and network
+- A resource group is a logical entit for organizing Azure resources
+- A management group is a logical entity for managing subscriptions
+  can only contain subscriptions and other management groups
+
+- Azure Container Instances (ACI) is a serverless option for easily running containerized workloads
+- Azure Functions is a service for hosting microservices in the cloud
+- Azure offers the ability to create VMs easilty with a choice of multiple operating systems
+- Availability Sets provide a virtual representation of a network rack (a fault domain) and an update domain
+  The default domain protects against a fault in the rack
+  the update domain ensures avaiability during reboots from updates
+- Virtual Machine Scale Sets (VMSS) allow you tue scale VMs easily
+- Azure Virtual Desktop (AVD) provides desktop virtualization for running operating systems and apps using a client for
+  Windows, macOS, iOS or Android
+  Can also be accessed via a web browser
+- Creating a VM in Azure creates many additional resources under the hood
+  including network interfaces, virtual networks and disks
+- Azure App Service is PaaS service for easily hosting web apps in the cloud
+  Runs web apps in App Service plans
+- Azure Kubernete Service (AKS) is a PaaS offering
+  for hosting Kubernetes clusters
+  running containerized applications
+- Azure Spring Cloud makes hosting Spring apps in the cloud easy
+
+- Azure Virtual Networks (VNets) are used to create network environments in the cloud
+  VNet peering can be used to connect two VNets to each other
+  Gobal VNet peering connects VNets in separate regions
+- Azure DNS allows for the management of DNS records in the cloud
+  Private DNS zones are resources in a VNet
+  Public DNS zone are for internet-facint resources
+- Azure VPN Gateway connects you VNet to other netwroks securely
+- Azure ExpressRoute connect network to you Azure Vnets using a secure connection called a CIRCUIT
+  ExpressRoute can transfer at speeds up to 10 Gbps
+  
+- Azure Blob storage is for storing binary files ins Blobs
+  Blob storage can be organized using containers
+- Azure Disks is a cloud-based SMB file share
+  Azure FileSync can synchronize an Azure Files share with on on-premises server
+- Azure Blob storage offersthree tiers
+  Hot tier
+  Cool tier
+  Archive tier
+- Locally Redundant Storage (LRS) is for data that can be easily recreated
+  It stores THREE copies of data in the SAME datacenter
+- Zone redundant storage (ZRS) stores data in MULTIPLE datacenters using availability zones
+- Geo-Redundant Storage (GRS) is the same as LRS
+  But an additional three copies of your data are stored in a second region
+- Geo-Zone-Redundant Storage (GZRS) is like ZRS
+  But it creates three additional copies of your data in a second regions using LRS
+- A general-purpose v2 storage accounts (Standard tier) is recommended for most users and 
+  supports all storage services
+- Block Blobs, file shares, and page Blobs storage account type (Premium tier) are for the highest level of performance in specific storage scenarios
+- AzCopy is a command-line utility formoving files to an from Azure Storage
+- Azure Storage Explore is a cross-platform application for moving files to and from Azure Storage
+
+- Azure Migrate is a service that can discover, assess, and migrate workloads to Azure
+- Azure Data Box is a service for offline data migration to Azure Storage
+  Offered as Data Box Disk, Data Box, Data Box Heavy
+  
+- Azure Active Directory is a cloud-based identity services
+  Used to give users access to Azure resources
+- Azure Active Directory Domain Services (Azure AD DS) connects on-premises WIndows domains to Azure resources
+- Single sign-on (SSO) allows users to use resources such as SharePoint and Microsoft365 withouth entering a password
+- Multifactor authentication (MFA) authenticates using a combination of two or more factors 
+  using something you know,
+  something you have,
+  something you are
+- Passwordless authentication allows for authentication using a device or a security key instead of a password
+- Guests users can be added to Azure AD to give them access to your Azure resources
+- External users from other companies can be ginve access ot you Azure AD so they can collaborate on apps and services
+- Conditional Access allows you to define policies that must be met for people to authenticate to Azure AD
+- Role-based access control (RBAC) allows others a specific level of access to resources based on a role assignment
+- Defense in depth ('castle doctrine') is the concept of multiple layers of defense,
+  designed to protect from a breach of security
+- Zero-trust is a framework that applies end-to-end security and the assumption that all access may be a breach of security
+- Microsoft Defender for Cloud is a single solution
+  for managing the security and regulatory compliance of Azure resources,
+  resources in the cloud,
+  and resources on-premises
+
+Chapter 3 - Describe Azure management and governance
+  -- chapter summary
+- Your selection of Azure regions can impact costs due to differeing costs in billing zones
+- Cloud solution partners (CSP) can sometimes save money on Azure deploymnet by selling complete solutions
+- Azure Reservations can help save costs by committing to resource usage over time
+- Reservce capacity pricing on data solutions can save money
+- VMs and Azure SQL Database can benefit from the Azure Hybrid Benefit where you bring your own license for Windows or SQL Server
+- Azure Spot VMs make it possible t run small workloads on Microsoft's unused server capacity to save money
+- The pricing calculator allows you to create an estimate of Azure expenses for various services
+- The Total Cost of Ownership (TCO) calculator show you how much money you can save in Azure versus on-premises
+- Azure Cost Management and Billing makes is easy to keep an eye on expenses, 
+  and you can create budgets to control costs
+- Tags are name/value pairs that you add to Azure resources,
+  and because the show up on you invoice,
+  using them is a great way to categorize expenses
+- Azure Blueprints make is easy to package resources, 
+  ARM [Azure Resource Manager] templates,
+  policy assignments,
+  role assignments,
+  in a blueprint that can be reused
+- Azure Policy provides governance of corporate policies,
+  which can respond to a breach in policy using several effects
+- Resource locks can prevent an Azure resource from being changed or deleted
+- The Service Trust Portal provides information and tools on trust, security and compliance
+- The Azure Portal is a customizable web-based interface, 
+  for creating and managing Azure resources
+- Azure PowerShell uses the Az module to create and manage Azure resources at a commandline
+- The Azure command-line interface (CLI) is a command-line tool for creating and managing Azure resources
+- Azure Cloud Shell provides an easy access to Azure PowerShell and the CLI from any web browser and from the Azure mobile app
+- The Azure Arc service extends Azure management and governancd tools to non-Azure resources
+- Azure Resource Manager (ARM) is the key interface used by all Azure management tools
+- ARM templates are declarative JSON files that ensure predictable Azure deployments
+- Azure Advisor provides analysis and recommendations for cost, 
+  security, 
+  reliability, 
+  operational excellence, 
+  and performance of your Azure resources
+- Azure Service Health shows you all current and historic incidents in Azure that impacted you resources
+- Azure Monitor is a monitoring platform that includes powerful tools like
+  Application Insight and
+  Log Analytics
+  to help monitor wab apps and VMs
+- Azure Monitor alerts make it easy to react appropriately to metrics
