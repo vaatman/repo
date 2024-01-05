@@ -42,3 +42,103 @@ AAP2 components:
   - provides a way to manage and distribute automation content
   - a public service at console.redat.com provides access to Red Hat Ansible Certified Content Collections
   - that can be downloaded and used with ansible-galaxy and with automation controller
+  - you can also setup a private automation hub for your own AnsibleContentCollections
+Hosted services
+  - addition to the hosted automation at console.redhat.com
+  - Red Hat Insights for RedHat AAP
+    - helps you understand what automation code you are running and whether it is successful
+    - also to evaluate the positive impact on you organization
+  - Automation Analytics
+    - helps to provide better insight into the performance of you automation infrastructure
+    - to analyze how you use automation and what modules/playbooks/workflows yuou most frequently use
+
+QUIZ
+1c 2a 3d 4a 5b
+
+Running Playbooks with Automation Content Navigator
+
+ansible-navigator
+ - new tool in AAP2
+ - combines features formerly provided by: ansible-[playbook|inventory|config|doc]
+ - new interactive mode woith text-based interface
+ - can be run using "--mode stdout" to provide output like the previous tools
+ eg:
+ old: $ ansible-playbook playbook.yml -i inventory
+ new: $ ansible-navigator run playbook.yml -i inventory -m stdout
+
+automation execution environment
+- a container image that includes Ansible Content Collections
+- their software dependencies
+- and a minimal Ansible engine
+- use by both ansible-navigator and automation controller
+- helps to avoid creating multiple Python virtual environments
+- when no exec.env is specified, the default is pulled from registry.redhat.com
+- this needs to authenticate
+- you need a login to registry.redhat.com and a valid subscription to AAP
+- use: podman login registry.redhat.io before running ansible-navigator
+- required only once per session
+- use --execution-environmnet-image (-eei) to select a specific container
+- eg.: ee-supported-rhel8:latest to use the latest [tagged] version of that image
+
+Install Automation Content Navigator
+- ansible-navigator is only installed on your control node
+- you need a valid AAP subscription
+- installation procedure:
+  - Register using RHSM:
+  $ subscription-manager register
+  - Enable AAP2 repo:
+  $ subscription-manager repos --enable ansible-automation-platform-2.2-for-rhel-8-x86_64-rpms
+  - install ansible-navigator
+  $ yum install ansible-navigator
+
+Configuring Authentication to Managed Hosts
+- automation content navigator need login to managed hosts and superuser access
+- easiest way by SSH key-based authentication
+- to an account that allows privilege escalation through sudo without password
+
+Preparing SSH Key-based authentication
+- set a remote_user directive in de [defaults] section of ansible config on control node
+- use ssh-keygen to generate SSH key pair for user that runs ansible-navigator
+- install its public key in ~/.ssh/authorized_keys file for the remote_user on each managed hsots
+- on managed hosts configure passwordless sudo for the remote_user
+! ansible-navigator runs in a container and cannot access your ~/.ssh directory
+- running ssh-agent on controlnode can provide SSH private keys to execution environment
+- GUI login autoprovides ssh-agent and ssh-add us run to add private keys
+- ssh login must start ssh-agent [eval $(ssh-agent)], then run ssh-add, then run ansible-navigator in the same shell
+
+Running Automation Content Navigator
+- $ ansible-navigator
+- old vs new:
+- ansible-[config|doc|inventory|playbook]
+- ansible-navigator [config|doc|inventory|run]
+- subcommands: [collections|config|doc|help|images|inventory|log|open|replay|run]
+- in interactive session run eg. :config  to start the subcommand
+- run playbook:
+  - commandline: ansible-navigator run ...
+  - interactive: ansible-navigator :run
+- review previous playbook run
+  - per default 'playbook artifacts' are enabled
+  - names as: site-artifact-2022-10-25T20_05_7.939910+10:00.json
+  - can most often be safely ignored/removed
+- ansible-navigator doc does NOT support option --list (-l)
+- you must explicitly sepcifiy the plug-in name
+
+Guided Excercise
+Running Playbooks with Automation Content Navigator
+1. install ansible-navigator
+  $ sudo yum install ansible-navigator
+2. review the excercise playbook
+  $ less intranet.yml
+3. run the playbook using navigator
+  $ podman login hub.lab.example.com
+  username; student
+  Password: redhat123
+  $ ansible-navigator run intranet.yml -m stdout --eei ee-supported-rhel8
+4. run the playbook interactively
+  $ ansible-navigator --eei ee-supported-rhel8
+  :run intranet.yml
+  0 - to display details
+  ESC - to return to main playbook summary page
+  :q - to quit navigator
+
+page 40
