@@ -1,0 +1,44 @@
+Chapter 1 Developing Playbooks with Ansible Automation Platform 2
+
+AAP2 components:
+- Ansible Core
+  - fundamental functionality used to run Ansible Playbooks
+  - defines automation language used to write playbooks in yaml
+  - provides key functions [loops,conditionals etc]
+  - provides framework and basic command-line tools
+  - provides in ansible-core rpm
+- Ansible Content Collections
+  - previously modules
+  - now reorganizes into separate collections
+  - made up of related modules, roles and plugins
+  - ansible core is limited to a small set of modules 'ansible.builtin'
+  - ansible.builtin is always available
+  - collections provide flexibility to:
+    - select different versions of collections
+    - or different sets of collections
+    - ability to update modules on a separate cadence from Ansible itself
+- Ansible Content Navigator
+  - new top-level tool to develop and test Ansible playbooks
+  - replaces and extends earlier command-line utilities, including:
+    - ansible-playbook
+    - ansible-inventory
+    - ansible-config
+  - separates the control node [on which you run Ansible] from the automation execution environment that runs is
+  - by running the playbooks in a container
+- Automation Execution Environments
+  - conainer images that contain AnsibleCore, AnsibleContentCollections
+  - and any Python libraries, executables or other dependencies needed to run playbooks
+  - default environment in AAP 2.2 provides AnsibleCore 2.13
+  - and collections to provide a user experience similar to Ansible 2.9
+  - you an use ansible-builder to create you own execution environments
+- Automation Controller
+  - formerly called Ansible Tower
+  - provides central point of control to run enterprise automation code
+  - in Tower, the system was both control node and execution environment
+  - now separated
+  - can run execution environments on remote nodes
+  - communicating over the network using a feature calles automation-mesh
+- Automation Hub
+  - provides a way to manage and distribute automation content
+  - a public service at console.redat.com provides access to Red Hat Ansible Certified Content Collections
+  - that can be downloaded and used with ansible-galaxy and with automation controller
