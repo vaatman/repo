@@ -141,4 +141,109 @@ Running Playbooks with Automation Content Navigator
   ESC - to return to main playbook summary page
   :q - to quit navigator
 
-page 40
+Implementing Receommended Ansible Practices
+- Jeff Geerling:
+  - keep things simple
+  - stay organized
+  - test often
+- Keep things simple:
+  - use native YAML syntax [indented, multilines]
+  - not the "folded" syntax [much on single line]
+  - use existing modules
+  - adhere to a standard style
+    - how many spaces to indent
+    - how many vertical white space
+    - naming of tasks, plays, roles, variables
+    - commenting
+- Stay organized
+  - take advantage of Ansible organization features
+  - such as roles
+  - follow conventions for naming
+    - use descriptive variables, suc as apache_tls_port
+    - it's good practive to prefix role variables with the role name
+    - variable names should clarify contents
+  - standardize the project structure
+  - use dynamic inventories
+  - use other tools to construc groups or extra information
+    - ansible.builtin.group_by generates group based on a fact
+  - consider dividing hosts into different categories
+    - geographical, enironmental, sites, services
+  - user roles and collections for reusable content
+    - use ansible-galaxy to initialize directory hierarchy
+    - keer your roles in a roles subdir of your project
+  - run playbooks centrally
+  - ideally on an automation controller
+  - build automation execution environments
+    - if you need to frequently use specific Ansible Content Collections
+- Perform regular testing
+  - verify the result of a task
+  - use block: and rescue: directives
+    - block: to group tasks
+    - rescue: to recover from errors or failures
+  - develop playbooks with the latest Ansible version
+    - to avoid issues as Ansible modules and features evolve
+  - use test tools
+    - ansible-navigator run <playbook> --syntax-check -m stdout
+    - ansible-lint
+
+Guided exercises:
+- setup webserver on servera and serverb
+- setup databasesrv on serverc and serverd
+- single playbook with two plays
+  - play1: webservers
+  - play2: dbservers
+> replace named hosts with a groupname
+  - create hostgroup in inventory
+> move variables to hostgroup group variable files
+  - group_vars/webservers
+  - group_vars/dbservers
+  - change var naming in playbook accordingly
+> change folded syntax to native syntax
+
+LAB:
+- clone git repo
+  - $ git clone https://git.lab.example.conf/student/develop-review.git
+- create new branch
+  - $ git checkout -b exercise
+--------------------------------------------------------------------------------
+
+Chapter 2 Managing Content Collections and Execution Environments
+
+Reusing Content from Ansible Content Collections
+- a distribution formant for Ansible content
+- sets of related modules, roles and plug-ins
+- can be downloaded to controlnode
+- then used in playbooks
+- examples:
+  - redhat.insights -  to register a system with Redhat Insights
+  - cisco.ios - to manage Cisco IOS network appliances
+  - community.crypto - to create SSL/TLS certificates
+- install colelctions to only use content you need instead of all modules
+- to select a specific version
+- to choose between redhat or community versions
+
+Organizing AnsibleContentCollections in Namespaces
+- collections are organized in namespaces
+- to assign unique names to collections with conflicting with others
+- namespace is first part of a collection name
+- namespace names are limited 
+  - ASCII lowercase letter, numbers and underscore
+  - two characters minimum
+  - cannot start with underscore
+
+Using Ansible Content Collections
+- $ absible-navigator collections
+  - to list collections available in automation execution environments
+  - then type <number>: to list modules/plugins
+  - then enter the module number to access its documentation
+
+Using ACC in playbook
+- refer to it with its fully qualified collection name
+  - name: blah
+    redhat.insights.insight_register:
+- example using 'organizations' role from redhat.satellite collection:
+  - name: blah
+    ansible.buitling.include_role:
+      name: redhat.satellite.organizations
+
+tot p69
