@@ -246,4 +246,96 @@ Using ACC in playbook
     ansible.buitling.include_role:
       name: redhat.satellite.organizations
 
-tot p69
+Finding Ansible Content Collections
+- to update legacy playbooks using modules that moved to collections:
+- identify in which collections they are now available
+- https://github.com/ansible/ansibleblob/devel/lib/ansible/config/ansible_builtin_runtime.yml to map old to new
+
+Using the Built-in collection
+- ansible.builtin always included
+- set of common modules
+  - copy, template, file, yum, command, service and more
+- can be used with shortname
+- RedHat recommends using the FQCN
+
+Finding and Installing Ansible Content Collections
+- two sources provide Asnibe Content Collections
+  - automation hub : officially supported by Redhat
+  - Ansible Galaxy : open source community
+Automation hub
+- hosts RedHat certified Ansible Content Collections
+  - eg. redhat.[rhv|satellite|insights]
+  - cisco.ios
+- requires valid RedHat AAP subscription
+- UI at https://console.redhat.com/ansible/automation-hub
+Ansible Galaxy
+- public site
+  - eg. community.[crypt|postgresql|rabbitmq]
+  - UI at https://galaxy.ansible.com
+
+Installing Ansible Content Collections
+- one method:
+  - install collection in the same dir as your playbook
+  - before running ansible-navigator command
+  - normally you create a collecionts subdir for your collection
+Install from CLI
+- $ ansible-galaxy collection install community.crypto
+- from local/remote .tar
+  $ ansible-galaxy collection install /tmp/community-dns-1.2.0.tar.gz
+- ansible checks for 'colections/' subdir in the playbookdir
+- if not found: check collections_patch from ansible.cfg
+- by default collections are installed in first directory that collections_paths defines
+- use '-p <dir>' to psecify an alternative dir
+Install with requirements file
+- collections/requirements.yml
+- list of collections needed for playbooks in project
+- automation controller detects it
+- automatically installs collections
+- similar to a roles/requirements.yml file
+- $ ansible-galaxy collection install -r <requirements.yml>
+Listing installed collections
+- $ ansible-navigator collections
+- $ ansible-galaxy collection list
+
+Configuring Collection Sources
+- add additional distribution platforms in ansible.cfg
+- see exmaple on .pdf page 83
+
+Installing Collection from private Automation hub
+- similar to 'automation hub'
+- yo do NOT need the auth_url directives
+
+Selecting an Execution Environment
+- container image that includes:
+  - Ansible Content Colletions
+  - their software dependencies
+  - a minimal Ansible engine to run your playbooks
+- enable portable development of playbooks
+- simplifies development process
+- helps to ensure predictable, reproducable results
+- consists of following concepts:
+  - Ansible Core (or Ansible)
+  - Ansilbe Content Collections
+  - Python and any other dependencies
+  - Ansible runner to run playbooks
+- 3 prebuilt exe.envs:
+ - Minimal    - ee-minimal-rhel8    - minimal with Ansible Core 2.13
+ - Supported  - ee-supported-rhel8  - Core 2.13,Collections,dependencies
+ - Compatibilty - ee-29-rhel8       - Ansible 2.9 based
+- Minimal: good starting point
+- Supported: default
+- Compatibility: for Ansible 2.9 playbooks or pre-AAP2 code
+
+Inspecting Automation Execution Environments
+- $ ansible-navigator images
+
+Using ExecEnvs with content navigator
+- $ ansible-navigator run <plb.yml> -eei registry.redhat.io/ansible-automations-platform-22/ee-29-rhel8:latest
+- if the container image is already on your system, you can use:
+  - -eei ee-29-rhel8:latest
+- if not, use 'podman login' to ensure you're authenticated to the registry
+- use --pull-policy to control how images are pulled:
+  - always
+  - missing
+  - never
+  - tag [if image tag is 'latest']

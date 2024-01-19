@@ -1,0 +1,17 @@
+Chapter 2
+- ansible-navigator doc --mode stdout
+  - to access the module documentation
+- ansible-navigator images
+  - to inspect automation execution environments
+  - to list collections
+  - to list other resources
+- use FullyQualifiedCollectionNames
+- ansible-galaxy collection install
+  - to install Asnible Content Collectinos
+  - --collections-paths specifies installation directory
+- collections/requirements.yml
+  - to list Ansible Content Collections required for the project
+- Automation execution environments can access collections/ subdir
+- ee-supported-rhel8 is default aee and includes builtin and collections
+- ee-minimal-rhel8 provides only builtin
+- ee-29-rhel8 for playbooks requiring Ansible 2.9
