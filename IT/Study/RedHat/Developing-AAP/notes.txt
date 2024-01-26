@@ -435,4 +435,99 @@ Creating Credential Resources
 - Vault
   - use [ansible] vault credentials to decrypt from ansible vault
 
+Chapter 4 Working with Ansible Configuration Settings
+
+Inspecting the Ansible Configuration in Ipteractive mode
+- 'ansible-navigator config' displayx current Ansible config in use by/for the 'ansible-navigator run' command
+- shows source of of current ansible-navigator configuration settings
+- useful for troubleshooting
+- each line shows values for:
+  - Name - internal name that ansible users for parameters
+  - Default - whether parameter is using itd default value [True]
+  - Source - when not Default, indicates here how parameter has been set
+  - Current - actual value of parameter
+- search sepcifi configuration parameter
+  - type :filter [or :f]
+- accessing parameter details
+  - type the corresponding number
+Inspecting local configuration
+- by default ansible-navigator uses an automation exec env
+- if you project does noet provide the ansible.cfg
+  - ansible-navigator uses /etc/ansible/ansible.cfg from the exec env
+- does NOT use the /etc/ansible/ansible.cfg from the LOCAL system
+- to use that local file
+  - use '--execution-environment false'
+Inspecting the Ansible Configuration in Standard Output Mode
+- add '--mode stdout' [or -m stdout] to the command
+- in non-interactive mode subcommands are requred:
+  - list - static list that describes each parameter
+  - dump - lists all Ansible config params and their current values
+  - view - displays contents fo ansible.cfg 
+
+Configuring Automation Content Navigator
+- create a configuration/settings file to override the default values
+- useful if you want to use a different exec env and do not want to enter the correct --eei option every time ansible-navigator is run
+- settings file can be JSON or YAML format
+- JSON file must have extension .json
+- YAML file must have extension .yml or .yaml
+Locating the settings file
+- Automation Content Navigator looks in following locations
+  - ANSIBLE_NAVIGATOR_CONFIG env var
+  - ansible-navigator.yml in current Ansible project directory
+  - ~/.ansible-navigator.yml in you home directory
+- each project van have its own automation content navigator settings file
+- projectdirectory/homedirectory can only contain ONE settings file each
+  - either a JSON or a YAML file
+- ansible-navigator.yml in projectdir is stored in version control with the rest of the projects
+  - overrides any configuration in het user's homedir
+- ansible-navigator.yml in homedire is only used if no other config file available
+- only set ANSIBLE_NAVIGATOR_CONFIG envvar to override all other configfiles
+
+Generating a Settings File
+- use 'ansible-navigator settings' to generate settings file
+- to generate a sample in yml format use '--sample'
+- to output config matching current effective config use '--effective'
+- redirect output to save to file etc..
+- --sample generates output with most lines commented [#]
+  - also contains comments that describe settings
+  - note: when uncommenting, ALSO remove adjacent space
+- --effective generates more condensed output
+  - does not contain any comments
+Setting a default Execution Environment
+- use the 'execution-environment' key
+  - 'image' specifies the container image
+    - sets the --eei option
+  - 'pull' sepcifies when and how to pulle the container image
+    - sets the --pp option
+    - you can set additional options [eg disabling TLS]
+  - 'enabled' specifies whethe to use an automation exec env or not
+    - defaults to 'True'
+- instead of:
+  $ ansible-navigator run site.yml --eei ee-29-rhel8 --pp always
+  create ansible-navigator.yml containing:
+  ---
+  ansible-navigator:
+    execution-environment:
+      image: ee-29-rhel8:latest
+      pull:
+        policy: always
+  then run:
+  $ ansible-navigator run site.yml
+Setting the Default Mode to Standard Output
+- add 'mode: stdout' in yml file
+Disabling Playbook Artifacts
+- basic design of ansible-navigator assumes you can NOT provide interactive input whil playbook is running
+- navigator also records 'playbook artifact' files for each run of the playbook
+  - these record information about the playbook run
+  - can be used to review the results
+  - review to troubleshoot issues
+  - kept for compliance purposes
+  - review contents with 'ansible-navigator replay <file>'
+  - contents may contain sensitive information about the run
+  - temporarily disable artifacts
+    - ansible-navigator run --pae false
+    - navigator .yml:
+      playbook-artifact:
+        enable: false
+- by default ansible-navigator looks at registry.redhat.io of images
 
