@@ -41,3 +41,26 @@ Chapter 2
 - ee-supported-rhel8 is default aee and includes builtin and collections
 - ee-minimal-rhel8 provides only builtin
 - ee-29-rhel8 for playbooks requiring Ansible 2.9
+
+Chapter 3
+- Automation controller provides centralized location
+  - to run Ansible code
+  - to review results
+- Automation contoller project specifies
+  - location of a Git repo
+    - that stores Ansible code
+    - a source contolre credential
+- Automation controller job template specifies
+  - inventory
+  - machine credentials
+  - execution environment
+  - project
+  - and playbook to run
+  - on managed hosts
+- use webUI to launch automated jobs from template
+- using ansible-navigator to test playbooks in an exec.env
+  - can help streamline the process
+  - of setting up the playbooks
+  - to run successfully
+
+
