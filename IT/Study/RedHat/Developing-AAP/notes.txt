@@ -339,3 +339,100 @@ Using ExecEnvs with content navigator
   - missing
   - never
   - tag [if image tag is 'latest']
+
+Chapter 3 - Running Playbooks with Automation Controller
+
+Introduction to Automation Controller
+- previously called 'Ansible Tower'
+- provdies centralized hub you can use to run your Ansible code
+- provides framework for running and managing Ansible on enterprise scale
+  - centralized webUI for playbook management
+  - role based access control
+  - centralized logging and auditing
+- you can enable CI/CD by using the REST API
+- provides mechanisms to enable centralized use/control of machine credentials and other secrets without exposing them to the end user
+
+Automation Controller Architecture
+- introduction of automation execution environments decouples
+  - automation controller control plane
+  - from its execution environment
+  - was tightly coupled in Ansible Tower
+- execution environments replace system executables/python/etc
+- help to run automation code consistently
+Tower: monolithic, poor scalability
+AAP2 : decentralized/modular, scale as needed
+
+Automation Controller Features
+- Visual Dashboard
+  - webUI
+- RBAC
+  - control access to controller objects, like
+    - organizations
+    - projects
+    - inventories
+- Graphical Inventory Management
+- use webUI to create inventories
+- then add hostgroups and hosts
+- update inventories from an external inventory
+  - cloudprovides/CMDB/GitRepo
+- TaskManager and Job Scheduling 
+  - schedule playbook execution
+  - run routine tasks unattended
+- Real-time/Historical JobStatusReporint
+  - webUI displays playbook output in real-time
+- User-triggerd Automation
+  - users can launch job/workflow templates with single click
+- Credential Management
+  - controller centrally manages authentication credentials
+  - encrypts password/keys provided
+  - users cannot retrieve them
+- Centralized Logging/Auditing
+  - controller logs all playbook and remote command execution
+  - can integrate logs into third-party solutions eg. Splunk/Sumologic
+- Integrated Notifications
+  - controller can deliver notifications to many applications
+  - email,Grafana,IRC,Mattermost,Slack,Rocket.Chat,Twilio,Webhooks
+- Multiplaybook Workflows
+  - controller can chain together numerous playbooks
+  - to facilitate implementation of complex routines
+    - including provisioning,configuration,development,orchestration
+- Browsable REST API
+  - controller exposes every automation controller feature
+
+Exploring Resources in Automation Controller
+- Automation controller provides centralized locations for Ansible playbooks
+- Several resources MUST exist before you can create a job template:
+  - a machine credential to connect to managed hosts
+  - a source control credential to download/sync remote content, eg. Git
+  - a project that specifies location of content [such as playbooks]
+  - an inventory with at least one host
+
+Creating Credential Resources
+- Ansible Galaxy/Automation Hub API Token
+  - to download conten collections/roles
+    - from Ansible Galaxy
+    - automation hub,
+    - private hub
+  - after creating, you must enable the credential
+    - for an organization
+- Container Registry
+  - to authenticate BEFORE yo ucan pull a container
+    - from container registry
+    - or private automation hub
+- GitHub PersonalAccess Token
+  - GitHub no longer supports password-based auth for https
+  - to continue using https create/use GitHub personal access token
+  - create a controller credentail that uses the token
+- Machine
+  - can use this credential to access make changes to managed hosts
+  - specifies username and either password or SSH provate key
+  - if needed, configure privilege exscalation
+    - specify username
+    - specify password
+- Source Control
+  - to synchronize project resources from remote repo
+    - specify username and password or SSH private key
+- Vault
+  - use [ansible] vault credentials to decrypt from ansible vault
+
+
