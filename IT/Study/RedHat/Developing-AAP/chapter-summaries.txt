@@ -63,4 +63,16 @@ Chapter 3
   - of setting up the playbooks
   - to run successfully
 
-
+Chapter 4
+- ansible-navigator config
+  - explore/analyze current config used by 'ansible-navigator run'
+- Automation content nvaigator can use only ansible.cfg files, that it can ''see' inside the automation exec env
+  - these files include
+    - /etc/ansible/ansible.cfg in the exec env
+    - ansible.cfg in your project directory
+- configure automation content navigator settings by
+  - using the file defined by ANSIBLE_NAVIGATOR_CONFIG env var
+  - ansible-navigator.yml in your current dir
+  - ~/.ansible-navigator.yml in your homedir
+- --sample generates a sample ansible-navigator.yml
+- --effective generates config that reflects current effective config
