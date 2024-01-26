@@ -1,3 +1,29 @@
+Chapter 1
+- AAP2 simplifies development and use of Ansible Playbooks at scale
+  - by introducing Ansible Content Collections
+  - and automation execution environments
+- Automation content navitor == ansible-navigator
+  - can extend and replace many previous Ansible commands
+  - including ansible-playbook
+- Ansible Content Collections provide
+  - related Ansible modules, roles, plug-ins
+  - supported by the same group of software developers
+- Automation execution environments
+  - container images
+  - contain specific version of
+    - Ansible Core
+    - Ansible Content Collections
+    - any Python library
+    - executables
+    - other dependencies
+  - to run playbooks
+- Automation content should be managed in version control system
+  - such as Git
+  - enables to track/control change to code
+- Implement recommended practices
+  - facilitates collaboration
+  - reduces potential problems
+
 Chapter 2
 - ansible-navigator doc --mode stdout
   - to access the module documentation
