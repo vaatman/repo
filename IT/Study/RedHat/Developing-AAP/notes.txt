@@ -531,3 +531,241 @@ Disabling Playbook Artifacts
         enable: false
 - by default ansible-navigator looks at registry.redhat.io of images
 
+Chapter 5
+
+Managing Inventories
+- static inventory file
+  - easy to write
+  - convenient for small infrastructure
+  - require manual administration
+- dynamically generated inventories
+  - scripts
+  - dynamically determine which host/hostgroups
+  - based on information from external source
+    - API cloud provides
+    - Cobbler
+    - LDAP
+    - other
+  - recommended practice
+    - in large environment
+    - in rapid changing invironment
+  - two types
+    - inventory plug-ins
+    - inventory scripts
+Inventory plugins
+- piece of python code
+- generates an inventory object from a dynamic source
+- Ansible ships with plug-ins for a number of external sources:
+  - Amazon | Google | Azure | VMware | OpenStack | OpenShift eo.
+Using inventory plugins
+- prepare a configuration in YAML format
+  - provides connection parameters
+  - example:
+  pluing: redhat.satellite.forman
+  url: https://satellite.example.com
+  user: ansibleinventory
+  password: Sup3r53cr3t
+  host_filters: 'organization="Development"'
+- every inventory plug-in has documentation
+  - ansible-navigator doc
+  - --type / -t 
+  - --list / -l
+    - only plug-ins from installed Ansible Content Collections
+  $ ansible-navigator doc --mode stdout --type inventory --list
+  $ ansible-navigator doc --mode stdout --type inventory redhat.satellite.foreman
+- to run a playbook against hosts in dynamic inventory
+  - use --inventory option:
+  $ ansible-navigator run --inventory ./dyn_inv.yml playbook.yml
+  - if the file is executable, it is run as a script
+  - otherwise it is parsed as config for inventory plugins
+  - if that fails it is used as a static inventory
+Developing inventory scripts
+- inventory script
+  - collects info from external source
+  - returns inventory in JSON
+  - custom program in any language
+  - as long as output is JSON
+  - RedHat recommends developing plugins instead of scripts
+- refer to 'Inventory Scripts' in the Ansible Developer Guide
+- start the script with appropriate interpreter line
+  eg. #!/usr/bin/python
+- make sure it is executable
+- script must support '--list' and '--host <managed host>' options
+- using --list , script must print JSON dictionary
+Using Inventory Scripts
+- just like static inventory tesxt files
+- specify location
+  - ansible.cfg
+  - --inventory option
+Managing Multiple Inventories
+- ansible supports multiple inventories in the same run
+- inventory location is a directory
+- all inventory files in it are combined
+- executable files are used to retrieve dynamic inventories
+- other files as used as static inventories
+  - or configuration files for inventory plugins
+- inventory files should not depend on other inventory files/scripts
+- currently multiple inventories are parsed in alphbetical order
+  - make sure files are self-consisten
+- ansible ignores files with certain suffixes
+  - controlled with inventory_ignore_extensions directive
+  - default= .pyc|,pyo|.swp|.bak|~|.rpm|.md|.txt|.rst|.orig|.ini|.cfg|.retry
+
+Writing YAML inventories
+- ansible uses plugins to support differen formats for inventory files
+- INI format for static inventories
+- plugins for dynamic inventories
+- most plugins are enabled by default
+- enable additional in ansible.cfg
+  - enable_plugins directive
+- 'script' plug-in provides support for dynamic inventory scripts
+- 'ini' plug-ing provides support for INI format
+- 'yaml' plugin for static inventory in YAML format
+  - use blokc to organize related config items
+  - indent starts new [sub] block
+  - 'children' to define nested groups
+  - organizes both groups and nested groups in the same place
+Setting inventory variables
+- use the 'vars' keyword
+  - INI format:
+    [monitoring]
+    watcher.example.com
+    [monitoring:vars]
+    smtp_relay=smtp.example.com
+  - YAML format:
+    monitoring:
+      hosts:
+        watcher.example.com
+      vars:
+        smtp_relay: smtp.example.com
+- indent variable un a host to set host variable in YAML
+Converting static inventory in INI to YAML
+- 'ansible-navigator inventory' designed to display entire inventory
+- can be used to convert to YAML
+  $ ansible-navigator inventory --mode stdout -i <ini_inv> --list --yaml
+- may not be 100% complete
+  - some variables are only set once for a host
+Troubleshooting YAML files
+- protect a colon followd by a a space
+  - seen as new dictionary element
+  - surround string with quotes
+- protecting a variable that starts with a value
+  - variable replacement performed with {{ variable }}
+  - { is start of dictionary
+  - enclose the placeholder with double quotes
+    "{{ variable }} rest of the value"
+  - in general, use double quotes for any of following reserved characters
+    - {} {} > , | * & ! % # ' @
+- difference between string/boolean/float
+  - booleans and floating point numbers used as values for a variable must NOT be quoted
+  - quoted values are treated as strings
+    tempereature: 36.5  == float,numericvalue
+    version: "2.0"      == string
+
+Managing Inventory Variables
+- basic principle of variables
+  - to write flexible/reusable tasks/roles/playbooks
+  - to specify differences in configuration between differen systems
+  - set in many places:
+    - defaults/main.yml and vars/main.yml for a role
+    - in inventory file as host or group variable
+    - in variable file group_vars/ or host_vars/ subdir of playbook/inventory
+    - in a play/role/task
+  - keep it simple
+    - only a few different methods
+    - in only a few places
+  - do not repeat yourself
+    - organize systems in groups
+    - set common variables
+  - organize variable in small readable files
+    - split variable definitions in multiple files for large projects
+    - group related variables in a file
+    - use meaningful names
+Variable Merging and Precedence
+- Ansible uses precedence rules to choose a value for a variable
+- from lowest precedence up:
+  - commandline
+    - all options on CLI have lowest precedence
+      - except: --extra-vars [-e] !!
+  - rolename/defaults/main.yml
+  - host/group variables
+    - group variables: ascending precedence
+      - directly in inventory
+      - for 'all' in inventory group_vars/all
+      - for 'all' in playbook group_vars/all
+      - for other groups in inventory group_vars/
+      - for other groups in playbook group_vars/
+    - host variables: ascending precedence
+      - directly in inventory
+      - set in inventory host_vars/
+      - set in playbook host_vars/
+    - host facts and cached facts
+  - play variables
+    - set by 'vars' section in play
+    - set by prompting user with vars_prompt in a play
+      - not recommended
+      - nog compatible with automation-controller
+    - set from external file user vars_files section of a play
+      - useful for organizing large lists of variables
+      - can also help to separate sensitive variables
+      - that can be encrypted with Ansible Vault
+    - set by a role rolename/vars/main.yml file
+    - set for current block with a 'vars' section of that block
+    - set for current task woth 'vars' section of that task
+    - loaded dynamically with include_vars modules
+    - set for host with 'set_fact' of 'register'
+    - parameters set for a role when loaded by the role section
+    - or by using include_role module
+    - set by a 'vars' section on tasks included with include_tasks module
+  - extra variables
+    - set using --extra-variables or -e
+    - always have highest precedence
+Separating Variables from Inventory
+- in large environment
+  - move variable definitions into separate varaible files
+  - one for each hostgroup
+  - or even for each host in a hostgroup
+  - use meaningful names
+  project2/
+    group_vars/
+      db_servers/
+        mysql.yml
+        firewall.yml
+      lb_servers/
+        firewal.yml
+        haproxy.yml
+        ssl.yml
+      web_servers/
+        firewall.yml
+        webapp.yml
+        apache.yml
+
+Using Special Inventory Variables
+- ansible_connections
+- ansible_host
+- ansible_port
+- ansible_user
+- ansible_become_user
+- ansible_python_interpreter
+
+Configuring human readable Inventory hostnames
+- by default output display the inventory hostname
+- set a meaningful hostname using ansible_host:
+  hosts:
+    webserver_1:
+      ansible_host: server100.example.com
+  - will show webserver_1 in the output
+  - to connect to a host by using specific IP/hostname
+  - meaningful name to arbitrary named cloud systems
+  - to refer to a FQDN to properly connect to it
+Identify the Current host by using variables
+- during playrun
+- a number of variables/facts to identify current managed host
+  - inventory_hostname
+  - ansible_host
+  - ansible_facts['hostname']
+  - ansible_facts['fqdn']
+- ansible_play_hosts
+  - list of all hosts that have not yet failed during the current play
+  - and therefor are going to be used for the tasks remaining in the play
+
