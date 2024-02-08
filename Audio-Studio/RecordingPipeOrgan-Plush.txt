@@ -1,0 +1,37 @@
+'Plush (GS)' on recording pipeorgan:
+
+Thought I'd chime in cause we're specialists with organ recordings. Whether theatre organ or traditonal church organ, it's made to sound IN the room, not up close. Often very good results are obtained by using two pairs of mics. Believe it or not, I like spaced cardioid or spaced wide cardioid, closer in with another spaced pair far away. The distant pair gives you some room bloom (if there is any) and the closer pair gives detail.
+
+I wouldn't use any figure 8 mic because the low end is rolled off. Imaging is not what it's about so an XY is not so important.
+
+Theatre organs usually have interesting percussion sections and bells --as well as chimes and maybe even a caliope section.
+You want detail on these. Omnis far away will do nothing for you
+unless there are some 32 or 64 foot pipes.
+
+When you visit the theatre, have the organist play and face the main ranks. Then step backwards slowly until you hear maximum bass report still with good focus of sound. That's where your first pair would go.
+
+From there on out, it's just adding in some natural hall ambience.
+(might not be much)
+
+source: https://www.gearslutz.com/board/101537-post14.html
+
+
+-----
+
+
+
+You're getting some good advice and I'll add something so that you can get a beautiful rolling (trailing) reverb.
+
+One of the things that people ignore in organ recordings in reverberant spaces is that they forget to mic the reverb!
+
+Also, many organs are voiced so that the proper sound is at congregation level, not really high up. Check to see if this is the case at your venue.
+
+Back to micing the reverb---
+use your normal stereo pair and then place a spaced cardioid pair 1/3 to 2/3
+the way back the length of the nave. Face them away from the organ
+towards the back of the church. Take this pair into your console and crank the gain to 45-50dB. Blend this in with your main pair until you hear the reverberation of the church rolling back onto your main pair sound.
+
+The result is: upon playback, the listener is *there.* 
+
+source: http://recording.org/threads/upcoming-organ-recording-suggestions.25296/#post-187251
+
