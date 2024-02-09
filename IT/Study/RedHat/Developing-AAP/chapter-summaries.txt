@@ -116,3 +116,22 @@ Chapter 6
   - timer
   - profile_tasks
   - profile_roles
+
+Chapter 7
+- use filters in Jinja2 expressions and templates, to
+  - format data
+  - transform data
+  - parse data
+- filters provided by
+  - Jinja2
+  - Ansible Content Collections
+- you can apply multpiple filters sequentially in the same Jinja2 expression
+- lookup plug-ins
+  - get data from external sources for plays
+  - run in the execution environment
+  - NOT on the managed host
+- you can combine filter and lookup plug-ins
+  - to implement sophisticated loops
+- Ansible provides manny supplementary filters
+  - for processing networking related data
+  - such as 'ansible.utils.ipaddr'
