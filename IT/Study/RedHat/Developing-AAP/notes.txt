@@ -769,3 +769,301 @@ Identify the Current host by using variables
   - list of all hosts that have not yet failed during the current play
   - and therefor are going to be used for the tasks remaining in the play
 
+Chapter 6
+
+Privilege escalation strategies
+- at many levels
+- using directives
+- or connection variables
+- become | become_user | become_method | become_flags
+Privilege escalation by configuration
+- 'become' true in ansible.cfg; all plays use privilege escalation by default
+- they use the 'become_method' to change to the 'become_user'
+- if set to false in ansible.cfg,  can be overriden with -b options on CLI
+  Directive         CLI
+  become            --become or -b
+  become_method     --become-method=
+  become_user       --become-user=
+  become_password   --ask-become-pass or -K
+Privilege escalation in plays
+- if a play does NOT specify privilege escalation, default from config/cli is used
+- play overrides ansible.cfg and cli
+- to ensure correct escalation, always specify in playbook
+Privilege escalation in tasks
+- specified in taks overrides play/config/cli
+- highest precedence
+Grouping with Blocks
+- for subset of tasks on a play that require privilege escalation
+- use become: on block: of tasks
+- overrides play setting
+Privilege escalation in tasks
+- set inside the tasks in the role
+- of set in the playbook for the role
+Listing Privilege escalation with Connection Variables
+- apply as inventory variables on groups or individual hosts
+  Directive         ConnectionVariable
+  become            ansible_become
+  become_method     ansible_become_method
+  become_user       ansible_become_user
+  become_password   ansible_become_pass
+- connection variables override become settings in config/plays/tasks/blocks/roles
+Choosing Approaches
+- run tasks with least privilege possible
+- keep playbooks simple
+
+Controlling the order of execution
+- in a play ansible always runs tasks from roles before tasks under tasks: section
+- even when roles: is lower in playbook thatn tasks:
+- good practice for readability to have roles: before tasks:
+Importing or Incldugin Roles as a Task
+- include/import roles as a task using the roles: section of the play
+  - easily run a set of tasks
+  - import/include a roles
+  - then run more tasks
+  - might be less clear which roles a playbook uses
+- use include_role: to dynamically include a role
+  - 'ansible-navigator run' parses and inserts the role at the include_role: task
+  - DURING execution
+  - aborts the execution if errors are detected
+- use import_role:  to statically import a role
+  - 'ansible-navigator run' starts by parsing and inserting the role
+  - BEFORE starting the execution
+  - does not start execution the playbook if errors are detected
+Defining Pre- and Post-tasks
+- to run tasks [and their handlers] BEFORE your roles
+- to run tasks AFTER normal tasks [and handlers] have run
+- pre_tasks:  run BEFORE roles:
+- post_tasks: run AFTER tasks: section and any handlers notified by tasks:
+Order of execution [as in the example p.237:
+- pre_tasks
+- handlers: notified in pre_tasks [if any]
+- roles:
+- tasks:
+- handlers: notified in roles: and tasks:
+- post_tasks:
+- handlers: notified in post_tasks:
+
+- the order of these sections in the play does not change order of execution
+- good practice for readability to organize the play:
+  - follow order of execution
+  - pre_tasks | roles | tasks | post_tasks
+  - usually handlers: at the end of the play
+- handers: are called after running all of the tasks
+- to immediately run handlers: that haven been notified
+  - use the ansible.buitlin.meta: module
+  - with 'flush_handlers' parameter
+- handlers: have global scope
+  - a play can notify: handlers: in roles
+  - on role can notify: handlers: by another role or by the play
+- handlers: are run in the order they are listed
+  - listed as in the handlers: section of the play
+  - NOT in the order they were notified
+
+Listening to handlers
+- a handlers can also 'subscribe' to a specific nnotification
+- and run when that notification is triggered
+- one notification can trigger multiple handlers
+- by default a handler runs when notify: matches the handler name
+  - each handler must have a unique name
+- to trigger multiple handlers at the same time
+  - the handlers can subscribe to the same notification name
+  - create a 'normal' handler
+  - use 'listen: <notification>'
+  - then the listen: is used by the handler instead of a call by name
+- particularly helpful with roles
+  - roles use notifcations to trigger handlers
+  - a role can notify: a handler when an event occurs
+  - other roles: play: may use this notification to run additional handlers
+    - defined outside the role
+Notifying Handlers
+- a task can nofity multiple handlers in at least tow ways:
+  - notify a list of handlers individually by name
+  - notify one name for which multiple handlers are configured to listen
+- if handlers are resue as a set by multiple tasks
+  - easiest way to use a listen: directive
+  - you can change the set of handlers included or not
+  - no need to update the task:
+Controlling the Order of Host Execution
+- hosts: determines which hosts to manage for a play
+- order is changable 
+  - on a play-by-play basis
+  - using order: directive
+  - possible values:
+    - inventory: inventory orde
+    - reverse_inventory: reverse inventory order
+    - sorted: sorted in alphabetical order, number before letters
+    - reverse_sorted: reverse alphabetical order
+    - shuffle: randomize every time the play runs
+Running Selected tasks
+- to run only a subset of plays/tasks in [large/complex] playbook
+- apply 'tags:'
+  - tag is a text label on a resource
+  - specifies what to run/skip
+  - tags: <list of tagnames>
+  - tag an entire play: tags: in head
+  - tag each task: most common, on task name level
+  - tag imported_task
+  - tag a role - all tasks in the role associated with the tag
+  - tag a block of tasks -  all tasks in block associated with the tag
+- on imported resource the tag applies to all tasks in imported role/task file
+- on included resource the tag ONLY applies to that task itself
+  - and ONLY runs tasks in the included role/task file that also uses the tag name
+Managing tagged resources
+- use ansible-navigator to run tasks with specific tags
+  - --tags to run
+  - --skip-tags to skip
+Combining tags to run multiple tasks
+- use comma separated list
+  - --tags install,setup
+- listing:
+  - ansible-navigator run -m stdout playbook.yml -i inventory --list-tags
+Assigning special tags
+- 'always'
+  - a resource tagged 'always' runs every time
+  - even if it does NOT match the list of tags passwd to --tags option
+  - only exception: when it is explicitly skipped
+    - using '--skip-tags always' option
+- 'never'
+  - a resource tagged 'never' does not run
+  - unless playbook is run with '--tags never'
+- 'tagged'
+  - runs any resource with an explicit tag
+- 'untagged'
+  - runs any resource without an explicit tag
+  - excludes all tagged resources
+- 'all'
+  - runs all tasks in play
+  - tagged or not
+  - is default
+
+Optimizing execution for speed
+- in number of ways
+  - optimize the infrastructure
+  - disable fact gathering
+    - gather_facts == ansible.buitling.setup
+    - hidden task
+    - provides info about nodes
+    - use through 'ansible_facts' variable
+    - collection info on EACH host takes time
+    - replace some gathered variables:
+        ansible_facts['hostname'], ansible_hostname, ansible_facts['nodename'], ansible_nodename
+        by
+        inventory_hostname, inventory_hostname_short magic variables
+  - reusing gathered facts with fact caching
+    - cache plug-ins store gathered facts or inventory source data
+      - gathered by a play
+    - fact cache can limit times you need to gather by reusing from cache
+    - always enabled
+    - can use only one cache plug-ing at a time
+    - 'memory' cache is enabled by default
+    - in multi play playbooks
+      - a first play can gather facts for [all] hosts
+      - subsequent play can use the facts
+      - and disable gather_facts for themselves
+    - use 'smart gathering'
+      - in ansible.cfg
+      - gathering=smart
+      - gathers facts for each NEW host in aplybook run
+        - if host used across multiple play
+        - NOT contacted again in the run
+  - fact caching works by default on automation controller
+    - you can select 'Enable Fact Storage' in job template
+      - changes caching plug-in
+      - to one that stores facts gathered by jobs launched by template
+      - facts can be reuse between multiple playbook runs
+    - default plugin is 'memory'
+      - only cache facts furing a particular job run
+
+Limit Fact gathering
+- disable fact gathering at play level
+- use ansible.builtin.setup module as explicit task
+- with its 'gather_subset' options:
+  - all | min | hardware | network | virtual | ohai | facter
+  - eg. '!network' to exclude the network facts
+- generally quicker than gathering at play level
+
+Increasing parallelism
+- ansible runs first task on every host in current batch [of hosts]
+- the runs second task etc. until play completes
+- 'forks' parameter controls active connection at the same time [parallelism]
+- default is 5
+  - jobs are processed in groups of five hosts at a time
+- increasing the 'forks' allow for mote task simultaneously
+  - playbook may complete in less time
+  - place more load on control node
+- set 'forks' in ansible.cfg
+  forks=100
+- or on CLI -f option with ansible-navigator
+
+Avoid looping with Package Manager modules
+- some modules accept a list of items to work on
+  - do not require a loop
+  - eg. ansible.builtin.yum
+- increases efficiency
+  - job with list is called only one time
+  - job with loop is called for every item in the loop
+  - eg. package managers [yum/dnf]
+    - list: calls yum/dnf once for all packages
+    - loop: calls yum/dnf once for EVERY package
+- other do NOT accept a list
+  - eg. ansible-builtin.service
+  - loop is needed for multiple services
+
+Efficiently copying files to managed hosts
+- use ansible.builtin.copy:
+  - on multiple runs, subsequent runs take less time
+    - only files that are different are copied
+- more efficient to use ansible.posix.synchronize
+  - uses 'rsync' in the background
+  - usually faster than copy
+  - use option 'delete: true' can also remove file on target that no longer exist in source
+
+Using Templates
+- using eg. ansible.builtin.lineinfile: is inefficient with a loop
+  - and can als be error-prone
+  - eg whith several/alotof 'regexp;' options
+- use ansible.builtin.template: instead
+  - use a <name>.j2 templatefile as the src:
+
+Enable Pipelining
+- Ansible performs several SSH operation to run a task on a remote node
+- use pipelining feature to increase performance
+  - ansible establishes fewer SSH connections
+- set ANSIBLE_PIPELINING environment variable
+  - true or false
+  - in execution environment
+  - default NOT used
+  - requires the 'requiretty sudo' option on all remote nodes disabled
+  - that sudo option by default already DISABLED on RHEL8
+    - may impair other platforms
+
+Profiling Playbook Execution with Callback Plug-ins
+- callback plug-ins extend Ansible
+  - by adjusting how it responds to various events
+- some plug-ins modify the output of the cli tools
+  - such as 'ansible-navigator'
+- eg. 'timer' plugin
+  - shows playbook execution time
+  - in output of ansible-navigator
+- ansible-controller logs some information about jobs
+  - extracted from ansible-navigator output
+  - so use callback plug-ins with caution
+- specified in ansible.cfg
+  - callback_enabled=time, profile_tasks, cgroup_perf_recap
+- use ansible-navigator to list available callback plug-ins
+  - $ ansible-navigator doc -t callback -l -m stdout
+  - $ ansible-navigator doc -t callback timer -m stdout
+
+Timing tasks and roles
+- to help identify slow tasks and roles
+  - 'timer'
+    - display duration of playbook execution
+  - 'profile_tasks'
+    - display start time of each task
+    - time spent on each task
+    - sorted in descneding order
+    - at end of palybook execution
+  - 'profile_roles'
+    - time psent on each roel at end of the output
+    - sorted in descending order
+- update 'callbacks_enabled' in ansible.cfg to activate

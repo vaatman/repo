@@ -92,3 +92,27 @@ Chapter 5
 - use special inventory variables
   - to control connections
   - to make playbook output more readable
+
+Chapter 6
+- privilege escalation configured on multiple levels
+  - play
+  - role
+  - block:
+  - task:
+- uses several directives
+  - become
+  - become_user
+  - become_method
+  - become_flags
+- ansible runs play sections in following order
+  - pre_tasks
+  - roles
+  - tasks
+  - post_tasks
+- handlers run in the same order as they appear in the play
+- use tags to select/skip tasks during play execution
+- disabling fact gathering speeds up playbook execution
+- use callback plug-ins to 'profile' playbooks
+  - timer
+  - profile_tasks
+  - profile_roles
