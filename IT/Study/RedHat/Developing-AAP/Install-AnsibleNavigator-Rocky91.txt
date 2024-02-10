@@ -30,4 +30,5 @@ $ ansible-navigator run -m stdout p.yml
 . add python3-netaddr module
 $ dnf install python3-netaddr
 $ ansible-galaxy collection install ansible.utils
+$ ansible-galaxy collection install list
 
