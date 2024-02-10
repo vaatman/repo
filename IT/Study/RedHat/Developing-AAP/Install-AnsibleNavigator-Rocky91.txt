@@ -1,0 +1,33 @@
+Install ansible-navigator in rocky91 vm on m2800
+================================================
+
+source: ansible.readthedocs.io/projects/navigator/installation/
+
+. install podman
+$ ssh rocky-91-03
+$ sudo dnf install podman
+
+. install ansible-navigator
+$ python3 -m pip install ansible-navigator --user
+
+. ensure .local/bin in ~/.bashrc
+: is default
+
+. test
+$ vi p.yml
+---
+- name: Test
+  hosts: localhost
+
+  tasks:
+    - name: Test01
+      ansible.builtin.debug:
+        msg: "blah"
+
+$ ansible-navigator run -m stdout p.yml
+
+: install ansible.utils.ipaddr
+. add python3-netaddr module
+$ dnf install python3-netaddr
+$ ansible-galaxy collection install ansible.utils
+
