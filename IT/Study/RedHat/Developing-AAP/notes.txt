@@ -1091,9 +1091,14 @@ Providing default variable values
   - use the default filter to ignore the error
 - typically 'default' provides a value when not defined
   - can provide a value when the variable is empty/false
-    - eg. "{{ pattern | bool | default('MESSAGE') }}"
+    - HV: 'empty/false' is NOT an error
+    - to 'force; default, use its option 'true'
+    pattern: "some text"
+    - "{{ pattern | regex-search('test') | default('MESSAGE') }}"
+      regex evaluates to empty string, default is NOT used
+    - "{{ pattern | bool | default('MESSAGE') }}"
     - 'pattern' evaluates to false, default is NOT used [not set to true]
-    - eg. "{{ pattern | bool | default('MESSAGE', true) }}"
+    - "{{ pattern | bool | default('MESSAGE', true) }}"
     - 'pattern' evaluates to false, default sets to true
 
 Variable types
