@@ -11,7 +11,7 @@ AAP2 components:
   - previously modules
   - now reorganizes into separate collections
   - made up of related modules, roles and plugins
-  - ansible core is limited to a small set of modules 'ansible.builtin'
+  - Ansible core is limited to a small set of modules 'ansible.builtin'
   - ansible.builtin is always available
   - collections provide flexibility to:
     - select different versions of collections
@@ -97,7 +97,7 @@ Configuring Authentication to Managed Hosts
 - to an account that allows privilege escalation through sudo without password
 
 Preparing SSH Key-based authentication
-- set a remote_user directive in de [defaults] section of ansible config on control node
+- set a remote_user directive in de [defaults] section of Ansible config on control node
 - use ssh-keygen to generate SSH key pair for user that runs ansible-navigator
 - install its public key in ~/.ssh/authorized_keys file for the remote_user on each managed hsots
 - on managed hosts configure passwordless sudo for the remote_user
@@ -282,7 +282,7 @@ Install from CLI
 - $ ansible-galaxy collection install community.crypto
 - from local/remote .tar
   $ ansible-galaxy collection install /tmp/community-dns-1.2.0.tar.gz
-- ansible checks for 'colections/' subdir in the playbookdir
+- Ansible checks for 'colections/' subdir in the playbookdir
 - if not found: check collections_patch from ansible.cfg
 - by default collections are installed in first directory that collections_paths defines
 - use '-p <dir>' to psecify an alternative dir
@@ -433,7 +433,7 @@ Creating Credential Resources
   - to synchronize project resources from remote repo
     - specify username and password or SSH private key
 - Vault
-  - use [ansible] vault credentials to decrypt from ansible vault
+  - use [ansible] vault credentials to decrypt from Ansible vault
 
 Chapter 4 Working with Ansible Configuration Settings
 
@@ -442,7 +442,7 @@ Inspecting the Ansible Configuration in Ipteractive mode
 - shows source of of current ansible-navigator configuration settings
 - useful for troubleshooting
 - each line shows values for:
-  - Name - internal name that ansible users for parameters
+  - Name - internal name that Ansible users for parameters
   - Default - whether parameter is using itd default value [True]
   - Source - when not Default, indicates here how parameter has been set
   - Current - actual value of parameter
@@ -598,7 +598,7 @@ Using Inventory Scripts
   - ansible.cfg
   - --inventory option
 Managing Multiple Inventories
-- ansible supports multiple inventories in the same run
+- Ansible supports multiple inventories in the same run
 - inventory location is a directory
 - all inventory files in it are combined
 - executable files are used to retrieve dynamic inventories
@@ -607,12 +607,12 @@ Managing Multiple Inventories
 - inventory files should not depend on other inventory files/scripts
 - currently multiple inventories are parsed in alphbetical order
   - make sure files are self-consisten
-- ansible ignores files with certain suffixes
+- Ansible ignores files with certain suffixes
   - controlled with inventory_ignore_extensions directive
   - default= .pyc|,pyo|.swp|.bak|~|.rpm|.md|.txt|.rst|.orig|.ini|.cfg|.retry
 
 Writing YAML inventories
-- ansible uses plugins to support differen formats for inventory files
+- Ansible uses plugins to support differen formats for inventory files
 - INI format for static inventories
 - plugins for dynamic inventories
 - most plugins are enabled by default
@@ -811,7 +811,7 @@ Choosing Approaches
 - keep playbooks simple
 
 Controlling the order of execution
-- in a play ansible always runs tasks from roles before tasks under tasks: section
+- in a play Ansible always runs tasks from roles before tasks under tasks: section
 - even when roles: is lower in playbook thatn tasks:
 - good practice for readability to have roles: before tasks:
 Importing or Incldugin Roles as a Task
@@ -982,7 +982,7 @@ Limit Fact gathering
 - generally quicker than gathering at play level
 
 Increasing parallelism
-- ansible runs first task on every host in current batch [of hosts]
+- Ansible runs first task on every host in current batch [of hosts]
 - the runs second task etc. until play completes
 - 'forks' parameter controls active connection at the same time [parallelism]
 - default is 5
@@ -1027,7 +1027,7 @@ Using Templates
 Enable Pipelining
 - Ansible performs several SSH operation to run a task on a remote node
 - use pipelining feature to increase performance
-  - ansible establishes fewer SSH connections
+  - Ansible establishes fewer SSH connections
 - set ANSIBLE_PIPELINING environment variable
   - true or false
   - in execution environment
@@ -1102,7 +1102,7 @@ Providing default variable values
     - 'pattern' evaluates to false, default sets to true
 
 Variable types
-- ansible store runtime data in variables
+- Ansible store runtime data in variables
 - exact type of data defined by
   - YAML structure
   - content of the value
@@ -1463,3 +1463,144 @@ Reformatting or calculating network information
   - into the minimal representation
   "{{ my_networks | ansible.utils.cidr_merge }}"
     - overlapping entries in the list are merged
+
+Chapter 8 Coordinating Rolling Updates
+
+Delegating Tasks
+- sometime you may need to perform task[s] on another host on behalf of the managed host
+- 'delegate' a task to run on another host insted of the current managed host
+- 'delegate_to' directive
+- the host to delegate to does not need to be listed in the inventory
+- hv: it's just a task run on another host than set by the hosts: directive
+Delegating to the execution environment
+- most common place to delegate
+- or to 'localhost'
+- eg. to communicate
+  - to something unreachable from managed host but
+  - reachable from exec.env/localhost
+- in AAP2, $ ansible-navigator with 'delegate_to: localhost'
+  - runs within the automation exec.env
+  - privilege escalation may fail is sudo cmd not present
+  - assumed resources on controlnode may not be present in exec.env
+
+Delegating Facts
+- when delegating a task
+  - Ansible uses the host vars/facts for the MANAGED host
+    - the current 'inventory_hostname'
+  - eg. task for 'demo' delegated to 'localhost'
+    - vars/facts for 'demo' are used
+- assign facts collected by delegated task
+  - to the host to which the task was delegated
+  - use 'delegate_facts' directive
+  - gathers facts in hostvars['<delegated_to_host>'] namespace
+
+Configuring Parallelism
+Using Forks
+- when Ansible processes a playbook, it runs each play in order
+  - first determines list of hosts for the play
+  - then run through each task in order
+  - a host must successfully complete a task before next host starts
+- in theory Ansible can connect to all hosts in a play simultaneously
+  - can put heavy load on control node and exec.env
+- maximum number of simultaneous connections
+  - controlled by 'fokrs' parameter
+  - in ansible.cfg
+  - default '5'
+  - check: $ ansible-navigator -m stdout config dump
+- a task in a play runs on first number of hosts as in 'forks'
+  - followed by next round
+  - until all host have passed
+  - then next task is started
+- default forks is conservative
+  - for tasks mostly running on managed hosts: raise forks
+  - for tasks running in exec.env
+    - eg. when mananging network routers/switches
+    - raise judiciously
+      - increases load o exec.env
+  - set in ansible.cfg
+  - use -f with ansible-navigator run
+
+Running Batches of Hosts
+- normally
+  - Ansible ensures all managed hosts
+  - complete each task
+  - before it starts the next task
+  - can take out all hosts service in a play
+- use 'serial:' directive
+  - to run on hosts in batches
+  - task runs on # of host set with serial:
+  - when the batch of have completed, next batch of hosts run
+  - Ansible continues until all managed host have run
+  - if a play fails on a batch of hosts
+    - the playbook aborts
+    - play does NOT run on remaing hosts
+  - can be specified as a percentage
+
+Managing Rolling Updates
+- a strategy that staggers deployments to batches of servers
+- infrastructure deployment can complete with zero downtime
+- Ansible can halt deployment
+  - limit the errors to servers when a problem occurs
+  - with test and monitoring in place:
+    - roll back configuration
+    - quarantine affected hosts
+    - send notifications to stakeholders
+Controlling Batch Size
+- default: run a play one task for all host before next task
+- use 'serial:' directive to process hosts through a play in batches
+Setting batch size
+- use an integer
+- use a percentage
+- gradually change batchsize by setting a list of values
+    - serial:
+      - 1
+      - 10%
+      - 100%
+  - first batch contains a single host
+  - second batch is 10% of total hosts as configured in play
+  - third batch is all remaining hosts
+  - if unprocessed hosts remain after last list value
+    - last batch [serial value] repeats until all hosts processed
+Aborting the play
+- by default: get as many hosts to complete a play as possible
+- if task fails for host
+  - host is dropped from play
+  - Ansible continues to run remaining tasks for other hosts
+  - play only stop if ALL hosts fail
+- if serial: is set
+  - Ansible stops play for all remaining hosts
+    - if all hosts in current batch fail
+    - not just the remaining hosts
+  - if all hosts in batch fail the play aborts
+- 'ansible_play_batch' variable
+  - keeps list of active servers for each batch
+  - Ansible removes a host that fails task from the list
+  - Ansible updates the list after every task
+Specifying failure tolerance
+- by default: play execution halts when all hosts in a batch fail
+- you can alter the failure behavior
+  - use' max_fail_percentage' directive
+  - when number of failed hosts in a batch exceeds th %
+    - Ansible halt playbook execution
+  - set to zero
+    - to implement a "fail fast" strategy
+Summarized Ansible failure behavior
+- if serial: and max_fail_percentage: are NOT defined
+  - all hosts are run through the play in one batch
+  - if all hosts fail, the play fails
+- if serial: IS defined and max_fail_percentage: NOT
+  - hosts are run through the play in multiple batches
+  - the play fails of all hosts in any one batch fail
+- if max_fail_percentage IS defined
+  - the play fails if more than that percentage of hosts in a batch fail
+
+Running a task once
+- to run a task once for an entire batch of hosts
+  - rather than once for each host in the batch
+- use 'run_once:' directive
+  - true/false value
+  - can be combined with delegate_to:
+  - set 'true' causes a task to run once for each batch
+  - if needed to run only once foor all hosts in a play
+    - add following conditional statement to the task
+    when: inventory_hostname == ansible_play_hosts[0]

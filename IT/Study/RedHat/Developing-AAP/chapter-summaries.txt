@@ -135,3 +135,10 @@ Chapter 7
 - Ansible provides manny supplementary filters
   - for processing networking related data
   - such as 'ansible.utils.ipaddr'
+
+Chapter 8
+- 'delegate_to' keyword can delegate a task to run on a different host
+- 'forks:' parameter in Ansible config file specifies maximum number of prallel connections to managed hosts
+- 'serial:' keyword to run hosts through a play in batches
+- 'max_fail_percentage:' keyword to abort the play if more than a certain percentage of hosts in the current batch fail
+- 'run_once:' keyword to run a task once for a batch rather than once for each host in a batch
