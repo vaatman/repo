@@ -1606,3 +1606,357 @@ Running a task once
   - if needed to run only once foor all hosts in a play
     - add following conditional statement to the task
     when: inventory_hostname == ansible_play_hosts[0]
+
+Chapter 9 Creating Content Collections and Execution Environments
+
+Developing Ansible Content Collections
+- Red Hat, its partners and AnsibleCommunity provide many collections
+- when no collection is available
+- or you need a custom collection
+- consider developing collections
+- collection not available with Ansible 2.8 and older
+
+Selecting a Namespace for Collections
+- Ansible organizes collections in namespaces
+- namespace is the first part of a collection name
+  - eg. for amazon.aws collection
+  - 'amazon' is the namespace
+- carefully choose a namespace
+  - to publish to Ansible Galaxy
+    - use your Ansible Galaxy username as namespace
+  - to publish to private automation hub
+    - ask platform admin to create a namespace
+    - or create yourself if you have required permissions
+  - to publish to automation hub as a Red Hat partner
+    - use the namespace that Red Hat hsas assigned for your company
+Creating the Collection Directory Structure
+- use 'ansible-galaxy collection init' command
+  - specify the name of the collection
+  - inclduing the namespace
+  $ ansible-galaxy collection init mynamespace.mycollection
+- creates a directory and file structure
+- you can remove any file/dir that is not being used
+Adding Content to a Collection
+- organize modules/plug-ins/files in subdirs
+  - under plugins/ directory
+- move roles in their directory structure
+  - under roles/ directory
+  - to create a role for the collection
+    - use $ ansible-galaxy role init <rolename>
+Updating Collection Metadata
+- galaxy.yml
+  - in root of collection dir
+  - provides info for Ansible
+    - to build
+    - and publish the collection
+  - comments that describe each parameter
+Declaring Collection Dependencies
+- collections may depend on other collections
+- a role in a collections might call modules from other collections
+- use 'dependencies:' paramater in galaxy.yml file
+  - is a dictionary of lists
+    - key is the collection FQCN
+    - value is the collection version
+    eg.:
+    dependencies:
+      community.general: '>=1.0.0'
+  - ansible.builtin NOT needed to be declared
+- more complex collections might provide modules/plugins/filter that depend on additional Python libraries
+  - corresponding Python packages must be installed in exec.env
+  - for those Python dependencies
+    - create a 'requirements.txt'
+    - at the root yo the collection
+    - each line declares a Python package
+- some collections also require system-level packages in the exec.env
+  - at the root of your collections
+  - create the 'bindep.txt' file
+  - list the RPM's
+  - one per line
+  - eg: rsync [platform:centos8 platform:rhel8]
+  - the bindep tool processes the bindep.txt file
+    - can manage package for several Linux distros
+- when 'ansible-galaxy collection install' is run [by user/controller]
+  - automatically installs additional collection
+  - you may have declared in galaxy.yml
+  - does NOT process requirements.txt for Python packages
+  - does NOT process bindep.txt for system packages
+  - the 'ansible-builder' command to create exec.env
+    - DOES process all those files
+- define additional metadata for the collection
+  - in meta/runtime.yml file
+    - add 'requires_ansible' parameter for a specific version of Ansible
+    - mandatory if you plan to publish to
+      - Ansible Galaxy
+      - automation hub
+      - private automation hub
+Building Collections
+- run 'ansible-galaxy collection build'
+- results in .tar.gz file
+- then test/share/publish this .tar.gz
+Validating/Testing collections
+- when a collection is published to private automation hub
+  - the platforms automatically run some test
+  - private automation hub uses 'ansible-lint'
+- collection for automation hub are test more thoroughly
+  - using 'ansible-test' tool
+- recommended to install and use
+  - ansible-list
+  - ansible-test
+- you cannot directly use the collection 
+  - build and install the collection from the .tar.gz
+
+Publishing Collections
+- use platform web UI to publish your collection from the .tar.gz
+- private automation hub
+  > Collections Namespaces
+    > Upload collection
+    - an admin must review and approve
+    > Collections > Approval
+- whenever you modify you collection
+  - edit galaxy.yml
+  - update version: parameter
+  - otherwise the platform rejects the collection
+  - create a .tar.gz
+  - publish the new version
+- ansible-galaxy command ALSO supports publishing collections
+  - update ansible config file
+  [galaxy]
+  server_list = inbound_mynamespace
+  [galaxy_server.inbound_mynamespace]
+  url=https://<url>
+  token=<token>
+    - use webUI for inbound URL for you namespace
+      > Collections > Namespaces > View collections > CLI configuration
+      - retrieve API token
+      > Collections > API token management > Load token
+      - update token line with the authentication token
+    - run ansible-galaxy collection publish <mycollection.tar.gz>
+
+Building a Custom Automation Execution Environment
+- using ansible-builder
+Deciding when to
+- Red Hat provides several that suit needs of many
+- these include the most comment Ansible Content Collections
+- to inspect a container image and view collections/PythonPkgs/OSpkgs
+  - ansible-navigator images
+- sometimes you might need an Ansible Content Collection
+  - not included in one of existing exec.envs
+  - often you can install the extra collection
+    - in your Ansible project
+    - then use an existing exec.env
+    - withtou having to build a new one
+- consider create a custom exec.env when
+  - you frequently reuse specific collections
+    - not included in existing exec.envs
+    - especially if you have many projects that use this collection
+  - the collection you want requires Python packages
+    - not included in existing exec.env
+  - the collection conflicts with another collection
+    - in existing exec.envs
+
+Preparing for a new Automation exec.env
+- use 'ansible-builder' command to create the container images
+- provided by ansible-builder RPM
+- create a workdir for the build
+- 'execution-environment.yml' file determines how to build the image
+  - see example p418:
+  ---
+  version: 1
+  build_arg_defaults:
+    EE_BASE_IMAGE: <image to use as starting point>
+    EE_BUILDER_IMAGE: <image that includes tool for the buildprocess>
+  ansible_config: ansible.cfg
+  dependencies:
+    galaxy: requirements.yml
+    python: requirements.txt
+    system: bindep.txt
+Declaring the Ansible Content Collections to install
+- requirements.yml
+  - list content collections
+  - used by ansible-builder
+  - to install in exec.env
+  - YAML format
+  - simple:
+    - name of the collection[s]
+  - more complex:
+    - name of collection[s]
+    - specific verions
+    - source
+      - for private automation hub
+        - also provide a token
+        - in an ansible.cfg
+Declaring Python packages
+- requirements.txt
+  - list Python packages
+  - used by ansible-builder
+  - to install in exec.env
+  - provide name
+      textfsm
+  - and/or name and version
+      jsonschema>=3.2.1
+Declaring RPM packages
+- bindep.txt
+  - list RPM packages
+  - used by ansible-builder
+  - to install in exec.env
+  - provide name and distro target directive
+      rsync [platform:rpm]
+- some collections include a bindep.txt file
+  - no need to duplicate in your own
+- if system has valid subscription
+  - ansible-builder has access to the same RPM packages
+- otherwise the build process only has access to
+  - Red Hat Universal Base Images repos
+  - 'UBI' repos
+  - publicly available
+  - only provide a limited set of RPM packages
+  - package in your bindep.txt might not be available in these repos
+
+Building a new Automation execution environment
+- ansible-builder automatically pulls base and builder images
+  - if not already available locally
+  - if authentication is equired
+     - you must provide it
+     - BEFORE starting the build process
+- login to Red Hat container registry
+  $ podman login registry.redhat.io
+- create exec.env
+  - use --tag/-t to provide a name for the container image
+  $ ansible-builder build --tag ee-demo:v1.0
+  $ podman images
+Interacting with the build process
+- for more advanced configurations
+  - eg. private automatino hub uses TLS
+  - you must provide the CA certificate
+- the exec.env builder operates in two stages:
+  1. create context/ directory
+  - in current directory
+  - creates Containerfile in there
+    - contains instructions for 'podman build' command
+  - also create _build/ directory
+    - copies files into it
+    - so build process can access them
+      - requirements.yml
+      - requirements.txt
+      - ansible.cfg
+      - bindep.txt
+  2. the command runs 'podman build'
+  - constructs the resulting exec.env container image
+- to prepare for customizing the build process
+  - use 'ansible-builder create' command
+    !! overwrites existing context/Containerfile
+
+Adjusting the build arguments and base image
+- default values can be specified in execution-environment.yml
+  - defining build_arg_defaults variable
+  - as dictionary 
+  - of arguments
+  - and their values
+  - using --build-arg on CLI
+  - values in execution-environment.yml take precedence
+- build arguments used by ansible-builder
+  - ANSIBLE_GALAXY_CLI_COLLECTION_OPTS
+    - passes optional CLI options
+    - to ansible-galaxy command used by build process
+  - EE_BASE_IMAGE
+    - parent image for the exec.env
+  - EE_BUILDER_IMAGE
+    - image used for compiling tasks
+  - arguments are hardcoded into the resulting Containerfile
+Modifying the Containerfile
+- available after 'ansible-builder create'
+  - in context/ directory
+- can be modified to needs
+- hv: dockerfile syntax
+Building the exec.env image
+- manually execute the second stage
+  - 'podman build' command
+  $ podman build -f context/Containerfile -t ee-demo:v2.0 context
+
+Validating a Custom exec.env
+- ansible-builder create autoatmion exec.env
+- validate that it works correctly
+- list installed collections
+  - $ ansible-galaxy collection list
+  - recursively remove the dir removes the collection
+Running a test playbook
+- create a playbook to use a module/role from you collection
+  - FQCN
+    - name: test my custom modules
+      mynamespace.mycollection_mymodule:
+- when using automation exec.env:
+  - 'localhost' is the container itself
+  - NOT the machine where ansible-navigator is run
+  - this is different from the 'ansible-playbook' command
+  - add the local machine in the inventory
+    - modify plays/tasks
+    - to point to that machine
+- use ansible-navigator to run test playbook
+  - use -i to specify inventory file/directory
+  - use --eei to specify exec.env image
+  - if container image exists locally
+    - use '--pull-policy (--p) never'
+    - otherwise attempt to pull from Red Hat or Dockerhub
+  - add --become (-b) if needed
+  - add --mode (-m) stdout if desired
+  $ ansible-navigator run test_playbook.yml -i inventory \
+    > --eei localhost/ee-demo:v2.0 -pp never -m stdout
+
+Providing Authentication Credentials
+- an ansible play on a managed host generally requires authentication
+  - to log in
+  - to make changes
+- for Linux one common solution
+  - install a user
+    - specified by 'remote_user' directive
+    - with public SSH key
+    - that matches private SSH key to the exec.env
+Automation Controller Machine Credentials
+- controller can store private SSH key in a 'machine credential'
+  - a special resource
+  - can be update from webUI
+  - can not be read from webUI
+- for SSH authentication
+  - is can store SSH username and password
+Automation Content Navigator Authentication
+- can get your private SSH key from ssh-agent
+  - runs automatically in Gnome desktop
+  - run eval $(ssh-agent) when login from terminal
+    - run ssh-add to add private key
+- NOT recommended to store private SSH key in 'private_key_file' directive
+- by default ansible-navigator does NOT prompt
+  - NOT for passwords
+  - NOT for other interactive input
+  - you can NOT use options for
+    - connection password (--ask-pass)
+    - privilege escalation (--ask-become-pass)
+    - vault passwords (--ask-vault-pass)
+  - this is intentional
+    - controller does NOT support it either
+- to enable support for interactive prompts for passwords
+  - either use '--pae false' option
+  - or edit ansible-navigator.yml and add:
+    playbook-artifact:
+      enable: false
+    - additionaly use -m stdout option
+
+Sharing an Automation exec.env from Private automation hub
+- ansible-builder creates exec.env image on local system
+- for automation controller to access these images
+  - push them to a container registry
+    - such as Quay.io
+    - of private automation hub
+- it is NOT allowed to publicly distribute images built on top of Red Hat provided images
+- to push a container image to a private automation hub
+  - list local image(s)
+    $ podman images
+  - tag the image
+    $ podman tag localhost/ee-demo:v2.0 hub.example.com/mynamespace/ee-demo:v2.0
+    - if you do NOT specify a tag
+      - 'latest' is used as tag
+  - login to private automation hub
+    $ podman login hub.example.com
+  - push the container image
+    $ podman push hub.example.com/mynamespace/ee-demo:v2.0
+
+p445
