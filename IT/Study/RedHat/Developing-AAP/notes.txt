@@ -290,7 +290,7 @@ Install with requirements file
 - collections/requirements.yml
 - list of collections needed for playbooks in project
 - automation controller detects it
-- automatically installs collections
+- automatically installs collections before running playbooks
 - similar to a roles/requirements.yml file
 - $ ansible-galaxy collection install -r <requirements.yml>
 Listing installed collections
@@ -299,7 +299,7 @@ Listing installed collections
 
 Configuring Collection Sources
 - add additional distribution platforms in ansible.cfg
-- see exmaple on .pdf page 83
+- see example on .pdf page 83
 
 Installing Collection from private Automation hub
 - similar to 'automation hub'
@@ -833,7 +833,7 @@ Defining Pre- and Post-tasks
 - to run tasks AFTER normal tasks [and handlers] have run
 - pre_tasks:  run BEFORE roles:
 - post_tasks: run AFTER tasks: section and any handlers notified by tasks:
-Order of execution [as in the example p.237:
+Order of execution [as in the example p.237]:
 - pre_tasks
 - handlers: notified in pre_tasks [if any]
 - roles:
@@ -851,6 +851,8 @@ Order of execution [as in the example p.237:
 - to immediately run handlers: that haven been notified
   - use the ansible.buitlin.meta: module
   - with 'flush_handlers' parameter
+    - docs.ansible.com: to Execute Ansible 'actions'
+    - flush_handlers makes Ansible run any handler tasks which have thus far been notified. Ansible inserts these tasks internally at certain points to implicitly trigger handler runs (after pre/post tasks, the final role execution, and the main tasks section of your plays).
 - handlers: have global scope
   - a play can notify: handlers: in roles
   - on role can notify: handlers: by another role or by the play

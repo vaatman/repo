@@ -2,7 +2,7 @@ Chapter 1
 - AAP2 simplifies development and use of Ansible Playbooks at scale
   - by introducing Ansible Content Collections
   - and automation execution environments
-- Automation content navitor == ansible-navigator
+- Automation content navigator == ansible-navigator
   - can extend and replace many previous Ansible commands
   - including ansible-playbook
 - Ansible Content Collections provide
@@ -33,7 +33,7 @@ Chapter 2
   - to list other resources
 - use FullyQualifiedCollectionNames
 - ansible-galaxy collection install
-  - to install Asnible Content Collectinos
+  - to install Ansible Content Collectinos
   - --collections-paths specifies installation directory
 - collections/requirements.yml
   - to list Ansible Content Collections required for the project
@@ -49,7 +49,7 @@ Chapter 3
 - Automation contoller project specifies
   - location of a Git repo
     - that stores Ansible code
-    - a source contolre credential
+    - a source contoller credential
 - Automation controller job template specifies
   - inventory
   - machine credentials
@@ -86,9 +86,9 @@ Chapter 5
 - use YAML inventory plug-in for static inventories in YAML format
 - use 'ansible-navigator inventory' to convert INI to YAML format
 - good practice: keep most variables out of static inventory files
-- take advantage of inventory groups to improve maintainanbility
+- take advantage of inventory groups to improve maintainability
   - group_vars/ dir
-  - host_vars dir
+  - host_vars/ dir
 - use special inventory variables
   - to control connections
   - to make playbook output more readable
@@ -129,7 +129,7 @@ Chapter 7
 - lookup plug-ins
   - get data from external sources for plays
   - run in the execution environment
-  - NOT on the managed host
+    - NOT on the managed host
 - you can combine filter and lookup plug-ins
   - to implement sophisticated loops
 - Ansible provides manny supplementary filters
