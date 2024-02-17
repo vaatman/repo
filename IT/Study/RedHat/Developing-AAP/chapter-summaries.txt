@@ -142,3 +142,33 @@ Chapter 8
 - 'serial:' keyword to run hosts through a play in batches
 - 'max_fail_percentage:' keyword to abort the play if more than a certain percentage of hosts in the current batch fail
 - 'run_once:' keyword to run a task once for a batch rather than once for each host in a batch
+
+Chapter 9
+- 'ansible-galaxy collection init'
+  - creates directory
+  - for new Content Collections
+- dependencies for a collection are specified in three files
+  - galaxy.yml        : other collections under the 'dependencies' paramater
+  - requirements.txt  : Python packages
+  - bindep.txt        : RPM packages
+- 'ansible-galaxy collection publish'
+  - to publish collections
+  - on private automation hub
+- 'ansible-builder'
+  - creates custom exec.envs
+- execution-environment.yml file
+  - configfile for ansible-builder
+    - specifies collections
+    - Python packages
+    - RPM's
+- 'podman images, podman tag, podman push'
+  - to list, tag and push exec.envs
+  - to a container registry
+- automation controller can automatically pull collections and roles
+  - specified in Ansible project's 'requirements.yml'
+    - needs to set up stored credentials
+    - so it can authenticate
+    - to automation hub
+- automation controller can use and automatically pull custom exec.envs
+  - first needs credentials for the container registry configured
+  - and location specified

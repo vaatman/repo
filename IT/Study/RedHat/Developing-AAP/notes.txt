@@ -1959,4 +1959,134 @@ Sharing an Automation exec.env from Private automation hub
   - push the container image
     $ podman push hub.example.com/mynamespace/ee-demo:v2.0
 
-p445
+Using Custom Content Collections and Exec.Envs in Automation Controller
+- to run an Ansible playbook that requires
+  - an Ansible Content Collection
+  - that is not included
+  - in an existing automation exec.env
+- one of yout automation exec.ens might already provide
+  - all the resources needed by the collection
+  - but not the collection itself
+- then you can configure automation controller
+  - to automatically download the collection
+  - into the automation exec.env
+  - when it runs your playbbok
+- two things needed for this
+  - collections/requirements.yml file
+    - in your Ansible project
+    - which specifies the additional collections
+    - your playbook needs
+  - configure automation controller
+    - with the authentication credentials 
+    - it needs to access the Ansible automation hub
+    - that stores those collections
+Preparing Ansible projects for automation controller
+- when you run ansible-navigator run <playbook>
+  - that requires Ansible Content Collections
+  - that are not in the automation exec.env
+  - you must manually install the collections
+- usually the project provides 
+  - a collections/requirements.yml file
+  - to process with $ ansible-galaxy collection install -r collections/requirements.yml
+- automation controller does not reuiqre you to manually run this command
+  - it automatically runs the following command
+  - to install collections and roles
+  - when you run a playbook
+  $ ansible-galaxy collection install -r collections/requirements.yml
+  $ ansible-galaxy role install -r role/requirements.yml
+  - the collections/requirements.yml file
+    - might point to collections
+      - on Ansible automation hub
+      - or private automation hub
+Storing Authentication Credentials for Collections
+- automation hub and private automation hub require login credentials
+  - you need to configure automation controller
+    - with a credential that provides
+      - the automation hub API token
+      - and URLS for Ansible automation hub
+      - and for any private automation hub
+    - that you playboko uses to download collections
+  - Log in to automation controller webUI
+    > Resources > Credentials > Add
+      > Ansible Galaxy / Automation Hub API Token
+        - enter URL
+        - enter token
+      - obtain the Ansible automation hub URL and token at
+        - https://console.redhat.com/ansible/automation-hun/token
+  - Associate the credential with all the organizations in automation controller
+    > Access > Organizations
+    - select an Organization
+    > Edit
+      - enter credentail in Galaxy Credentials field
+      > Save
+- if you installed automation controller and hub at the same time
+  - following credentials resources are created
+    - Automation Hub Community Repository
+    - Automation Hub Published Repository
+    - Automation Hub RH Certified Repository
+  - these use the API token for the private automation hub 'admin' user
+    - loading a new token in the private automation webUI deletes the previous token
+    - you must update these automation controller credentials with the new API token
+
+Using Custom Automation Exec.Envs with Automation Controller
+- automation controller uses an exec.env to run playbooks
+- by default supported exec.envs from Red Hat included
+- you can use own custom exec.envs
+- configure automation controller
+  - to download the container images for these exec.envs automatically
+  - configure controller with a credential
+    - to use to authenticate
+    - to the container registry containing your image
+    - with information about what container images to pull
+      - from where
+      - how often
+    - (optional) specify a default exec.env
+    - (optional) specify an exec.env
+      - when running a playbook from a particulas template
+      - if you do not want the template to use
+        - the project's default exec.env
+Storing Container Registry Credentials
+- automation controller automatically downloads [any] container image
+- many container registries require authentication
+  - configure automation controller
+    - with a credentail
+    - to store this authentication info
+    > Log in web UI
+    _ Resources > Credentials > Add
+      - select 'Container Registry' credential type
+        - enter URL
+        - enter username
+        - enter password
+        > Save
+- if you installed automation controller and hub at the same time
+  - installation script creates
+    - 'Automation Hub Container Registry' credential
+      - uses private automation hub 'admin' user
+      - and password specified during installation
+    - if you update the password for this 'admin' user
+      - you must update the 'Automation Hub Container Registry' credential as well
+Configuring Automation Exec.envs
+> Log in to webUI
+  > Administration > Execution Environments > Add
+  - complete the form
+  - if you do not specify a tag
+    - the tag defaults to 'latest'
+      - might be problematic
+      - eg. when a new untested image is pushed untagged
+      - all jobs will start with using this untested image
+Configuring the default Automation Exec.Env
+- when setting up an Ansible project
+ - you can specify a default exec.env
+ > log in to webUI
+ > Resources > Projects > Add
+ - complete the form
+Specifying an Exec.env in a template
+- a template specifies all parameters controller needs to run a playbook including
+  - project containing the playbook
+  - inventory to use
+  - machine credentials for access to managed nodes
+- you can also select a specific exec.env
+  - overrides the default exec.env
+  - first you use a new exec.env
+    - controller must download the container image
+      - if it's not present
