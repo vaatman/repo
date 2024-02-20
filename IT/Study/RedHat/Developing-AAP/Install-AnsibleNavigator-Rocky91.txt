@@ -5,9 +5,9 @@ source: ansible.readthedocs.io/projects/navigator/installation/
 
 . install podman
 $ ssh rocky-91-03
-$ sudo dnf install podman
+$ sudo dnf install podman python3-pip
 
-. install ansible-navigator
+. install ansible-navigator AS USER
 $ python3 -m pip install ansible-navigator --user
 
 . ensure .local/bin in ~/.bashrc
