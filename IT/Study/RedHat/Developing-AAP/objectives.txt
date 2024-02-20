@@ -1,0 +1,123 @@
+Chapter 1
+- Describe the architecture of Red Hat Ansible Automation Platform 2
+  - and how its new features help with Ansible automation development
+- Install automation content navigator
+  - and use it to run an existing playbook
+  - with a supported exec.env
+- Create and manage Ansible Playbooks
+  - in a Git repository
+  - following recommended practices
+- Demonstrate and describe common recommended practices
+  - for developing and maintaining
+  - effective Ansible automation solutions
+
+Chapter 2
+- Describe how Ansible Content Collections
+  - are used to distribute
+    - modules
+    - and plug-ins
+  - and create plays
+    - that use content from them
+- Search automation hub
+  - for Ansible Content Collections
+    - install them from CLI
+      - by name
+      - or by using a requirements.yml file
+- Identify the automation exec.envs
+  - provided by Red Hat
+  - and select the correct one
+    - for your use case
+
+Chapter 3
+- Describe the architecture and use cases
+  - of the automation controller component
+    - of Red Hat Ansible Automation Platform
+- Navigate and describe the automation controller webUI
+  - succesfully launch a job
+    - using a job template
+    - project
+    - credential
+    - inventory
+
+Chapter 4
+- Browse the currents Ansible configuration
+  - by using automation content navigator
+- Change configuration settings
+  - for automation content navigator
+    - with its configuration file
+  - and determine where the configuraion file is located
+
+Chapter 5
+- Describe what dynamic inventories are
+  - install and use an existing script
+  - or plug-in
+  - as an Ansible dynamic inventory source
+- Write static inventory files in YAML format
+- Structure host and group variables
+  - using multiple files
+    - per host/group
+  - use special variables
+    - to override the host/port/remote_user
+    - that Ansible uses for a specific host
+
+Chapter 6
+- Control automatic privilege escalation at
+  - play
+  - role
+  - task
+  - block level
+- Configure tasks that can
+  - run before roles
+  - or after normal handlers
+  - and simultaneously notify multiple handlers
+
+Chapter 7
+- Format, parse, define values
+  - of variables
+  - using filters
+- Populate variables with data
+  - from external sources
+  - using lookup plug-ins
+- Implement loops
+  - using structures
+    - other than simple lists
+    - by using
+      - lookup plug-ins
+      - and filters
+- Use filters to
+  - inspect
+  - validate
+  - manipulate
+  - variables containing networking information
+
+Chapter 8
+- Run a task for a managed host
+  - on a different host
+  - control whether facts gathered by that task
+    - are delegated to the managed host
+    - or to the other host
+- Tune the number of simultaneous connections
+  - that Ansible opens to managed hosts
+  - and how Ansible processes group of managed hosts
+    - through the play' tasks
+- Tune the behavior of the 'serial' directive
+  - when batching hosts for execution
+  - abort the play if it fails for too many hosts
+  - create tasks that run only once
+    - for each batch
+    - or for all hosts in the inventory
+
+Chapter 9
+- Create content collections
+  - and distribute them for reuse
+- Build a custom automation exec.env image
+  - by using the 'ansible-builder' command
+- Validate that a custom exec.env
+  - works as expected
+  - by testing it
+  - with the ansible-navigator command
+  - and then distribute it for reuse
+- Run a playbook in automatino controller
+  - that uses a content collection
+    - in the project
+  - or content provided by a specific automation exec.env

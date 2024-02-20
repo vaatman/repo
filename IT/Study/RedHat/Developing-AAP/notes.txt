@@ -11,7 +11,7 @@ AAP2 components:
   - previously modules
   - now reorganizes into separate collections
   - made up of related modules, roles and plugins
-  - ansible core is limited to a small set of modules 'ansible.builtin'
+  - Ansible core is limited to a small set of modules 'ansible.builtin'
   - ansible.builtin is always available
   - collections provide flexibility to:
     - select different versions of collections
@@ -97,7 +97,7 @@ Configuring Authentication to Managed Hosts
 - to an account that allows privilege escalation through sudo without password
 
 Preparing SSH Key-based authentication
-- set a remote_user directive in de [defaults] section of ansible config on control node
+- set a remote_user directive in de [defaults] section of Ansible config on control node
 - use ssh-keygen to generate SSH key pair for user that runs ansible-navigator
 - install its public key in ~/.ssh/authorized_keys file for the remote_user on each managed hsots
 - on managed hosts configure passwordless sudo for the remote_user
@@ -282,7 +282,7 @@ Install from CLI
 - $ ansible-galaxy collection install community.crypto
 - from local/remote .tar
   $ ansible-galaxy collection install /tmp/community-dns-1.2.0.tar.gz
-- ansible checks for 'colections/' subdir in the playbookdir
+- Ansible checks for 'colections/' subdir in the playbookdir
 - if not found: check collections_patch from ansible.cfg
 - by default collections are installed in first directory that collections_paths defines
 - use '-p <dir>' to psecify an alternative dir
@@ -290,7 +290,7 @@ Install with requirements file
 - collections/requirements.yml
 - list of collections needed for playbooks in project
 - automation controller detects it
-- automatically installs collections
+- automatically installs collections before running playbooks
 - similar to a roles/requirements.yml file
 - $ ansible-galaxy collection install -r <requirements.yml>
 Listing installed collections
@@ -299,7 +299,7 @@ Listing installed collections
 
 Configuring Collection Sources
 - add additional distribution platforms in ansible.cfg
-- see exmaple on .pdf page 83
+- see example on .pdf page 83
 
 Installing Collection from private Automation hub
 - similar to 'automation hub'
@@ -340,7 +340,7 @@ Using ExecEnvs with content navigator
   - never
   - tag [if image tag is 'latest']
 
-Chapter 3 - Running Playbooks with Automation Controller
+Chapter 3 Running Playbooks with Automation Controller
 
 Introduction to Automation Controller
 - previously called 'Ansible Tower'
@@ -433,7 +433,7 @@ Creating Credential Resources
   - to synchronize project resources from remote repo
     - specify username and password or SSH private key
 - Vault
-  - use [ansible] vault credentials to decrypt from ansible vault
+  - use [ansible] vault credentials to decrypt from Ansible vault
 
 Chapter 4 Working with Ansible Configuration Settings
 
@@ -442,7 +442,7 @@ Inspecting the Ansible Configuration in Ipteractive mode
 - shows source of of current ansible-navigator configuration settings
 - useful for troubleshooting
 - each line shows values for:
-  - Name - internal name that ansible users for parameters
+  - Name - internal name that Ansible users for parameters
   - Default - whether parameter is using itd default value [True]
   - Source - when not Default, indicates here how parameter has been set
   - Current - actual value of parameter
@@ -598,7 +598,7 @@ Using Inventory Scripts
   - ansible.cfg
   - --inventory option
 Managing Multiple Inventories
-- ansible supports multiple inventories in the same run
+- Ansible supports multiple inventories in the same run
 - inventory location is a directory
 - all inventory files in it are combined
 - executable files are used to retrieve dynamic inventories
@@ -607,12 +607,12 @@ Managing Multiple Inventories
 - inventory files should not depend on other inventory files/scripts
 - currently multiple inventories are parsed in alphbetical order
   - make sure files are self-consisten
-- ansible ignores files with certain suffixes
+- Ansible ignores files with certain suffixes
   - controlled with inventory_ignore_extensions directive
   - default= .pyc|,pyo|.swp|.bak|~|.rpm|.md|.txt|.rst|.orig|.ini|.cfg|.retry
 
 Writing YAML inventories
-- ansible uses plugins to support differen formats for inventory files
+- Ansible uses plugins to support differen formats for inventory files
 - INI format for static inventories
 - plugins for dynamic inventories
 - most plugins are enabled by default
@@ -769,3 +769,1324 @@ Identify the Current host by using variables
   - list of all hosts that have not yet failed during the current play
   - and therefor are going to be used for the tasks remaining in the play
 
+Chapter 6 Privilege escalation strategies
+
+- at many levels
+- using directives
+- or connection variables
+- become | become_user | become_method | become_flags
+Privilege escalation by configuration
+- 'become' true in ansible.cfg; all plays use privilege escalation by default
+- they use the 'become_method' to change to the 'become_user'
+- if set to false in ansible.cfg,  can be overriden with -b options on CLI
+  Directive         CLI
+  become            --become or -b
+  become_method     --become-method=
+  become_user       --become-user=
+  become_password   --ask-become-pass or -K
+Privilege escalation in plays
+- if a play does NOT specify privilege escalation, default from config/cli is used
+- play overrides ansible.cfg and cli
+- to ensure correct escalation, always specify in playbook
+Privilege escalation in tasks
+- specified in taks overrides play/config/cli
+- highest precedence
+Grouping with Blocks
+- for subset of tasks on a play that require privilege escalation
+- use become: on block: of tasks
+- overrides play setting
+Privilege escalation in tasks
+- set inside the tasks in the role
+- of set in the playbook for the role
+Listing Privilege escalation with Connection Variables
+- apply as inventory variables on groups or individual hosts
+  Directive         ConnectionVariable
+  become            ansible_become
+  become_method     ansible_become_method
+  become_user       ansible_become_user
+  become_password   ansible_become_pass
+- connection variables override become settings in config/plays/tasks/blocks/roles
+Choosing Approaches
+- run tasks with least privilege possible
+- keep playbooks simple
+
+Controlling the order of execution
+- in a play Ansible always runs tasks from roles before tasks under tasks: section
+- even when roles: is lower in playbook thatn tasks:
+- good practice for readability to have roles: before tasks:
+Importing or Incldugin Roles as a Task
+- include/import roles as a task using the roles: section of the play
+  - easily run a set of tasks
+  - import/include a roles
+  - then run more tasks
+  - might be less clear which roles a playbook uses
+- use include_role: to dynamically include a role
+  - 'ansible-navigator run' parses and inserts the role at the include_role: task
+  - DURING execution
+  - aborts the execution if errors are detected
+- use import_role:  to statically import a role
+  - 'ansible-navigator run' starts by parsing and inserting the role
+  - BEFORE starting the execution
+  - does not start execution the playbook if errors are detected
+Defining Pre- and Post-tasks
+- to run tasks [and their handlers] BEFORE your roles
+- to run tasks AFTER normal tasks [and handlers] have run
+- pre_tasks:  run BEFORE roles:
+- post_tasks: run AFTER tasks: section and any handlers notified by tasks:
+Order of execution [as in the example p.237]:
+- pre_tasks
+- handlers: notified in pre_tasks [if any]
+- roles:
+- tasks:
+- handlers: notified in roles: and tasks:
+- post_tasks:
+- handlers: notified in post_tasks:
+
+- the order of these sections in the play does not change order of execution
+- good practice for readability to organize the play:
+  - follow order of execution
+  - pre_tasks | roles | tasks | post_tasks
+  - usually handlers: at the end of the play
+- handers: are called after running all of the tasks
+- to immediately run handlers: that haven been notified
+  - use the ansible.buitlin.meta: module
+  - with 'flush_handlers' parameter
+    - docs.ansible.com: to Execute Ansible 'actions'
+    - flush_handlers makes Ansible run any handler tasks which have thus far been notified. Ansible inserts these tasks internally at certain points to implicitly trigger handler runs (after pre/post tasks, the final role execution, and the main tasks section of your plays).
+- handlers: have global scope
+  - a play can notify: handlers: in roles
+  - on role can notify: handlers: by another role or by the play
+- handlers: are run in the order they are listed
+  - listed as in the handlers: section of the play
+  - NOT in the order they were notified
+
+Listening to handlers
+- a handlers can also 'subscribe' to a specific nnotification
+- and run when that notification is triggered
+- one notification can trigger multiple handlers
+- by default a handler runs when notify: matches the handler name
+  - each handler must have a unique name
+- to trigger multiple handlers at the same time
+  - the handlers can subscribe to the same notification name
+  - create a 'normal' handler
+  - use 'listen: <notification>'
+  - then the listen: is used by the handler instead of a call by name
+- particularly helpful with roles
+  - roles use notifcations to trigger handlers
+  - a role can notify: a handler when an event occurs
+  - other roles: play: may use this notification to run additional handlers
+    - defined outside the role
+Notifying Handlers
+- a task can nofity multiple handlers in at least tow ways:
+  - notify a list of handlers individually by name
+  - notify one name for which multiple handlers are configured to listen
+- if handlers are resue as a set by multiple tasks
+  - easiest way to use a listen: directive
+  - you can change the set of handlers included or not
+  - no need to update the task:
+Controlling the Order of Host Execution
+- hosts: determines which hosts to manage for a play
+- order is changable 
+  - on a play-by-play basis
+  - using order: directive
+  - possible values:
+    - inventory: inventory orde
+    - reverse_inventory: reverse inventory order
+    - sorted: sorted in alphabetical order, number before letters
+    - reverse_sorted: reverse alphabetical order
+    - shuffle: randomize every time the play runs
+Running Selected tasks
+- to run only a subset of plays/tasks in [large/complex] playbook
+- apply 'tags:'
+  - tag is a text label on a resource
+  - specifies what to run/skip
+  - tags: <list of tagnames>
+  - tag an entire play: tags: in head
+  - tag each task: most common, on task name level
+  - tag imported_task
+  - tag a role - all tasks in the role associated with the tag
+  - tag a block of tasks -  all tasks in block associated with the tag
+- on imported resource the tag applies to all tasks in imported role/task file
+- on included resource the tag ONLY applies to that task itself
+  - and ONLY runs tasks in the included role/task file that also uses the tag name
+Managing tagged resources
+- use ansible-navigator to run tasks with specific tags
+  - --tags to run
+  - --skip-tags to skip
+Combining tags to run multiple tasks
+- use comma separated list
+  - --tags install,setup
+- listing:
+  - ansible-navigator run -m stdout playbook.yml -i inventory --list-tags
+Assigning special tags
+- 'always'
+  - a resource tagged 'always' runs every time
+  - even if it does NOT match the list of tags passwd to --tags option
+  - only exception: when it is explicitly skipped
+    - using '--skip-tags always' option
+- 'never'
+  - a resource tagged 'never' does not run
+  - unless playbook is run with '--tags never'
+- 'tagged'
+  - runs any resource with an explicit tag
+- 'untagged'
+  - runs any resource without an explicit tag
+  - excludes all tagged resources
+- 'all'
+  - runs all tasks in play
+  - tagged or not
+  - is default
+
+Optimizing execution for speed
+- in number of ways
+  - optimize the infrastructure
+  - disable fact gathering
+    - gather_facts == ansible.buitling.setup
+    - hidden task
+    - provides info about nodes
+    - use through 'ansible_facts' variable
+    - collection info on EACH host takes time
+    - replace some gathered variables:
+        ansible_facts['hostname'], ansible_hostname, ansible_facts['nodename'], ansible_nodename
+        by
+        inventory_hostname, inventory_hostname_short magic variables
+  - reusing gathered facts with fact caching
+    - cache plug-ins store gathered facts or inventory source data
+      - gathered by a play
+    - fact cache can limit times you need to gather by reusing from cache
+    - always enabled
+    - can use only one cache plug-ing at a time
+    - 'memory' cache is enabled by default
+    - in multi play playbooks
+      - a first play can gather facts for [all] hosts
+      - subsequent play can use the facts
+      - and disable gather_facts for themselves
+    - use 'smart gathering'
+      - in ansible.cfg
+      - gathering=smart
+      - gathers facts for each NEW host in aplybook run
+        - if host used across multiple play
+        - NOT contacted again in the run
+  - fact caching works by default on automation controller
+    - you can select 'Enable Fact Storage' in job template
+      - changes caching plug-in
+      - to one that stores facts gathered by jobs launched by template
+      - facts can be reuse between multiple playbook runs
+    - default plugin is 'memory'
+      - only cache facts furing a particular job run
+
+Limit Fact gathering
+- disable fact gathering at play level
+- use ansible.builtin.setup module as explicit task
+- with its 'gather_subset' options:
+  - all | min | hardware | network | virtual | ohai | facter
+  - eg. '!network' to exclude the network facts
+- generally quicker than gathering at play level
+
+Increasing parallelism
+- Ansible runs first task on every host in current batch [of hosts]
+- the runs second task etc. until play completes
+- 'forks' parameter controls active connection at the same time [parallelism]
+- default is 5
+  - jobs are processed in groups of five hosts at a time
+- increasing the 'forks' allow for mote task simultaneously
+  - playbook may complete in less time
+  - place more load on control node
+- set 'forks' in ansible.cfg
+  forks=100
+- or on CLI -f option with ansible-navigator
+
+Avoid looping with Package Manager modules
+- some modules accept a list of items to work on
+  - do not require a loop
+  - eg. ansible.builtin.yum
+- increases efficiency
+  - job with list is called only one time
+  - job with loop is called for every item in the loop
+  - eg. package managers [yum/dnf]
+    - list: calls yum/dnf once for all packages
+    - loop: calls yum/dnf once for EVERY package
+- other do NOT accept a list
+  - eg. ansible-builtin.service
+  - loop is needed for multiple services
+
+Efficiently copying files to managed hosts
+- use ansible.builtin.copy:
+  - on multiple runs, subsequent runs take less time
+    - only files that are different are copied
+- more efficient to use ansible.posix.synchronize
+  - uses 'rsync' in the background
+  - usually faster than copy
+  - use option 'delete: true' can also remove file on target that no longer exist in source
+
+Using Templates
+- using eg. ansible.builtin.lineinfile: is inefficient with a loop
+  - and can als be error-prone
+  - eg whith several/alotof 'regexp;' options
+- use ansible.builtin.template: instead
+  - use a <name>.j2 templatefile as the src:
+
+Enable Pipelining
+- Ansible performs several SSH operation to run a task on a remote node
+- use pipelining feature to increase performance
+  - Ansible establishes fewer SSH connections
+- set ANSIBLE_PIPELINING environment variable
+  - true or false
+  - in execution environment
+  - default NOT used
+  - requires the 'requiretty sudo' option on all remote nodes disabled
+  - that sudo option by default already DISABLED on RHEL8
+    - may impair other platforms
+
+Profiling Playbook Execution with Callback Plug-ins
+- callback plug-ins extend Ansible
+  - by adjusting how it responds to various events
+- some plug-ins modify the output of the cli tools
+  - such as 'ansible-navigator'
+- eg. 'timer' plugin
+  - shows playbook execution time
+  - in output of ansible-navigator
+- ansible-controller logs some information about jobs
+  - extracted from ansible-navigator output
+  - so use callback plug-ins with caution
+- specified in ansible.cfg
+  - callback_enabled=time, profile_tasks, cgroup_perf_recap
+- use ansible-navigator to list available callback plug-ins
+  - $ ansible-navigator doc -t callback -l -m stdout
+  - $ ansible-navigator doc -t callback timer -m stdout
+
+Timing tasks and roles
+- to help identify slow tasks and roles
+  - 'timer'
+    - display duration of playbook execution
+  - 'profile_tasks'
+    - display start time of each task
+    - time spent on each task
+    - sorted in descneding order
+    - at end of palybook execution
+  - 'profile_roles'
+    - time psent on each roel at end of the output
+    - sorted in descending order
+- update 'callbacks_enabled' in ansible.cfg to activate
+
+Chapter 7 Transforming Data with Filters and Plugins
+
+Processing Variables using filters
+- variable values are applied using Jinja2 expressions
+  - eg. {{ variable }}
+  - also support 'filters'
+  - used to modify/process the value from the variable
+  - some filter provided by jinja2 language
+  - others by AAP plugins
+- use a pipe character to use a filter in jinja2 expression
+ - eg. {{ variable | filter }}
+
+Providing default variable values
+- 'default' filter
+  - to ignore undefined variable
+  - or to provide a value to an undefined variable
+    - eg. when creating a useraccount
+      "{{ item['shell'] | default('/bin/bash') }}"
+      if shell not defined use this default
+- when using a module, you must choose the keys in it for use
+  - undefined vars produces errors
+  - use the default filter to ignore the error
+- typically 'default' provides a value when not defined
+  - can provide a value when the variable is empty/false
+    - HV: 'empty/false' is NOT an error
+    - to 'force; default, use its option 'true'
+    pattern: "some text"
+    - "{{ pattern | regex-search('test') | default('MESSAGE') }}"
+      regex evaluates to empty string, default is NOT used
+    - "{{ pattern | bool | default('MESSAGE') }}"
+    - 'pattern' evaluates to false, default is NOT used [not set to true]
+    - "{{ pattern | bool | default('MESSAGE', true) }}"
+    - 'pattern' evaluates to false, default sets to true
+
+Variable types
+- Ansible store runtime data in variables
+- exact type of data defined by
+  - YAML structure
+  - content of the value
+- some value type:
+  - string: a sequence of characters
+  - number: a numeric value
+  - boolean: true/false value
+  - date: ISO08601 calender date
+  - Null: variable is/becomes undefined
+  - list/array: sorted collection of values
+  - dictionary: collection of key-value pairs
+- sometime value type conversion is needed
+  - eg. a value to int/float
+  - use a filter
+  {{ (ansible_facts['date_time']['hour'] | int ) +1 }}
+    - the gathered hour as string is converted to int and incremented by 1
+- various filters available
+  - eg. math operations
+    log | pow | root | abs | round
+    {{ 1764 | root }}
+    - takes the sqrt of the variable/value
+
+Manipulating Lists
+- many filters available
+  - if the list consists of numbers 
+    - use max | min | sum  for largest/smallest/total
+    - eg. {{ [2, 4, 5, 8, 10, 12] | sum }}
+Extracting List Elements
+- obtain information about the content of lists
+  - first element
+    {{ [2, 4, 5, 8, 10, 12] | first }} is eq( 2 )
+  - last element
+    {{ [2, 4, 5, 8, 10, 12] | last }} is eq( 12 )
+  - length of a list
+    {{ [2, 4, 5, 8, 10, 12] | length }} is eq( 6 )
+  - random element from a list
+    {{ ['Douglas', 'Marvin', 'Arthur'] | random }}
+Modifying the order of list elements
+- reorder a list
+  - 'sort' filter
+    "{{ [ 4, 8, 10, 6, 2 ] | sort }} is eq( 10, 8, 6, 4, 2] )""
+  - 'reverse' filter
+    "{{ [ 2, 4, 6, 8, 10 ] | reverse }} is eq( 10, 8, 6, 4, 2] )""
+  - 'shuffle' filter
+Merging lists
+- merge several lists into a single list
+  - to simplify iteration
+  - 'flatten' filter
+  - turns lists on the left to list on the right
+    "{{ [ 2, [4, [6, 8]], 10] | flatten }} is eq( [ 2, 4, 6, 8, 10 ] )"
+Operating on lists as sets
+- to ensure a list has no duplicates
+  - 'unique' filter
+    "{{ [ 1, 1, 2, 2, 2, 3, 4, 4 } | unique }} is eq( [ 1, 2, 3, 4, ] )"
+- to ensure a set with elements from both input sets
+  - 'union' filter
+- to ensure a set with elements common to both sets
+  - 'intersect' filter
+- to ensure a set with elements from the first set NOT present in the second
+  - 'difference' filter
+
+Manipulating Dictionaries
+- dictionaries are NOT ordered
+  - not in any way
+  - unlike lists
+Joining dictionaries
+- 'combine' filter
+  - entries from second dictionary have higher priority
+Converting dictionaries
+- convert dictionary to a list
+  - 'dict2items' filter
+- convert list to a dictionary
+  - 'items2dict' filter
+
+Hashing, Encoding and Manipulating Strings
+- compute checksums
+- create password hashes
+- convert text to/from Base64 encoding
+Hashing strings and passwords
+- 'hash' filter
+  - returns hash value of input string
+  - using the provides algorithm
+  "{{ 'Arthur' | hash('sha1') }}"
+- generate password hash
+  "{{ 'secret_password' | password_hash('sha512') }}"
+Encoding strings
+- translace binary data to base64 viceversa
+  - 'b64encode' filter
+  - 'b64decode' filter
+- sanitize a string before sending to the shell
+  - surround it by quotes
+  - 'quote' filter
+    shell: echo {{ my_string | quote }}
+Formatting text
+- enforce the case of an input string
+  - 'lower' filter
+  - 'upper' filter
+  - 'capitalize' filter
+    {{ 'Marvin' | lower }} 
+    {{ 'Marvin' | upper }} 
+    {{ 'Marvin' | capitalize }} 
+Replacing text
+- replace ALL occurences of a substring inside the input string
+  - 'replace' filter
+  - eg. replace 'ar' with asterisks
+  "{{ 'Marvine', 'Arthur' | replace('ar','**') }}"
+- to perform more complex searches and replacements
+- use regular expressions
+  - 'regex_search' filter
+  - 'regex_replace' filter
+  "{{ 'arthur', 'marvin' | regex_search('ar\S*r') }}"
+    - returns 'arthur'
+  "'{{ 'arthur up' | regex_replace('ar(\S*)r','\\1mb') }}' is eq( 'thumb up' )"
+
+Manipulating Data Structures
+- many data structures in Ansible in JSON format
+Data structure queries
+- extract information from Ansible data structures
+  - combine 'selectattr' filter
+    - to select a sequence of objects based on attributes of the objects in the list
+  - with 'map' filter
+    - to turn a list of dictionaries into a simple list based on a given attribute
+
+Parsing and encoding data structures
+- transform data structures to/from text
+  - useful for
+    - debugging
+    - communication
+- datastructures serialize
+  - to JSON format
+    - with 'to_json' filter
+  - to YAML format
+    - with 'to_yaml' filter
+  - to obtain formatted, human-readable output
+    - 'to_nice_json' filter
+    - 'to_nice_yaml' filter
+
+Templating external data using lookups
+- lookup plugin
+  - Ansible extension
+  - to Jinja2 templating language
+  - enable use of data from external sources
+    - such as files
+    - and shell environment
+  - called with one of two template functions
+    - 'lookup'
+    - 'query'
+    - syntax similar to filters
+      - specify the name of the function
+      - in () the name of the lookup plug-in
+      - and any arguments the plug-in needs
+    - eg. put contents of a file in a variable
+      - using 'lookup'
+    vars:
+      hosts: "{{ lookup('ansible.builtin.file', '/etc/hosts') }}"
+      - you can include more than 1 filename
+      hosts: "{{ lookup('ansible.builtin.file', '/etc/hosts', '/etc/issue') }}"
+        - content in resulting value is comma separated
+      - using 'query'
+    vars:
+      hosts: "{{ query('ansible.builtin.file', '/etc/hosts', '/etc/issue') }}"
+        - 'query' always returns a list
+
+Selecting Lookup Plug-ins
+- default numerous plug-ins provided
+- $ ansible-navigator doc -m stdout -t lookup -l
+  - to list lookup plugins available
+Reading contents of files
+- load contents of a local file in a variable
+  - 'file' plug-in'
+  - if relative path provided
+    - plug-ing looks in playbooks 'files' directory
+  - can parse YAML and JSON into properly structured data, using
+    - from_yaml
+    - from_json
+  - reads file that are in the execution environment'
+    - not on the control node
+    - or managed host
+  - execution environment read files inside of the execution environment container
+    - not on the host on which you run ansible-navigator
+- to use a file that is NOT in the execution environment or your projectdir
+  - use 'ansible.builtin.slurp' module
+    - instead of a lookup plug-in
+Applying data with a template
+- 'template' plug-in returns the contents of files
+  - difference to 'file'
+    - 'template' expects file contents in Jinja2 template
+    - it evaluates that template BEFORE applying the contents
+  - if relative path is passed
+    - plug-in looks for templatefile in playbook templates directory
+Reading command output in the execution environment
+- return output generated by the command 'raw'
+  - 'pipe' plug-in
+    {{ query('ansible.builtin.pipe', 'ls files') }}
+    - raw output as string
+- return output generated by the command 'split in lines'
+  - 'lines' plug-in
+    {{ query('ansible.builtin.lines', 'ls files') }}
+    - output as list
+Getting content from a URL
+- in similar way to 'file' get content from a URL
+  - 'url' plug-in
+  {{ lookup('ansible.builtin.url', 'https://my.site.com/my.file') }}
+  - many options available
+Getting information from the Kubernetes API
+- full access to k8s API
+  - 'kubernetes.core.k8s' plug-in
+  - through 'openshift' Python module
+  - only to extract information from the Kubernetes cluster
+    - use 'kubernetes.core.k8s' MODULE to manage the cluster
+Using custom lookup plugins
+- plug-ins are Python scripts
+- you can write you own
+- for Ansible to find them, copy to
+  - a custom Ansible Content Collection
+    - copy lookup plug-in scripts into .plugins/lookup directory
+  - a custom role
+    - copy lookup plug-in scripts into .filter_plugins directory
+  - an Ansible project
+    - copy lookup plug-in scripts into the .lookup_plugins directory in the same directory as the playbooks
+
+Handling lookup errors
+- most plug-ins are designed to abort the playbook in event of failure
+- 'lookup' function delegates execution to other plug-ins
+  - that might not need to abort playbook in such an event
+- 'lookup' can be adapted to different plug-in needs
+  - use 'error' parameter
+  {{ lookup('ansible.builtin.file', 'my.file', errors='warn') }}
+  - default value for 'errors' option is 'strict'
+    - raises a 'fatal' error
+  - 'warn' logs a warning
+  - returns an empty string/list
+  - has option 'ignore'
+    - silently ignore the error
+    - return emtpy string/list
+
+Implementing Advanced Loops
+- loops to iterate over tasks help to simplify playbooks
+- 'loop' keyword loops over a flat list of items
+- more complex loops can be constructed
+  - with lookup plug-ins
+- before Ansible 2.5
+  - with_items
+  - with_list
+- 'loop' has benefits:
+  - no need to memorize with_* scenario to use
+    - instead use plug-ins and filters to adapt a loop keyword
+  - focus on learning plug-ins and filters available in Ansible
+  - provides command-line acces
+- with_* is NOT deprecated
+
+Example iteration scenarios
+- iterating over a list
+  - with_items automatically performs 'one-level flattening'
+    - use 'flatten' filter on 'loop:' module
+    - use 'levels-1' argument to specify number of levels to search for
+- iterating over nested lists
+  - given p318 a 'users' variable
+    - is a list
+    - each entry is a dictionary
+      - containing strings, lists
+  - 'subelement' filter creates a single list from this nested list
+    - processes a list of dictionaries
+      - each dictrionary contains a key that refers to a list
+      - provide THAT key to the subelements filter
+      - creates a NEW list from the variable data
+        - each item is itself a two-element list
+- iterating over a dictionary
+  - dictionary == set of key-value pairs
+  - use 'dict2item' filter to transform the dictionary into a list
+    "{{ item['key'] }}"   geeft var name
+    "{{ item['value']['name'] }}"   geeft gebruikers name uit dictionary
+    loop: "{{ users | dict2items }}"
+-  iterating over a file globbing pattern
+  - iterate over files that match a provided file 'globbing' pattern
+  - use 'fileglob' lookup plug-in
+    ansible,builtin.debug:
+      msg: "{{ lookup('ansible.builtin.fileglob', '~/.bash*') }}"
+    - output a string
+    - to output a list
+      msg: "{{ query('fileglob', '~/.bash*') }}"
+      - is a list because data is enclosed in [ ]
+      - to use in a loop:
+        msg: "{{ item }}"
+      loop: "{{ query('fileglob', '~/.bash*') }}"
+- retrying a task
+  - run a play only until a specific condition is met
+  - use 'until:' directive
+    until: "'STATUS_OK' in smoke_test['content']"
+      - smoke_test is a registered variable in the task
+
+Using filter to work with network addresses
+- network information can be collected and processed
+- using a number of
+  - filters
+  - lookup plug-ins
+- useful with fact gathering
+  - to configure network devices on managed hosts
+- standard ansible.builtin.setup module
+  - gathers facts at start of many plays
+    - ansible_facts['interfaces']
+      - list of all network interface names on the managed system
+- useful facts to remember:
+  - ansible_facts['dns']['nameserver']
+  - ansible_facts['domain']
+  - ansible_facts['all_ipv4_addresses']
+  - ansible_facts['all_ipv6_addresses']
+  - ansible_facts['fqdn']
+  - ansible_facts['hostname']
+
+Network information filters
+- validate and manipulate networking-related data
+  - stored in variables and facts
+- 'ansibile.utils.ipaddr' filter
+  - validates syntax op IP addresses
+  - filters out bad data
+  - converts from VLSM subnetmasks to CIDR subnet prefix
+  - performs subnet math
+  - finds next usable address in a network range
+Testing IP addresses
+- ansible.utils.ipaddr
+  - accepts a single value
+    - IP address : returns IP address
+    - hostname : returns IP address
+- {{ my_hosts_list | ansible.utils.ipaddr }}
+Filtering data
+- supply filter with an appropriate option
+  - output in CIDR notation
+  - ansible.utils.ipaddr('netmask') - display the netmask
+  - ansible.utils.ipaddr('host') - only valid individual IP addresses 
+  - ansible.utils.ipaddr('net') - filter out invalid network addresses
+  - ansible.utils.ipaddr('private') - display private spaces
+  - ansible.utils.ipaddr('public') - display address in public address space
+  - ansible.utils.ipaddr('ipwrap') - put brackets around IPv6 addresses
+Manipulating IP addresses
+- to return an IP
+  - "{{ '192.0.2.1/24' | ansible.utils.ipaddr('address') }}"
+- to return the 'variable-length subnet mask' [255.255.255.0]
+  - "{{ '192.0.2.1/24' | ansible.utils.ipaddr('netmask') }}"
+- to return the CIDR prefix [24]
+  - "{{ '192.0.2.1/24' | ansible.utils.ipaddr('prefix') }}"
+- to return the broadcast address
+  - "{{ '192.0.2.1/24' | ansible.utils.ipaddr('broadcast') }}"
+- to return the network address
+  - "{{ '192.0.2.1/24' | ansible.utils.ipaddr('network') }}"
+- to return the IP in DNS PTR record format
+  - "{{ '192.0.2.1/24' | ansible.utils.ipaddr('revdns') }}"
+Reformatting or calculating network information
+- display an IP on a given network
+  - the 5th address on the network
+  "{{ '192.0.2.0/24' | ansible.utils.ipaddr(5) }}"
+- display usable range of the network
+  "{{ '192.0.2.0/24' | ansible.utils.ipaddr('range_usable') }}"
+- display if given address is usable
+  - returns true/false
+  "{{ '192.0.2.0/24' | ansible.utils.network_in_usable('192.0.2.5') }}"
+- aggregate a list of subnets and individual hosts
+  - into the minimal representation
+  "{{ my_networks | ansible.utils.cidr_merge }}"
+    - overlapping entries in the list are merged
+
+Chapter 8 Coordinating Rolling Updates
+
+Delegating Tasks
+- sometime you may need to perform task[s] on another host on behalf of the managed host
+- 'delegate' a task to run on another host insted of the current managed host
+- 'delegate_to' directive
+- the host to delegate to does not need to be listed in the inventory
+- hv: it's just a task run on another host than set by the hosts: directive
+Delegating to the execution environment
+- most common place to delegate
+- or to 'localhost'
+- eg. to communicate
+  - to something unreachable from managed host but
+  - reachable from exec.env/localhost
+- in AAP2, $ ansible-navigator with 'delegate_to: localhost'
+  - runs within the automation exec.env
+  - privilege escalation may fail is sudo cmd not present
+  - assumed resources on controlnode may not be present in exec.env
+
+Delegating Facts
+- when delegating a task
+  - Ansible uses the host vars/facts for the MANAGED host
+    - the current 'inventory_hostname'
+  - eg. task for 'demo' delegated to 'localhost'
+    - vars/facts for 'demo' are used
+- assign facts collected by delegated task
+  - to the host to which the task was delegated
+  - use 'delegate_facts' directive
+  - gathers facts in hostvars['<delegated_to_host>'] namespace
+
+Configuring Parallelism
+Using Forks
+- when Ansible processes a playbook, it runs each play in order
+  - first determines list of hosts for the play
+  - then run through each task in order
+  - a host must successfully complete a task before next host starts
+- in theory Ansible can connect to all hosts in a play simultaneously
+  - can put heavy load on control node and exec.env
+- maximum number of simultaneous connections
+  - controlled by 'fokrs' parameter
+  - in ansible.cfg
+  - default '5'
+  - check: $ ansible-navigator -m stdout config dump
+- a task in a play runs on first number of hosts as in 'forks'
+  - followed by next round
+  - until all host have passed
+  - then next task is started
+- default forks is conservative
+  - for tasks mostly running on managed hosts: raise forks
+  - for tasks running in exec.env
+    - eg. when mananging network routers/switches
+    - raise judiciously
+      - increases load o exec.env
+  - set in ansible.cfg
+  - use -f with ansible-navigator run
+
+Running Batches of Hosts
+- normally
+  - Ansible ensures all managed hosts
+  - complete each task
+  - before it starts the next task
+  - can take out all hosts service in a play
+- use 'serial:' directive
+  - to run on hosts in batches
+  - task runs on # of host set with serial:
+  - when the batch of have completed, next batch of hosts run
+  - Ansible continues until all managed host have run
+  - if a play fails on a batch of hosts
+    - the playbook aborts
+    - play does NOT run on remaing hosts
+  - can be specified as a percentage
+
+Managing Rolling Updates
+- a strategy that staggers deployments to batches of servers
+- infrastructure deployment can complete with zero downtime
+- Ansible can halt deployment
+  - limit the errors to servers when a problem occurs
+  - with test and monitoring in place:
+    - roll back configuration
+    - quarantine affected hosts
+    - send notifications to stakeholders
+Controlling Batch Size
+- default: run a play one task for all host before next task
+- use 'serial:' directive to process hosts through a play in batches
+Setting batch size
+- use an integer
+- use a percentage
+- gradually change batchsize by setting a list of values
+    - serial:
+      - 1
+      - 10%
+      - 100%
+  - first batch contains a single host
+  - second batch is 10% of total hosts as configured in play
+  - third batch is all remaining hosts
+  - if unprocessed hosts remain after last list value
+    - last batch [serial value] repeats until all hosts processed
+Aborting the play
+- by default: get as many hosts to complete a play as possible
+- if task fails for host
+  - host is dropped from play
+  - Ansible continues to run remaining tasks for other hosts
+  - play only stop if ALL hosts fail
+- if serial: is set
+  - Ansible stops play for all remaining hosts
+    - if all hosts in current batch fail
+    - not just the remaining hosts
+  - if all hosts in batch fail the play aborts
+- 'ansible_play_batch' variable
+  - keeps list of active servers for each batch
+  - Ansible removes a host that fails task from the list
+  - Ansible updates the list after every task
+Specifying failure tolerance
+- by default: play execution halts when all hosts in a batch fail
+- you can alter the failure behavior
+  - use' max_fail_percentage' directive
+  - when number of failed hosts in a batch exceeds th %
+    - Ansible halt playbook execution
+  - set to zero
+    - to implement a "fail fast" strategy
+Summarized Ansible failure behavior
+- if serial: and max_fail_percentage: are NOT defined
+  - all hosts are run through the play in one batch
+  - if all hosts fail, the play fails
+- if serial: IS defined and max_fail_percentage: NOT
+  - hosts are run through the play in multiple batches
+  - the play fails of all hosts in any one batch fail
+- if max_fail_percentage IS defined
+  - the play fails if more than that percentage of hosts in a batch fail
+
+Running a task once
+- to run a task once for an entire batch of hosts
+  - rather than once for each host in the batch
+- use 'run_once:' directive
+  - true/false value
+  - can be combined with delegate_to:
+  - set 'true' causes a task to run once for each batch
+  - if needed to run only once foor all hosts in a play
+    - add following conditional statement to the task
+    when: inventory_hostname == ansible_play_hosts[0]
+
+Chapter 9 Creating Content Collections and Execution Environments
+
+Developing Ansible Content Collections
+- Red Hat, its partners and AnsibleCommunity provide many collections
+- when no collection is available
+- or you need a custom collection
+- consider developing collections
+- collection not available with Ansible 2.8 and older
+
+Selecting a Namespace for Collections
+- Ansible organizes collections in namespaces
+- namespace is the first part of a collection name
+  - eg. for amazon.aws collection
+  - 'amazon' is the namespace
+- carefully choose a namespace
+  - to publish to Ansible Galaxy
+    - use your Ansible Galaxy username as namespace
+  - to publish to private automation hub
+    - ask platform admin to create a namespace
+    - or create yourself if you have required permissions
+  - to publish to automation hub as a Red Hat partner
+    - use the namespace that Red Hat hsas assigned for your company
+Creating the Collection Directory Structure
+- use 'ansible-galaxy collection init' command
+  - specify the name of the collection
+  - inclduing the namespace
+  $ ansible-galaxy collection init mynamespace.mycollection
+- creates a directory and file structure
+- you can remove any file/dir that is not being used
+Adding Content to a Collection
+- organize modules/plug-ins/files in subdirs
+  - under plugins/ directory
+- move roles in their directory structure
+  - under roles/ directory
+  - to create a role for the collection
+    - use $ ansible-galaxy role init <rolename>
+Updating Collection Metadata
+- galaxy.yml
+  - in root of collection dir
+  - provides info for Ansible
+    - to build
+    - and publish the collection
+  - comments that describe each parameter
+Declaring Collection Dependencies
+- collections may depend on other collections
+- a role in a collections might call modules from other collections
+- use 'dependencies:' paramater in galaxy.yml file
+  - is a dictionary of lists
+    - key is the collection FQCN
+    - value is the collection version
+    eg.:
+    dependencies:
+      community.general: '>=1.0.0'
+  - ansible.builtin NOT needed to be declared
+- more complex collections might provide modules/plugins/filter that depend on additional Python libraries
+  - corresponding Python packages must be installed in exec.env
+  - for those Python dependencies
+    - create a 'requirements.txt'
+    - at the root yo the collection
+    - each line declares a Python package
+- some collections also require system-level packages in the exec.env
+  - at the root of your collections
+  - create the 'bindep.txt' file
+  - list the RPM's
+  - one per line
+  - eg: rsync [platform:centos8 platform:rhel8]
+  - the bindep tool processes the bindep.txt file
+    - can manage package for several Linux distros
+- when 'ansible-galaxy collection install' is run [by user/controller]
+  - automatically installs additional collection
+  - you may have declared in galaxy.yml
+  - does NOT process requirements.txt for Python packages
+  - does NOT process bindep.txt for system packages
+  - the 'ansible-builder' command to create exec.env
+    - DOES process all those files
+- define additional metadata for the collection
+  - in meta/runtime.yml file
+    - add 'requires_ansible' parameter for a specific version of Ansible
+    - mandatory if you plan to publish to
+      - Ansible Galaxy
+      - automation hub
+      - private automation hub
+Building Collections
+- run 'ansible-galaxy collection build'
+- results in .tar.gz file
+- then test/share/publish this .tar.gz
+Validating/Testing collections
+- when a collection is published to private automation hub
+  - the platforms automatically run some test
+  - private automation hub uses 'ansible-lint'
+- collection for automation hub are test more thoroughly
+  - using 'ansible-test' tool
+- recommended to install and use
+  - ansible-list
+  - ansible-test
+- you cannot directly use the collection 
+  - build and install the collection from the .tar.gz
+
+Publishing Collections
+- use platform web UI to publish your collection from the .tar.gz
+- private automation hub
+  > Collections Namespaces
+    > Upload collection
+    - an admin must review and approve
+    > Collections > Approval
+- whenever you modify you collection
+  - edit galaxy.yml
+  - update version: parameter
+  - otherwise the platform rejects the collection
+  - create a .tar.gz
+  - publish the new version
+- ansible-galaxy command ALSO supports publishing collections
+  - update ansible config file
+  [galaxy]
+  server_list = inbound_mynamespace
+  [galaxy_server.inbound_mynamespace]
+  url=https://<url>
+  token=<token>
+    - use webUI for inbound URL for you namespace
+      > Collections > Namespaces > View collections > CLI configuration
+      - retrieve API token
+      > Collections > API token management > Load token
+      - update token line with the authentication token
+    - run ansible-galaxy collection publish <mycollection.tar.gz>
+
+Building a Custom Automation Execution Environment
+- using ansible-builder
+Deciding when to
+- Red Hat provides several that suit needs of many
+- these include the most comment Ansible Content Collections
+- to inspect a container image and view collections/PythonPkgs/OSpkgs
+  - ansible-navigator images
+- sometimes you might need an Ansible Content Collection
+  - not included in one of existing exec.envs
+  - often you can install the extra collection
+    - in your Ansible project
+    - then use an existing exec.env
+    - withtou having to build a new one
+- consider create a custom exec.env when
+  - you frequently reuse specific collections
+    - not included in existing exec.envs
+    - especially if you have many projects that use this collection
+  - the collection you want requires Python packages
+    - not included in existing exec.env
+  - the collection conflicts with another collection
+    - in existing exec.envs
+
+Preparing for a new Automation exec.env
+- use 'ansible-builder' command to create the container images
+- provided by ansible-builder RPM
+- create a workdir for the build
+- 'execution-environment.yml' file determines how to build the image
+  - see example p418:
+  ---
+  version: 1
+  build_arg_defaults:
+    EE_BASE_IMAGE: <image to use as starting point>
+    EE_BUILDER_IMAGE: <image that includes tool for the buildprocess>
+  ansible_config: ansible.cfg
+  dependencies:
+    galaxy: requirements.yml
+    python: requirements.txt
+    system: bindep.txt
+Declaring the Ansible Content Collections to install
+- requirements.yml
+  - list content collections
+  - used by ansible-builder
+  - to install in exec.env
+  - YAML format
+  - simple:
+    - name of the collection[s]
+  - more complex:
+    - name of collection[s]
+    - specific verions
+    - source
+      - for private automation hub
+        - also provide a token
+        - in an ansible.cfg
+Declaring Python packages
+- requirements.txt
+  - list Python packages
+  - used by ansible-builder
+  - to install in exec.env
+  - provide name
+      textfsm
+  - and/or name and version
+      jsonschema>=3.2.1
+Declaring RPM packages
+- bindep.txt
+  - list RPM packages
+  - used by ansible-builder
+  - to install in exec.env
+  - provide name and distro target directive
+      rsync [platform:rpm]
+- some collections include a bindep.txt file
+  - no need to duplicate in your own
+- if system has valid subscription
+  - ansible-builder has access to the same RPM packages
+- otherwise the build process only has access to
+  - Red Hat Universal Base Images repos
+  - 'UBI' repos
+  - publicly available
+  - only provide a limited set of RPM packages
+  - package in your bindep.txt might not be available in these repos
+
+Building a new Automation execution environment
+- ansible-builder automatically pulls base and builder images
+  - if not already available locally
+  - if authentication is equired
+     - you must provide it
+     - BEFORE starting the build process
+- login to Red Hat container registry
+  $ podman login registry.redhat.io
+- create exec.env
+  - use --tag/-t to provide a name for the container image
+  $ ansible-builder build --tag ee-demo:v1.0
+  $ podman images
+Interacting with the build process
+- for more advanced configurations
+  - eg. private automatino hub uses TLS
+  - you must provide the CA certificate
+- the exec.env builder operates in two stages:
+  1. create context/ directory
+  - in current directory
+  - creates Containerfile in there
+    - contains instructions for 'podman build' command
+  - also create _build/ directory
+    - copies files into it
+    - so build process can access them
+      - requirements.yml
+      - requirements.txt
+      - ansible.cfg
+      - bindep.txt
+  2. the command runs 'podman build'
+  - constructs the resulting exec.env container image
+- to prepare for customizing the build process
+  - use 'ansible-builder create' command
+    !! overwrites existing context/Containerfile
+
+Adjusting the build arguments and base image
+- default values can be specified in execution-environment.yml
+  - defining build_arg_defaults variable
+  - as dictionary 
+  - of arguments
+  - and their values
+  - using --build-arg on CLI
+  - values in execution-environment.yml take precedence
+- build arguments used by ansible-builder
+  - ANSIBLE_GALAXY_CLI_COLLECTION_OPTS
+    - passes optional CLI options
+    - to ansible-galaxy command used by build process
+  - EE_BASE_IMAGE
+    - parent image for the exec.env
+  - EE_BUILDER_IMAGE
+    - image used for compiling tasks
+  - arguments are hardcoded into the resulting Containerfile
+Modifying the Containerfile
+- available after 'ansible-builder create'
+  - in context/ directory
+- can be modified to needs
+- hv: dockerfile syntax
+Building the exec.env image
+- manually execute the second stage
+  - 'podman build' command
+  $ podman build -f context/Containerfile -t ee-demo:v2.0 context
+
+Validating a Custom exec.env
+- ansible-builder create autoatmion exec.env
+- validate that it works correctly
+- list installed collections
+  - $ ansible-galaxy collection list
+  - recursively remove the dir removes the collection
+Running a test playbook
+- create a playbook to use a module/role from you collection
+  - FQCN
+    - name: test my custom modules
+      mynamespace.mycollection_mymodule:
+- when using automation exec.env:
+  - 'localhost' is the container itself
+  - NOT the machine where ansible-navigator is run
+  - this is different from the 'ansible-playbook' command
+  - add the local machine in the inventory
+    - modify plays/tasks
+    - to point to that machine
+- use ansible-navigator to run test playbook
+  - use -i to specify inventory file/directory
+  - use --eei to specify exec.env image
+  - if container image exists locally
+    - use '--pull-policy (--p) never'
+    - otherwise attempt to pull from Red Hat or Dockerhub
+  - add --become (-b) if needed
+  - add --mode (-m) stdout if desired
+  $ ansible-navigator run test_playbook.yml -i inventory \
+    > --eei localhost/ee-demo:v2.0 -pp never -m stdout
+
+Providing Authentication Credentials
+- an ansible play on a managed host generally requires authentication
+  - to log in
+  - to make changes
+- for Linux one common solution
+  - install a user
+    - specified by 'remote_user' directive
+    - with public SSH key
+    - that matches private SSH key to the exec.env
+Automation Controller Machine Credentials
+- controller can store private SSH key in a 'machine credential'
+  - a special resource
+  - can be update from webUI
+  - can not be read from webUI
+- for SSH authentication
+  - is can store SSH username and password
+Automation Content Navigator Authentication
+- can get your private SSH key from ssh-agent
+  - runs automatically in Gnome desktop
+  - run eval $(ssh-agent) when login from terminal
+    - run ssh-add to add private key
+- NOT recommended to store private SSH key in 'private_key_file' directive
+- by default ansible-navigator does NOT prompt
+  - NOT for passwords
+  - NOT for other interactive input
+  - you can NOT use options for
+    - connection password (--ask-pass)
+    - privilege escalation (--ask-become-pass)
+    - vault passwords (--ask-vault-pass)
+  - this is intentional
+    - controller does NOT support it either
+- to enable support for interactive prompts for passwords
+  - either use '--pae false' option
+  - or edit ansible-navigator.yml and add:
+    playbook-artifact:
+      enable: false
+    - additionaly use -m stdout option
+
+Sharing an Automation exec.env from Private automation hub
+- ansible-builder creates exec.env image on local system
+- for automation controller to access these images
+  - push them to a container registry
+    - such as Quay.io
+    - of private automation hub
+- it is NOT allowed to publicly distribute images built on top of Red Hat provided images
+- to push a container image to a private automation hub
+  - list local image(s)
+    $ podman images
+  - tag the image
+    $ podman tag localhost/ee-demo:v2.0 hub.example.com/mynamespace/ee-demo:v2.0
+    - if you do NOT specify a tag
+      - 'latest' is used as tag
+  - login to private automation hub
+    $ podman login hub.example.com
+  - push the container image
+    $ podman push hub.example.com/mynamespace/ee-demo:v2.0
+
+Using Custom Content Collections and Exec.Envs in Automation Controller
+- to run an Ansible playbook that requires
+  - an Ansible Content Collection
+  - that is not included
+  - in an existing automation exec.env
+- one of yout automation exec.ens might already provide
+  - all the resources needed by the collection
+  - but not the collection itself
+- then you can configure automation controller
+  - to automatically download the collection
+  - into the automation exec.env
+  - when it runs your playbbok
+- two things needed for this
+  - collections/requirements.yml file
+    - in your Ansible project
+    - which specifies the additional collections
+    - your playbook needs
+  - configure automation controller
+    - with the authentication credentials 
+    - it needs to access the Ansible automation hub
+    - that stores those collections
+Preparing Ansible projects for automation controller
+- when you run ansible-navigator run <playbook>
+  - that requires Ansible Content Collections
+  - that are not in the automation exec.env
+  - you must manually install the collections
+- usually the project provides 
+  - a collections/requirements.yml file
+  - to process with $ ansible-galaxy collection install -r collections/requirements.yml
+- automation controller does not reuiqre you to manually run this command
+  - it automatically runs the following command
+  - to install collections and roles
+  - when you run a playbook
+  $ ansible-galaxy collection install -r collections/requirements.yml
+  $ ansible-galaxy role install -r role/requirements.yml
+  - the collections/requirements.yml file
+    - might point to collections
+      - on Ansible automation hub
+      - or private automation hub
+Storing Authentication Credentials for Collections
+- automation hub and private automation hub require login credentials
+  - you need to configure automation controller
+    - with a credential that provides
+      - the automation hub API token
+      - and URLS for Ansible automation hub
+      - and for any private automation hub
+    - that you playboko uses to download collections
+  - Log in to automation controller webUI
+    > Resources > Credentials > Add
+      > Ansible Galaxy / Automation Hub API Token
+        - enter URL
+        - enter token
+      - obtain the Ansible automation hub URL and token at
+        - https://console.redhat.com/ansible/automation-hun/token
+  - Associate the credential with all the organizations in automation controller
+    > Access > Organizations
+    - select an Organization
+    > Edit
+      - enter credentail in Galaxy Credentials field
+      > Save
+- if you installed automation controller and hub at the same time
+  - following credentials resources are created
+    - Automation Hub Community Repository
+    - Automation Hub Published Repository
+    - Automation Hub RH Certified Repository
+  - these use the API token for the private automation hub 'admin' user
+    - loading a new token in the private automation webUI deletes the previous token
+    - you must update these automation controller credentials with the new API token
+
+Using Custom Automation Exec.Envs with Automation Controller
+- automation controller uses an exec.env to run playbooks
+- by default supported exec.envs from Red Hat included
+- you can use own custom exec.envs
+- configure automation controller
+  - to download the container images for these exec.envs automatically
+  - configure controller with a credential
+    - to use to authenticate
+    - to the container registry containing your image
+    - with information about what container images to pull
+      - from where
+      - how often
+    - (optional) specify a default exec.env
+    - (optional) specify an exec.env
+      - when running a playbook from a particulas template
+      - if you do not want the template to use
+        - the project's default exec.env
+Storing Container Registry Credentials
+- automation controller automatically downloads [any] container image
+- many container registries require authentication
+  - configure automation controller
+    - with a credentail
+    - to store this authentication info
+    > Log in web UI
+    _ Resources > Credentials > Add
+      - select 'Container Registry' credential type
+        - enter URL
+        - enter username
+        - enter password
+        > Save
+- if you installed automation controller and hub at the same time
+  - installation script creates
+    - 'Automation Hub Container Registry' credential
+      - uses private automation hub 'admin' user
+      - and password specified during installation
+    - if you update the password for this 'admin' user
+      - you must update the 'Automation Hub Container Registry' credential as well
+Configuring Automation Exec.envs
+> Log in to webUI
+  > Administration > Execution Environments > Add
+  - complete the form
+  - if you do not specify a tag
+    - the tag defaults to 'latest'
+      - might be problematic
+      - eg. when a new untested image is pushed untagged
+      - all jobs will start with using this untested image
+Configuring the default Automation Exec.Env
+- when setting up an Ansible project
+ - you can specify a default exec.env
+ > log in to webUI
+ > Resources > Projects > Add
+ - complete the form
+Specifying an Exec.env in a template
+- a template specifies all parameters controller needs to run a playbook including
+  - project containing the playbook
+  - inventory to use
+  - machine credentials for access to managed nodes
+- you can also select a specific exec.env
+  - overrides the default exec.env
+  - first you use a new exec.env
+    - controller must download the container image
+      - if it's not present

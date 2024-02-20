@@ -2,7 +2,7 @@ Chapter 1
 - AAP2 simplifies development and use of Ansible Playbooks at scale
   - by introducing Ansible Content Collections
   - and automation execution environments
-- Automation content navitor == ansible-navigator
+- Automation content navigator == ansible-navigator
   - can extend and replace many previous Ansible commands
   - including ansible-playbook
 - Ansible Content Collections provide
@@ -33,7 +33,7 @@ Chapter 2
   - to list other resources
 - use FullyQualifiedCollectionNames
 - ansible-galaxy collection install
-  - to install Asnible Content Collectinos
+  - to install Ansible Content Collectinos
   - --collections-paths specifies installation directory
 - collections/requirements.yml
   - to list Ansible Content Collections required for the project
@@ -49,7 +49,7 @@ Chapter 3
 - Automation contoller project specifies
   - location of a Git repo
     - that stores Ansible code
-    - a source contolre credential
+    - a source contoller credential
 - Automation controller job template specifies
   - inventory
   - machine credentials
@@ -86,9 +86,89 @@ Chapter 5
 - use YAML inventory plug-in for static inventories in YAML format
 - use 'ansible-navigator inventory' to convert INI to YAML format
 - good practice: keep most variables out of static inventory files
-- take advantage of inventory groups to improve maintainanbility
+- take advantage of inventory groups to improve maintainability
   - group_vars/ dir
-  - host_vars dir
+  - host_vars/ dir
 - use special inventory variables
   - to control connections
   - to make playbook output more readable
+
+Chapter 6
+- privilege escalation configured on multiple levels
+  - play
+  - role
+  - block:
+  - task:
+- uses several directives
+  - become
+  - become_user
+  - become_method
+  - become_flags
+- ansible runs play sections in following order
+  - pre_tasks
+  - roles
+  - tasks
+  - post_tasks
+- handlers run in the same order as they appear in the play
+- use tags to select/skip tasks during play execution
+- disabling fact gathering speeds up playbook execution
+- use callback plug-ins to 'profile' playbooks
+  - timer
+  - profile_tasks
+  - profile_roles
+
+Chapter 7
+- use filters in Jinja2 expressions and templates, to
+  - format data
+  - transform data
+  - parse data
+- filters provided by
+  - Jinja2
+  - Ansible Content Collections
+- you can apply multpiple filters sequentially in the same Jinja2 expression
+- lookup plug-ins
+  - get data from external sources for plays
+  - run in the execution environment
+    - NOT on the managed host
+- you can combine filter and lookup plug-ins
+  - to implement sophisticated loops
+- Ansible provides manny supplementary filters
+  - for processing networking related data
+  - such as 'ansible.utils.ipaddr'
+
+Chapter 8
+- 'delegate_to' keyword can delegate a task to run on a different host
+- 'forks:' parameter in Ansible config file specifies maximum number of prallel connections to managed hosts
+- 'serial:' keyword to run hosts through a play in batches
+- 'max_fail_percentage:' keyword to abort the play if more than a certain percentage of hosts in the current batch fail
+- 'run_once:' keyword to run a task once for a batch rather than once for each host in a batch
+
+Chapter 9
+- 'ansible-galaxy collection init'
+  - creates directory
+  - for new Content Collections
+- dependencies for a collection are specified in three files
+  - galaxy.yml        : other collections under the 'dependencies' paramater
+  - requirements.txt  : Python packages
+  - bindep.txt        : RPM packages
+- 'ansible-galaxy collection publish'
+  - to publish collections
+  - on private automation hub
+- 'ansible-builder'
+  - creates custom exec.envs
+- execution-environment.yml file
+  - configfile for ansible-builder
+    - specifies collections
+    - Python packages
+    - RPM's
+- 'podman images, podman tag, podman push'
+  - to list, tag and push exec.envs
+  - to a container registry
+- automation controller can automatically pull collections and roles
+  - specified in Ansible project's 'requirements.yml'
+    - needs to set up stored credentials
+    - so it can authenticate
+    - to automation hub
+- automation controller can use and automatically pull custom exec.envs
+  - first needs credentials for the container registry configured
+  - and location specified
