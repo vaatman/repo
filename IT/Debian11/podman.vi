@@ -4,3 +4,19 @@ Install podman on Debian11
 . install
 $ sudo apt update
 $ sudo apt install podman cockpit-podman
+
+. create Dockerfile
+FROM debian:latest
+
+RUN apt-get update && apt-get install --no-install-recommends -y nginx curl netcat-openbsd; \
+  echo "daemon off;" >> /etc/nginx/nginx.conf
+
+EXPOSE 80
+CMD ["/usr/sbin/nginx"]
+
+. build
+$ podman build -t simple-nginx .
+
+. run
+hennie@T5810:~/PODMAN/simple-gninx$ podman run -i -t simple-nginx /bin/bash
+root@660d5aacf28d:/# 
