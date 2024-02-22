@@ -19,3 +19,4 @@ $ vi Vagrantfile, add a line for the nfs synced_folder:
 51    config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false
 
 . vagrant up
+.
