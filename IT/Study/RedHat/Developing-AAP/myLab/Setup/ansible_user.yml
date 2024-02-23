@@ -1,0 +1,14 @@
+---
+- name: Play settings
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+  - name: ensure user ansible
+    ansible.builtin.user:
+      name: ansible
+      shell: /bin/bash
+      groups: wheel
+      append: yes
+      password: "{{ 'Welcome@2024'|password_hash('sha512') }}"

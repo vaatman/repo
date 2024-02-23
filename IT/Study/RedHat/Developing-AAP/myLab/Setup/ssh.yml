@@ -1,0 +1,26 @@
+---
+- name: Play settings
+  hosts: all
+  become: true
+
+  vars:
+    someuser: "{{ ev_user }}"
+
+  tasks:
+    - name: ensure .ssh dir
+      ansible.builtin.file:
+        state: directory
+        path: "/home/{{ someuser }}/.ssh"
+        mode: 0700
+        owner: "{{ someuser }}"
+        group: "{{ someuser }}"
+
+    - name: copy ssh public key
+      ansible.builtin.copy:
+        dest: "/home/{{ someuser }}/.ssh/authorized_keys"
+        mode: 0600
+        owner: "{{ someuser }}"
+        group: "{{ someuser }}"
+        content: |
+          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDTqn47MM7n3wqW3R7FIfoAPrfUDpABj5phKxD7oQgN9V/KnJZZPhoboUJ0QvuXRJxkUJYJb8OKGciNsRUgiMpE0TDI2OXgDMKoMB0jpffgO8RGXS4LMqy504y3+2/7rMbCVQNWXKpSXW+rUfhOw6rsCOfejvh6GekanYK/MwBUwl8eYqwnUJff6T4UxAdHby8tE3YsAbI3q+EjYi+lSISGQCo4vZNES/GnOFEp0fOWHS2fNiyuxnjon7f8oREODnARkzIiz14tPPk5GTflc1ZCUcP+a/DRlpL888pWOd1mlxLZVB/tfqfjY84iUnbNo0mhBDpXwfcPQrTsU3JxTqh2ofsoLfs44bWeza17vKphQimEC0lD5ovpge5SvVJHt1mLdMFM8wPsAvFjXrTFbrWk9bPfajg8W1ewBKBXGeIvkHzS5sR/FDs8f+VDXOf3beNgr10adPKUKdYw2xsauYzl6mQlXIarJhRY0mPevzZE06+5DZ8/tB2JkUJkMLOkMn8= ansible@T5810
+          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDJ5ex/A1kZI5tNZG6lce60SRPK9nGDnJubaQHow906jVkW44qwAX3GzyPk97umFNjDJaOBuTivgHkLQ1WFrNCGN1DgX4k1JSRZlvudyWpnZjOvz0W+aqpBn3w/xHmcHTJiknCAlTxOhE0oCIH8I+wgzFQLGyA4q9BNXy/AafMxyRMhkPP8dxwqVI8dBmPu9TPIJs42nvhSqC35jER24qoCaygZXayMLAHzHOfxwBlZJRtb240wjSclDS6cb29t3Z8zfhY0kCcASxCrQlYWxj1a/27GRdz0wrnVNOprJ2keoEGaosVWrFhB5ENSDgaYoQsN5+zmjLIleMZEZeJWLzuym33KFGZsMFhtr0xFNCRu2pdU2yBV/B3oThUoVXgnlpKthfRhAGT+2aMSnoNO/8GbyLveIesrXqKic+DCD/vyBnIIp/Oj4sI+Ca1pDB2KtGMoYRcyrarDgo6VdPDxbWPFktI/sraaIgkxhYXFL8rE6dve+XWgZ80poZPTF9lMyTM= hennie@zolder-t5810

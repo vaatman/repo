@@ -1,0 +1,19 @@
+---
+- name: Play1 settings
+  hosts: rocky-92-01
+  become: true
+  gather_facts: false
+
+  vars: []
+
+  tasks:
+  - name: install packages
+    ansible.builtin.yum:
+      state: present
+      name:
+        - podman
+        - python3-pip
+  - name: install ansible-navigator
+    ansible.builtin.shell: |
+      python3 -m pip install ansible-navigator --user
+    become_user: hennie

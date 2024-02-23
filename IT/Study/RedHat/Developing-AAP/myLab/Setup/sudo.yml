@@ -1,0 +1,13 @@
+---
+- name: Play
+  hosts: all
+  become: true
+
+  vars:
+    someuser: "{{ ev_user }}"
+
+  tasks:
+  - name: ensure sudo
+    ansible.builtin.copy:
+      dest: "/etc/sudoers.d/{{ someuser }}"
+      content: "{{ someuser }} ALL=(ALL) NOPASSWD: ALL"
