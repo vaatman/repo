@@ -1,6 +1,7 @@
 Chapter 1
 
-- install ansible-navigator package
+1. use automation content navifator to run a playbook and review results
+.install ansible-navigator package
   prereq:
   - registered system
     # subscription-manager register
@@ -9,11 +10,60 @@ Chapter 1
 
   $ sudo yum install ansible-navigator
 
-- install podman
+.install podman
   $ podman login <automationhub>
     Username:
     Password:
     Login Succeeded!
 
-- write and run playbooks
-  $ ansible-navigator run <playbook.yml> -m stdout -eei ee-supported-rhel8
+.write and run playbooks
+  $ ansible-navigator run <playbook.yml> -m stdout -eei <execution env>
+
+2.clone an existing GIT repo, edit files, commit changes, push to repo
+. create workdir
+  $ mkdir -p ~/git-repos
+  $ cd $_
+. clone repo
+  $ git clone https://<url.git>
+  of
+  $ git clone git://<url.git>
+. create exercise branch
+  $ cd <somedir>
+  $ git checkout -b exercise
+  Switched to a new branch 'exercise'
+. configure global settings
+  $ git config --global user.name 'My Name'
+  $ git config --global user.email myname@my.domain.local
+  extra:
+  $ git config --global push.default simple
+  $ git config --global credential.https://git.lab.example.com student
+  $ git config --global credential.helper cache --timeout=7200
+. create basic ansible config files
+  .ansible.cfg
+    [defaults]
+    inventory = inventory
+    remote_user = devops
+  .inventory
+    [webservers]
+    serverd
+. review current status of local Git repo
+  $ git status
+. add your new files
+  $ git add playbook.yml ansible.cfg inventory
+. commit
+  $ git commit -am "blah"
+. push
+  $ git push -u origin exercise
+.run the playbook
+  .login to automationhub
+  $ podman login <automationhub>
+  .run the playbook
+  $ ansible-navigator run playbook.yml -eei ee-supported-rhel8:latest
+.create gitignore for naviator output files
+  $ vi .gitignore
+    ansible-navigator.log
+    *-artifact-*
+  $ git add .gitignore
+  $ git commit -am "blah"
+  $ git push
+
