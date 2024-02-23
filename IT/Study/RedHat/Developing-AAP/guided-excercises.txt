@@ -67,3 +67,10 @@ Chapter 1
   $ git commit -am "blah"
   $ git push
 
+3.apply recommended practices to an exisiting Ansible automation project
+- create a name on the second play
+- move the listed hosts to a hostgroup in the inventory
+- run the play against 'hosts: dbservers'
+- use more meaningful names for variables
+- use ansible module instead of command/shell
+
