@@ -1,6 +1,6 @@
 Chapter 1
 
-1. use automation content navifator to run a playbook and review results
+1. use automation content navigator to run a playbook and review results
 .install ansible-navigator package
   prereq:
   - registered system
@@ -74,3 +74,15 @@ Chapter 1
 - use more meaningful names for variables
 - use ansible module instead of command/shell
 
+Chapter 2
+
+1.write a playbook that uses modules from an AnsibleContentCollection
+. find the module 
+  .login to automationhub
+  $ podman login hub.example.lab.com
+  $ ansible-doc -l | grep firewalld
+  hv: fails
+  $ ansible-navigator doc -m stdout -l
+    .type '/firewalld' to search
+  $ ansible-navigator doc -m stdout ansible.posix.firewalld
+    .use this FQCN
