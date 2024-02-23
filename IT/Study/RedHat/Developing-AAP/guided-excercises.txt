@@ -1,0 +1,19 @@
+Chapter 1
+
+- install ansible-navigator package
+  prereq:
+  - registered system
+    # subscription-manager register
+  - repo enabled
+    # subscription-manager repos --enable ansible-automation-platform-2.2-for-rheo8-x86_64-rpms
+
+  $ sudo yum install ansible-navigator
+
+- install podman
+  $ podman login <automationhub>
+    Username:
+    Password:
+    Login Succeeded!
+
+- write and run playbooks
+  $ ansible-navigator run <playbook.yml> -m stdout -eei ee-supported-rhel8
