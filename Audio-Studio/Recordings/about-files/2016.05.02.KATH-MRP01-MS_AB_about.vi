@@ -1,0 +1,12 @@
+oMS - 88MS - AB20 - AB30
+========================
+
+1.60m hoog
+4.00m afstand
+
+tr.01-03	-oMS	-012Mid+MRPSide
+tr.04-06	-88MS	-MRP01s
+tr.07-09	-AB20	-MRP01s
+tr.10-11	-AB30	-MRP01s
+---
+tr.12ev		-88MS	-MRP01s

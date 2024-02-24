@@ -1,0 +1,10 @@
+L = 150 Ohm resistor on XLR
+R = SM200 mic
+
+ALC Limiter enabled
+
+take	file			trims	level
+1.	B22h36m37s01oct2018	16:00	12:00
+2.	B22h37m51s01oct2018	max.	12:00
+3.	B22h38m37s01oct2018	16:00	14:00
+4.	B22h39m04s01oct2018	max.	14:00

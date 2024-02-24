@@ -1,0 +1,15 @@
+tr.1 = B20h19m42s08jul2019.wav
+tr.2 = B20h23m27s08jul2019.wav
+tr.3 = B20h25m52s08jul2019.wav
+
+tr.1 - usiPro op vloer +- 20cm AB
+	trim off, level @12:00
+	levels gelijk gekalibreerd op B od8'
+	16voet in kl.tertsen omhoog
+
+tr.2 -	L.sm200 trim@16:00 level @12:00
+	R.usipro trim off level @12:00
+	levels gelijk gekalibreerd op B od8'
+
+tr.3 - usiPro op vloer +- 20cm AB
+	trim off, level @12:00

@@ -1,0 +1,6 @@
+2x sm200 door rijgogen blauwe rugtas
+dr100mk3
+mic gain 16dB
+pad sw ON
+FIR2
+peak +/- -10dB

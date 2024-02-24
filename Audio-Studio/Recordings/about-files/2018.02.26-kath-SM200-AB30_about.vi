@@ -1,0 +1,10 @@
+distance stand to choirorgan: 4 tiles [= +/- 2.40m]
+height stand +/- 180
+mics in +/-AB30 +/-30gr outwards
+
+chain:
+SM200s
+Echo2
+ 9LEDs ON [= +/- +40dB]
+pi3
+ file:Echo2-1519671117.wav

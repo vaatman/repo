@@ -1,0 +1,7 @@
+sE8omni 80cm AB
+dr100mk3
+
+24/88
+gain:	14.0dB
+pad:	ON
+adc:	FIR2

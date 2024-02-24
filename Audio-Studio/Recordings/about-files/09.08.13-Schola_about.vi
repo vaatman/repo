@@ -1,0 +1,17 @@
+Date:			08sep2013
+Location:		Kapel Bovendonk
+Who:			Begijnhofschola
+Mics:			Rec.tools MC700 Blumlein
+Position:		+/- 3m.hoog
+Interface:		
+MicPre:			
+Recorder:		crdlt196
+FP10 gain:		ch.1 @ 14:00
+			ch.2 @ 14:00
+MicTrim FR2LE:		
+InputLevel FR2LE:	
+Files:		
+BitDepth:		24
+SampleRate:		48000Hz
+SignalChain:		MC700 > FP10.ch1+2 > FR2LE
+			FP10.1+2 > crdlt196

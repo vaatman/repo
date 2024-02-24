@@ -1,0 +1,13 @@
+Date:			26aug2013
+Location:		Ant.kath
+Who:			koororgel
+Mics:			Rec.tools MC700, Blumlein fig.8s
+			Oktava mc012 Ab40/60/80, pointing up
+Position:		250cm up, 300cm van front
+Interface:		
+MicPre:			
+Recorder:		crdlt196 meterec
+MicTrim FR2LE:		
+InputLevel FR2LE:	
+Files:			
+SignalChain:		MC700&mc012 > FP10 > meterec

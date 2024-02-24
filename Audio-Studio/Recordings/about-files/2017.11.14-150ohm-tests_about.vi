@@ -1,0 +1,37 @@
+150ohm.xlr, @FR2LE, L.ch, 12v.battery, P48.on, 24/96k
+-----------------------------------------------------
+
+file				trim			level
+----				----			-----
+B19h56m13s14nov2017.wav		full			17:00 (=full)
+B19h56m49s14nov2017.wav		16:00 (=mark)		17:00
+B19h57m14s14nov2017.wav		15:00			17:00
+B19h57m43s14nov2017.wav		12:00			17:00
+B19h58m36s14nov2017.wav		10:00 (=opp.mark)	17:00
+B20h00m03s14nov2017.wav		15:00			16:00
+B20h00m29s14nov2017.wav		15:00			15:00
+B20h00m52s14nov2017.wav		15:00			14:00
+B20h01m20s14nov2017.wav		15:00			13:00
+B20h01m36s14nov2017.wav		15:00			12:00
+B20h01m53s14nov2017.wav		15:00			11:00
+B20h02m07s14nov2017.wav		15:00			10:00
+B20h02m23s14nov2017.wav		15:00			09:00
+
+150ohm.xlr, @ECHO2, L.ch, P48.on, S32_LE/96k
+--------------------------------------------
+
+file		level
+----		-----
+test01.wav	full
+test02.wav	until+ LED3	(2 topLEDS off)
+test03.wav	until+ LED5	(4 topLEDS off)
+test04.wav	until+ LED7	(6 topLEDS off)
+test05.wav	until+ LED8	(7 topLEDS off)
+test06.wav	until+ LED9	(8 topLEDS off)
+test07.wav	until+ LED10	(9 topLEDS off)
+test08.wav	until+ LED11	(10 topLEDS off)
+test09.wav	until+ LED12	(11 topLEDS off)
+test10.wav	until+ LED13	(12 topLEDS off)
+test11.wav	until+ LED14	(13 topLEDS off)
+test12.wav	until+ LED15	(14 topLEDS off)
+test13.wav	until+ LED16	(15 topLEDS off = 3 bottomLEDS on)

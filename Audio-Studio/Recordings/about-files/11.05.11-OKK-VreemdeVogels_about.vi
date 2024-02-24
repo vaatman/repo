@@ -1,0 +1,16 @@
+Date:			29mei2011
+Location:		Mariakerk Oosterhout
+Who:			OosterhoutsKamerkoor
+Mics:			StudioProjects B1 in ortf
+			Superlux S502
+Position:		+/- 4m.up, 1.5m.behind conductor
+Interface:		Edirol UA1EX (SPB1)
+MicPre:			BeyerMV100 (SPB1) 
+Recorder:		Fostex FR2LE
+			SonyVaioMeterec
+MicTrim FR2LE:		?
+InputLevel FR2LE:	?
+Files:			29mei11_0002.w64
+			B15h05m41s29may2011.wav
+SignalChain:		SPB1	>Beyer MV100	>UA1EX >SonyVaio (29mei11_0002.w64) (noise spikes)
+			S502	>FR2LE (B15h05m41s29may2011.wav)

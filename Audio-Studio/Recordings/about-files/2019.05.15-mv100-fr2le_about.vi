@@ -1,0 +1,14 @@
+L.CH = sm200
+R.Ch = sm200 @mv100_40dB
+
+level L = 14:00
+level R = 11:50
+
+trim L = 16:00 [at marker]
+
+
+B16h52m21s15may2019:
+5x 1kHz beep
+
+B17h06m12s15may2019:
+white noise

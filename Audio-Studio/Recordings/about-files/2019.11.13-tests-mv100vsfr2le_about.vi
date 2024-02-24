@@ -1,0 +1,6 @@
+L.mic > fr2le > mic in
+R.mic > mv100-R @20db > fr2le R.Line-in
+
+calibrated on 1kHz beep @ 107dB
+tr.2 =	mv100 red led on [= -6dB]
+	fr2le @ 0dB [+/-]

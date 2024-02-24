@@ -1,0 +1,32 @@
+OMNI's compared, oktava.mc012 rt.mc007
+
++/- 1.80m hoog
++/- 3m afstand
+
+!!! NOTE: LR swapped: L=S R=M !!!
+012=mid R.ch
+700=side L.ch
+
+012.OMNI,700.OMNI:
+tr01.	s16, c'->C (gr.terts dalend) legato 
+	s16, c'->C (gr.terts dalend) los 
+tr02.	pr4, C->gis''' los (gr.terts stijgend)
+tr03.	od8, C->gis''' los (gr.terts stijgend)
+tr04.	x
+
+012.OMNI,700.fig8:
+tr05.	s16, c'->C (gr.terts dalend) los 
+tr06.	pr4, C->gis''' los (gr.terts stijgend)
+tr07.	od8, C->gis''' los (gr.terts stijgend)
+
+!!! tr01-tr07 beide mic facing forward !!!
+
+
+012.OMNI-R.ch
+700.fig8-L.ch
+
+MidSide (! L=side,R=mid !) Froberger fantasia.II
+tr08.	od8,od8+pr4
+tr09.	lg8
+tr10.	gh4,pr4
+tr.11	std8+gh4,od8+ld8+pr4+s16

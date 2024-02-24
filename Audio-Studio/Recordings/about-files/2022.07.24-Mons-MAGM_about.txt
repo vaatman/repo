@@ -1,0 +1,8 @@
+se8 onder rugtas
++/- 30 cm AB
++/- 90 gr
+
+gain:	24dB
+pad:	off
+adc:	fir2
+safetytrack: max -9dB

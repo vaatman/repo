@@ -1,0 +1,7 @@
+mikroUsiPro langs opening blauwe rug +/- 20cm AB
+dr100mk3
+mic gain +12.0dB
+mic sw ON
+FIR2
+24/88200
+safety track -5dB max

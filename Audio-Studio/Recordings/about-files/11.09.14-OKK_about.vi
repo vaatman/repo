@@ -1,0 +1,31 @@
+Opname in 88MS
+
+!!! NOTE:
+L&R waren verkeerd om aangesloten:
+LINKS is SIDE
+RECHTS is MID
+!!!
+
+24bit 44.1kHz
+mc700.01 L
+mc700.02 R
+fp10 +/- 14.00 (tweede streepje rechts naast 'mic')
+max level -8.3dB
+
++/- 4m hoog
++/- 4 van source
+diepte orkest+koor 19tegels (= +/- 11m)
+breedte +/- 16tegels
+
+
+Editing with Reaper
+
+Mixing with Reaper:
+- SIDE mic -2dB against MID
+- EQ on SIDE channels: okk-09nov14 preset
+	based on ReaEQ, basically high pass filter at about 600Hz
+	clears up 'mud' AND seems to widen the image
+
+
+CD layouting in wavbreaker
+- saved to TOC file 88MS-MAster-Final.toc

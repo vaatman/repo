@@ -1,0 +1,5 @@
+mikroUsiPro headset
+dr100mk3
+mic gain 5.0dB
+pad sw ON
+FIR2

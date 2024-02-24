@@ -1,0 +1,13 @@
+tr.1 = B12h13m25s03jul2019.wav
+tr.2 = B12h15m44s03jul2019.wav
+tr.3 = B12h30m57s03jul2019.wav
+
+tr.1	L: usiPro -> fr2le mic in trim @09:00 level @12:00
+	R: usiPro -> mv100 that1512 gain @+20[=+14] -> fr2le level 9.1/3
+
+tr.2	L: 150.ohm -> mv100 that1512 gain @+20[=+14] -> fr2le level 9.1/3
+	R: usiPro  -> mv100 that1512 gain @+20[=+14] -> fr2le level 9.1/3
+
+tr.3	L: usiPro -> fr2le mic in trim@ 09:00 level @12:00
+	R: sm200  -> fr2le mic in trim@ 15:00 level @12:00
+note: sm200 are phase reversed

@@ -1,0 +1,19 @@
+OMNI-MS
+=======
+
+ch1 =	mc012 + 40mm ball
+ch2 =	mc700.01 fig.8
+ch3 =	s502.L
+ch4 =	s502.R
+
+tr.1 blijkt TOCH weer gekopieerd te zijn in iig tr.2 ...
+fix:
+sox <infile> <outfile> remix 1 1i,2
+- outfile.ch.1 is a copy of infile.ch1
+- outfile.ch.2 is a copy of infile.ch1inverted AND infile.ch2
+
+# sox 19apr2015-TSDH_0001.w64 19apr2015-TSDH_mc012.w64 remix 1 1i,2
+# sox 19apr2015-TSDH_0001.w64 19apr2015-TSDH_s502.w64 remix 1i,3 4
+
+echo AF4 was on 44100 kHz
+.w64 file is in 44100 kHz

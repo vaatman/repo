@@ -1,0 +1,16 @@
+88MS
+====
+
+L.ch =	mc700.01 fig.8 Mid
+R.ch =	mc700.02 fig.8 Side
+
+echo AF4 was on 44100 kHz
+.w64 file is in 48000 kHz
+ch.1 10:00
+ch.3 12:00
+af4 op 12v battery
+
+mic 1m achter dirigent
++/- 3m hoog
+30gr gekanteld naar beneden
+

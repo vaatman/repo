@@ -1,0 +1,10 @@
+orgel:	mrp01 in MS
+spreker: sp b1
+
+Echo AFpre8
+mid	=ch3 @10.30
+side	=ch4 @10.30
+b1	=ch5 @15.00
+
+mpr01s +- 4m hoog, 30gr hoek omhoog gericht
+b1 1.4m hoog 1,2m afstand (?)
