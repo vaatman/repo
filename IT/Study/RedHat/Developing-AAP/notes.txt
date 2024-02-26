@@ -438,21 +438,21 @@ Creating Credential Resources
 Chapter 4 Working with Ansible Configuration Settings
 
 Inspecting the Ansible Configuration in Ipteractive mode
-- 'ansible-navigator config' displayx current Ansible config in use by/for the 'ansible-navigator run' command
-- shows source of of current ansible-navigator configuration settings
+- 'ansible-navigator config' displays current Ansible config in use by/for the 'ansible-navigator run' command
+- shows source of current ansible-navigator configuration settings
 - useful for troubleshooting
 - each line shows values for:
   - Name - internal name that Ansible users for parameters
   - Default - whether parameter is using itd default value [True]
   - Source - when not Default, indicates here how parameter has been set
   - Current - actual value of parameter
-- search sepcifi configuration parameter
+- search specific configuration parameter
   - type :filter [or :f]
 - accessing parameter details
   - type the corresponding number
 Inspecting local configuration
 - by default ansible-navigator uses an automation exec env
-- if you project does noet provide the ansible.cfg
+- if your project does not provide the ansible.cfg
   - ansible-navigator uses /etc/ansible/ansible.cfg from the exec env
 - does NOT use the /etc/ansible/ansible.cfg from the LOCAL system
 - to use that local file

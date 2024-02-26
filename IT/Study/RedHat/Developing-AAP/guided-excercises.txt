@@ -86,3 +86,30 @@ Chapter 2
     .type '/firewalld' to search
   $ ansible-navigator doc -m stdout ansible.posix.firewalld
     .use this FQCN
+
+Chapter 3
+1. navigate through the automation controller webUI and launch a job
+- create a 'source control credential' [for the Git repo]
+  - navigate to controller
+  - login as admin:redhat
+  - > Resources Credentials > Add
+    > Name | Organization | Credential Type | Username | SCM Private Key
+- create a machine credential [to run against hosts]
+  - > Resources > Credentials > Add
+    > Name | Organization | Cred.type | Username |
+       SSHPrivateKey | Priv.Esc.Method | Pric.Esc.Username
+- create a project
+  - points to a Git repo
+  - that contains a playbook
+  - and an inventory
+  - > Resources > Projects > Add
+    > Name | Organization | Exec.Env | SRC.Type | SRC.URL |
+       SRC.Cred | Options
+- create an inventory
+- create a template
+
+Chapter 4
+1. change setting for automation controller
+- modify ansible.cfg
+  - specify new passwd
+  - hv: ansible-navigator [also] uses ansible.cfg in current/projectdir
