@@ -49,7 +49,7 @@ Chapter 3
 - Automation contoller project specifies
   - location of a Git repo
     - that stores Ansible code
-    - a source contoller credential
+  - a source contoller credential
 - Automation controller job template specifies
   - inventory
   - machine credentials

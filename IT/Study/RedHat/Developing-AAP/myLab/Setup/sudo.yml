@@ -7,7 +7,20 @@
     someuser: "{{ ev_user }}"
 
   tasks:
-  - name: ensure sudo
-    ansible.builtin.copy:
+  - name: ensure sudo user file
+    copy:
       dest: "/etc/sudoers.d/{{ someuser }}"
       content: "{{ someuser }} ALL=(ALL) NOPASSWD: ALL"
+    register: sudouserfile
+  - name: print
+    debug:
+      var: sudouserfile
+
+  - name: disable NOPASSWD for %wheel
+    lineinfile:
+      path: /etc/sudoers
+      state: present
+      regexp: '^%wheel\s'
+      line: '%wheel ALL=(ALL) PASSWD: ALL'
+    when: sudouserfile.changed
+
