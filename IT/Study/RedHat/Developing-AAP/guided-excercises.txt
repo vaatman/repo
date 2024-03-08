@@ -112,6 +112,7 @@ Chapter 4
 1. browse current configuration
   $ ansible-navigator config --eei <ee> --pp missing
   hv: 'inventory' can be found at 'Default host list'
+
 2. change settings for automation controller
 - modify ansible.cfg
   - specify new passwd
@@ -134,3 +135,53 @@ Chapter 4
   $ ansible-navigator settings --effective > sample.yml
   $ mv sample.yml ansible-navigator.yml
 
+Chapter 5
+1. install custom scripts that dynamically generate a list of inventory hosts
+  hv: scripts are redhat training custom
+  - create a directory for the exercise and enter it
+  - create an inventory directory and an inventory in it
+    $ mkdir inventory
+    $ vi inventory/hosts
+  - create a static parent group 'servers'
+    [servers:children]
+    webserver
+  - the inventorya.py dyn.inv.script
+    - defines the webserver group
+    - including the servera.lab.example.com host
+  - the inventoryb.py dyn.inv.script
+    - defines the workstation.lab.example.com host
+  - move the dyn.inv.scripts in the inventory dir
+  - set x-bits
+    hv: no x-bit == it's source as INI file, which also fails
+  - check:
+  $ ansible-navigator inventory -m stdout --list
+  $ ansible-navigator inventory -m stdout --graph
+
+2. convert an INI style inventory 
+    [webservers]
+    servera.lab.example.com
+    serverb.lab.example.com
+   to a YAML style inventory
+    webserver:
+      hosts:
+        servera.lab.example.com:
+        servera.lab.example.com:
+    note:
+    - the : after the hostname
+    - use wildcards server[a:b].lab.example.com: to group
+
+3. setup directories for multiple host variable files
+   - in supplied playbook
+     - one play for hosts: lb_servers
+     - two tasks
+     - each task has a vars: declaration
+     > move vars into inventory variable files
+   - create directory
+     $ mkdir group_vars/lb_servers
+   - create vars files
+     $ vi group_vars/lb_servers/haproxy.yml
+     ---
+     ha_proxy_appservers:
+        - name: serverb.lab.example.com
+          ip: 172.25.250.11
+   - repeat for webservers
