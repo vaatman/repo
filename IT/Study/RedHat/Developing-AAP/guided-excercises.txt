@@ -109,7 +109,28 @@ Chapter 3
 - create a template
 
 Chapter 4
-1. change setting for automation controller
+1. browse current configuration
+  $ ansible-navigator config --eei <ee> --pp missing
+  hv: 'inventory' can be found at 'Default host list'
+2. change settings for automation controller
 - modify ansible.cfg
   - specify new passwd
-  - hv: ansible-navigator [also] uses ansible.cfg in current/projectdir
+  hv:
+  - ansible-navigator [also] uses ansible.cfg in current/projectdir
+  - a non-default value in ansible.cfg shows up yellow in ansible-navigator
+  - a default value set in ansible.cfg ALSO shows up yellow in ansible-navigator
+  - default values are green when not present in ansible.cfg
+  > create a secret-pass with password in plaintext
+  > set this file in ansible.cfg as vault_password_file
+    - or user vault-password-file=<file> on CLI
+  > create&copy passwdhash using mkpasswd cmd
+  > create ansible vault file
+    username: joe
+    pwhash: <hash from above>
+  > create playbook for user creating
+    username: "{{ username }}"
+    password: "{{ pwhash }}"
+- generate ansible-navigator settings file
+  $ ansible-navigator settings --effective > sample.yml
+  $ mv sample.yml ansible-navigator.yml
+
