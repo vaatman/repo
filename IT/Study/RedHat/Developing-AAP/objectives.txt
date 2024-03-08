@@ -40,7 +40,7 @@ Chapter 3
     - inventory
 
 Chapter 4
-- Browse the currents Ansible configuration
+- Browse the current Ansible configuration
   - by using automation content navigator
 - Change configuration settings
   - for automation content navigator
