@@ -185,3 +185,41 @@ Chapter 5
         - name: serverb.lab.example.com
           ip: 172.25.250.11
    - repeat for webservers
+
+Chapter 6
+1. select the/an appropriate escalation method and privilege isolation
+- clone GIT repo
+- create new branch and check it out
+  $ git checkout -b exercise
+- privilege escalation is disabled
+  - action with root access will fail
+- review playbook
+  - install httpd and firewalld
+    - firewalld not on rocky91 lab for ansible
+    - available on rocky91 aap [navigator]
+    $ ansible-galaxy collection install ansible.posix
+  - running playbook on CLI fails
+  - adding -b will work
+- privilege escalation using a block
+  - create as new task:
+    name: Block task
+    become: true
+    block:
+  - then indent parts to be included
+2. use [pre|post]_tasks
+- to control whether tasks run before/after roles
+- use 'listen' directives to notify mulitple handlers at the same time
+- pre_tasks are run before the role
+3. use handlers
+- handlers are called by the 'notify:' directive
+
+LAB:
+Enable the timer and profile_tasks callback plug-ins for the playbook. The two plug-ins are part of the ansible.posix collection. If desired, then you can specify the FQCNs for the callback plug-ins.
+
+Edit the ansible.cfg configuration file and add the plug-ins to the callbacks_enabled directive. The modified file contains the following content:
+
+[defaults]
+inventory=inventory
+remote_user=devops
+callbacks_enabled=ansible.posix.timer,ansible.posix.profile_tasks
+- hv: memorize the callbacks config line
