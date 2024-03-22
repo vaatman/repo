@@ -223,3 +223,41 @@ inventory=inventory
 remote_user=devops
 callbacks_enabled=ansible.posix.timer,ansible.posix.profile_tasks
 - hv: memorize the callbacks config line
+
+Chapter 7
+1. use filters to reformat the values of variables
+- to skip a missing var 'myvar':
+  "{{ myvar | default(omit, true) }}"
+- two variables are present for package installation
+  - use the 'union' filter to create a sinlge list from them
+  - given two lists, rpmsa and rpmsb:
+    "{{ rpmsa | union(rpmsb) }}
+- use the map() filter to display the value of any key in the entry
+
+2. use 'lookup' and 'query' to template data from external sources
+- create a groups.yml with group definitions
+- usr lookup to query this file:
+  - "{{ lookup('ansible.builtin.file', 'groups.yml') | from_yaml }}"
+
+3. to read from a text file, which name is stored in a var 'warnfile':
+  - "{{ lookup('ansible.builtin.file', warnfile') }}"
+- to save a generate passwd in a file inde the credentials dir:
+  "{[ lookup('ansible.builtin.password', 'credentials/john' + ' length=9') }}"
+
+4. write tasks that use advanced looping
+- use a loop with 'dict2items' filter
+  - to transform a dictionary into a list
+    loop: "{{ rgroups | dict2items }}"
+- use a loop to iterate over user variables
+  - vars defined in group_vars/all/my_vars.yml
+  loop: "{{ my_users | subelements('my_groups') }}"
+- use a loop over a list of public_keys
+  - use the 'map' filter
+  - followed by the 'flatten' filter
+  > to generate a simple list of SSH public key files
+  public_key_lists:
+    - username: john
+      public_keys:
+        - pukeys/john/id_rsa.pub
+  - in debug:
+  loop: "{{ public_key_lists | map(attribute='public_keys') | flatten }}"
