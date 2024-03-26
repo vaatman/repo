@@ -1,0 +1,17 @@
+.Install packages
+$ sudo apt-get update
+# sudo apt install libvirt-daemon-system libvirt0 qemu vagrant virt-manager libvirt-clients libvirt-daemon-config-network libvirt-daemon-config-nwfilter libvirt-daemon-system-systemd
+
+.Join libvirtd group
+$ sudo vi /etc/group
+-libvirt
+- libvirt-qemu
+
+.Install plugin 
+$ vagrant plugin install vagrant-libvirt
+
+.Copy a Vagrantfile, fix NFS
+:apparently mounting with udp option doesn't work [anymore]
+$ vi Vagrantfile, add a line for the nfs synced_folder:
+50    # config.vm.synced_folder "../data", "/vagrant_data"
+51    config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false
