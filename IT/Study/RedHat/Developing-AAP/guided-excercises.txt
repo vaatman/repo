@@ -261,3 +261,42 @@ Chapter 7
         - pukeys/john/id_rsa.pub
   - in debug:
   loop: "{{ public_key_lists | map(attribute='public_keys') | flatten }}"
+
+5. Use filters and plugins to manipulate and validate data stored in variables that contain networking-related information
+- use the ansible.utils.ipaddr filter
+! not available in my rocky91 lab
+  - list collections
+    $ ansible-navigator doc -l -m stdout
+  - "{{ 192.168.1.1 | ansible.utils.ipaddr }}"
+    - print this ip, if no ip is supplied it prints 'false'
+  - "{{ 192.168.1.1 | ansible.utils.ipaddr('host')
+    - prints the ip if it's a hostaddress
+    - likewise: 'net' 'private' 'public'
+    - 'revdns' 'network' 'broadcast'
+    - or (5) for the 5th address
+    - 'range_usable' 'next_usable'
+  - likewise:
+    "{{ 2001::1/64 | ansible.utils.ipwrap }}"
+    - print ipv6 address in []
+
+LAB:
+- clone the data-review.git repo
+- cd to it, checkout as branch exercise
+  $ git checkout -b exercise
+- examine the firewall role
+  - edit the tasks to use filters
+    - to set default values for variables
+      state: "{{ item['state'] | default('enabled') }}"
+      zone: "{{ item['zone'] | default(omit) }}"
+      protocol: "{{ item['protocol' | default('tcp') | lower }}"
+- examine the deploy_apache playbook
+  - change the value of the 'firewall_rules' variable
+    - to use the 'template' lookup plugin
+    firewall_rules: "{{ lookup('ansible.builtin.template', 'apache_firewall_rules.yml.j2') | from_yaml }}"
+- examine the teamplte for apache_firewall_rules.yml.j2
+  - apache_port is set in the group_vars directory
+  - modify the loop to use gathered_facts
+    {% for server in groups['lb_servers'] %}
+    - zone: internal
+      source: "{{ hostvars[server]['ansible_facts']['default_ipv4']['address'] }}"
+    {% endfor %}
