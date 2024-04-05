@@ -300,3 +300,79 @@ LAB:
     - zone: internal
       source: "{{ hostvars[server]['ansible_facts']['default_ipv4']['address'] }}"
     {% endfor %}
+
+Chapter 8
+
+1. run a playbook that delegates to another host
+  - ansible.builtin.lineinfile module
+  - add two lines in a file using variables:
+    {{ ansible_facts['fqdn'] }}
+    {{ '%c' | strftime(ansible_facts['date_time']['epoch'] }}
+    delegate_to: workstation
+2. configure parallelism using 'forks' and 'serial'
+  - set forks for parallelism
+    - in ansible.cfg: forks =5
+    - in navigator: DEFAULT_FORKS(default) = 5
+      $ ansible-navigator config [dump|list] -m stdout
+  - set serial for batches
+    - to limit number of hosts that run simultaneously
+    - at play level, eg:
+      serial: 2
+      - all tasks + handlers in play are run 
+      - when play completes [successful]
+        - repeat on next two managed hosts
+      - if play fails
+        - the playbook aborts
+        - does not run on remaining hosts
+    - can be set a integer or percentage
+    - can be set a list, eg.:
+3. configure rolling updates
+  - run a playbook withc unequal batch size
+  - abort on too many failes
+  - run specific task once per batch
+  - inventory has 5 hosts
+    play sets
+    serial:
+      - 1
+      - 25%
+      - 100%
+    - 1 of 5 == 1
+    - 25% of 5 == 1.25 -> 1
+    - 100% of 5 == 5 ; only 3 remaining, so 3 it is
+
+LAB:
+. delegate tasks to other hosts [delegate_to: ]
+. implement deployment batches [serial: ]
+. limit failure [max_fail_percentage: ]
+- clone git repo, cd into it, create branch
+- install required collections
+  - get token from hub
+    - login https://hub.lab.example.com
+    - > Collections > API token > Load token > copy it
+  - use token to update token option in ansible.cfg
+    [<somerepo>]
+    token=<tokenstring>
+  - use ansible-galaxy to install collections in collections dir
+    $ ansible=galaxy galaxy install -r collections/requirements.yml -p collections/
+- add a pre_tasks section
+  - to disable webservers on the haproxy loadbalancer
+    - use community.general.haproxy module
+    - disable host using inventory_hostname var
+    - delegate to the loadbalancer
+      - {{ groups['lb_servers'][0] }} provides the name of the loadbalancer
+- modify update_webapp.yml playbook
+  - use delegation
+  - modify the 'smoke test'
+  - so that each request originates from the loadbalancer
+- add post_tasks section
+  - to re-enable each webserer on the haproxy loadbalancer
+  - similar to the pre_tasks
+    - enabled instead of disabled
+- configure to run tasks in batches
+  - no more than three batches
+    - 5%
+    - 35%
+    - all remaining
+  - add key to stop execution if any host fails a task
+
+
