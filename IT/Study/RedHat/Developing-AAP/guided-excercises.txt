@@ -385,3 +385,124 @@ LAB:
     - 35%
     - all remaining
   - add key to stop execution if any host fails a task
+
+Chapter 9
+1. create a content collection an publish it to private automation hub
+- create workdir, got into it
+- create collection
+  $ ansible-galaxy collection init student.collection
+- specify toe use Ansible 2.9.10
+  $ vi meta/runtime.yml
+    ---
+    requires_ansible: '>=2.9.10'
+- place module in this collection, use provided myping.py
+  $ cp myping.py plugins/modules
+- create role inside the collections
+  $ cd roles/
+  $ ansible-galaxy role init mymotd
+- create a template in the role
+- create a task in the role based on the template
+- delete unneeded files
+- build the collection
+  $ ansible-galaxy collection build
+- create 'student' namespace in pr.aut.hub, upload and approve the collection
+  - https://hub.lab.example.com
+    > Collections > Namespaces > Create
+    ...
+    > Upload
+    > Collections > Approve
+- install student.testcollection from pr.aut.hub
+  - copy published repo config from pr.aut.hub
+    - > Collections > Repository Management
+      - copy CLI config
+      - paste in your ansible.cfg
+        [galaxy_server.published_repo]
+        url=<some url>
+        token=
+  - copy API token from pr.aut.hub
+    > Collections > API token management > Load token > Copy
+      - add token in ansible.cf [see above]
+  - this project uses a requirements file [collections/requirements.yml]
+    ---
+    collections:
+      - name: student.testcollection
+  - install
+    $ ansible-galaxy collection install -r collections/requirements.yml -p collections
+
+2. create a custom automation execution environment
+- that provides a specific collection
+- re-use previous motd code
+- create configfiles for new aut.ex.env
+  $ mkdir $ cd
+  $ vi execution-environment.yml
+  - use ee-minimal-rhel8 latest
+- create requirements.yml file to add the motd collection
+- create requiremenst.txt file for Python dependencies
+  - needs funmotd
+- create bindep.txt for system-level dependencies
+- verify that ansible-builder is installed
+  $ rpm -qa |grep ansible
+  $ sudo yum install ansible-builder
+- create the automation execution environment
+  $ ansible-builder create
+    - creates _build directory
+    - creates context/Containerfile
+- copy motd.tar.gz to _build/ directory
+- build the custom aut.ex.env
+  $ ansible-builder build
+- list images
+  $ podman images localhost/ee-motd-minial
+- examine the image using navigator
+  $ ansible-navigator images --pp never --eei localhost/ee-motd-minimal:1.0
+    - inspect it
+
+3. validating a custom execution environment
+- re-use motd code
+- run code using default ex.env
+  $ ansible-navigator run motd-test.yml -m stdout
+  - fails
+  - exercise.motd.banner role is not installed
+- re-run with the custom ex.env
+  $ ansible-navigator run motd-test.yml -eei localhost/ee-motd-minimal -pp never -pae false -k -m stdout
+- publish the ex.env
+  - tag a label to the image
+    $ podman tag localhost/ee-motd-minimal hub.lab.example.com/ee-motd-minimal
+  - login to priv.aut.hub
+    $ podman login hub.lab.example.com
+  - push the image to prib.aut.hub
+    $ podman push hub.lab.example.com/ee-motd-minimal
+- verify that the image can be retrieved [on servere vm]
+  - add servere to the inventory
+  - re-run playbook for servere
+    $ ansible-navigator run motd-test.yml -eei hub.lab.exanple.com/ee-motd-minimal -pp always -pae false -k -m stdout
+  - login to server to see motd working
+
+4. using custom collections and execution environments in automation controller
+- by using a requirements file
+- publish the provided content collection on priv.aut.hub
+  - create Namespace
+    - https://hub/lab.example.com
+    - login user:redhat123
+    > Collections > Namespaces > Create
+    > Upload
+    > Collections > Approval > Approve
+  - create project from automation controller UI
+    > Resources > Project > Add
+      - Name
+      - Organization
+      - Source Control Type
+      - Source Control URL
+      - Source Control Credential
+- check current motd on some systems
+- create a job template to run the motd-test.yml from the Project
+  > Resources > Templates
+    > Add > Add job
+    ! @Limit: servera.lab.example.com
+    > Launch
+- add new exec.env using the UI
+  > Administration > EXecution Environments > Add
+- add new automation controller proect that uses the exercise.motd collection
+  > Resources > Projects > Add
+- Create job template to use the custom exec.env
+
+
