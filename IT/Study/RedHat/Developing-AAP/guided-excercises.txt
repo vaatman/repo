@@ -339,6 +339,17 @@ Chapter 8
     - 1 of 5 == 1
     - 25% of 5 == 1.25 -> 1
     - 100% of 5 == 5 ; only 3 remaining, so 3 it is
+  - specify failure tolerance
+      max_fail_percentage: 30%
+      - when serial: 2
+        - 30% of an inventory of 2 is 0.6 == a single host failure causes abort
+      - when [next] serial: 10%
+        - 30 % of 10 is 3 == more than 3 host failures must occur to abort
+      - "fail fast" == max_fail_percentage: 0
+  - running a task once
+    - run task once for the entire batch
+    - insted of for each host in the batch
+    run_once: true
 
 LAB:
 . delegate tasks to other hosts [delegate_to: ]
@@ -374,5 +385,3 @@ LAB:
     - 35%
     - all remaining
   - add key to stop execution if any host fails a task
-
-
