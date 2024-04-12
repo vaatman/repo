@@ -1,0 +1,80 @@
+login console:
+  student : student
+login podman:
+  student : redhat123
+login git push:
+  Student@123
+
+Chapter 1
+- developer-navigator
+  $ podman login hub.lab.example.com
+  $ ansiblerun intranet.yml -m stdout --eei ee-supported-rhel8
+- develop-git
+  - customize GIT env
+  $ git config --global user.name 'Student User'
+  $ git config --global \user.email student@lab.example.com
+  $ git config --global push.default simple
+  $ git config --global credential.https://git.lab.example.com.username student
+  $ git config --global credential.helper cache --timeout=7200
+  - review
+  $ git config --global -l
+  - create .gitignore
+  $ vi .gitignore
+    > add filenames
+  $ git add .gitignore
+  $ git commit -m "blah"
+  $ git push
+- develop-practices
+  - replace playbook vars: by group_vars/<file>
+  - replace {{ var }} with new {{ var }} name
+  - replace shell: to start service with service: module
+  - add block and rescue directives to that play that restart the web service on the hosts in the webservers group if the web application is unavailable
+      - name: Web application test
+      block:
+        - name: Check web application
+          ansible.builtin.uri:
+            url: http://{{ item }}
+          loop: "{{ groups['webservers'] }}"
+      rescue:
+        - name: Restart web server
+          ansible.builtin.service:
+            name: "{{ web_service }}"
+            state: restarted
+
+Chapter 2
+- manage-resuing
+  - locate a collection
+    - firewalld
+    - NOT in ansible.builtin
+    $ podman login hub.lab.example.com
+    $ ansible-navigator doc -l --eei ee-supported-rhel8 --pp missing -m stdout
+    /firewalld
+  - define collections in playbook
+    - under become: [eg.]
+      collections:
+      - ansible.builtin
+      - ansible.posix
+- manage-finding
+  - add local hub as repo for collections
+    > webUI 
+    > Collections > Repo Management
+      copy CLI config
+      add in ansible.cfg
+    > Collections > API token management
+      > Load token
+      add in ansible.cfg
+  - to show addedd collections
+    - add collections path in ansible.cfg defaults
+      collections_paths = ./collections:/usr/share/ansible/collections
+  - install using requirements.yml
+    ---
+    collections:
+      - name: ansible.netcommon
+        version: 2.1.0
+    $ ansible-galaxy collection install -r requirements.yml
+- manage-selecting
+  - inspect an image for collections:
+    $ ansible-navigator images --eei hub.lab.example.com/ee-minimal-rhel8
+      - press '0' to select the image
+      - press '2' for Ansible version and collections
+    - repeat for other images
