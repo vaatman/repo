@@ -78,3 +78,16 @@ Chapter 2
       - press '0' to select the image
       - press '2' for Ansible version and collections
     - repeat for other images
+
+Chapter 3
+- controller-playbooks
+  - create source control credentials
+    > webUI > Resources > Credentials
+    type Source Control
+  - create machine credential
+    > webUI > Resources > Credentials
+    type Machine
+  - create Project
+    > webUI > Projects
+
+    
