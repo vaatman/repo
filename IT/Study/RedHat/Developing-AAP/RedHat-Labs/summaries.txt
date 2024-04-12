@@ -29,3 +29,14 @@ The ee-supported-rhel8 automation execution environment is used by default by au
 The ee-minimal-rhel8 automation execution environment only provides the ansible.builtin Ansible Content Collection, but you can also use Ansible Content Collections from your project's collections/ directory.
 
 You can use the ee-29-rhel8 automation execution environment for playbooks that require Ansible 2.9.
+
+Chapter 3
+Automation controller provides a centralized location that you can use to run your Ansible automation and review the results of automation runs.
+
+An automation controller project specifies the location of a Git repository that stores Ansible code and, if needed, a source control credential to authenticate to the Git repository.
+
+An automation controller job template specifies the inventory, machine credentials, execution environment, project, and playbook to use to run your Ansible code on managed hosts.
+
+You can use the automation controller web UI to launch automation jobs from a job template and to review the results of jobs.
+
+Using ansible-navigator to test Ansible Playbooks in an execution environment can help streamline the process of setting up those playbooks to run successfully on automation controller.
