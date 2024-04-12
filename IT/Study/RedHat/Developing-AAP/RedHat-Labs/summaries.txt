@@ -40,3 +40,14 @@ An automation controller job template specifies the inventory, machine credentia
 You can use the automation controller web UI to launch automation jobs from a job template and to review the results of jobs.
 
 Using ansible-navigator to test Ansible Playbooks in an execution environment can help streamline the process of setting up those playbooks to run successfully on automation controller.
+
+Chapter 4
+The ansible-navigator config command helps you explore and analyze the current configuration used by the ansible-navigator run command.
+
+Automation content navigator can use only ansible.cfg files that it can see from inside the automation execution environment. These files include the /etc/ansible/ansible.cfg file in the execution environment container and the ansible.cfg file in your project directory.
+
+You can configure automation content navigator settings by using the file defined by the ANSIBLE_NAVIGATOR_CONFIG environment variable, the ansible-navigator.yml configuration file in your current directory, or the ~/.ansible-navigator.yml configuration file in your home directory.
+
+The ansible-navigator settings --sample command generates a sample ansible-navigator.yml configuration file.
+
+The ansible-navigator settings --effective command generates a configuration file that reflects your current effective configuration, including options specified on the command line, values of environment variables, and defaults.

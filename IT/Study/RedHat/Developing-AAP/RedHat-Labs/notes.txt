@@ -90,4 +90,25 @@ Chapter 3
   - create Project
     > webUI > Projects
 
+Chapter 4
+- config-ansible
+  - ansible.cfg in cwd relative to ansible-navigator overwrites defaults
+- config-navigator
+  - create an ansible-navigator.yml config file
+    - first create a 'sample'
+    $ ansible-navigator --effective -m stoud --eei ee-supported-rhel8:latest --pp never > tt
+    - copy/move sample to config
+    $ cp tt ansible-navigator.yml
+  - specify the ansible1.cfg file to be used
+    - in the execution-environment lines, add
+      environment-variables:
+        set:
+          ANSIBLE_CONFIG: /home/student/config-navigator/ansible1.cfg
+    - use --pae to disable playbook artifacts
+    - use ask-vault-pass to prompt for ansible-vault passwd
+    - configvar precedence [high > low]:
+      - envvar [by export NAME = ]
+      - ./ansible-navigator.yml
+      - ~/.ansible-navigator.yml
+
     
