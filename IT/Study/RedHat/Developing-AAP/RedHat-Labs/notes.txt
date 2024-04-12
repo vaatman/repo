@@ -214,3 +214,81 @@ Chapter 6
       - timer displays duration of playbook
       - profile_tasks displays starttime/timespent of/on each task, sorted descending at end
       - profile_roles displays timespent on each role, sorted descending at end
+
+Chapter 7
+- data-filters
+  - variable: {{ var }}
+  - filtered: {{ var | filter }}
+  - eg. set a default value
+    shell: "{{ item['shell'] | default('/bin/bash') }}"
+  - multiple filters can be used [pipes]
+      "{{ pattern | regex_search('test') | default('MESSAGE', true) }}"
+      "{{ pattern | bool | default('MESSAGE') }}"
+  - unite the values of two variables using 'union()' filter:
+    apache_package_list: "{{ apache_base_packages }}"
+    -- becomes
+    apache_package_list: "{{ apache_base_packages | union(apache_options_packages) }}"
+  - enable a commented variable to be omitted when false
+    enablerepo: "{{ apache_enablerepos_list }}"
+    -- becomes
+    enablerepo: "{{ apache_enablerepos_list | default(omit, true) }}"
+  - replace an empty set_fact:
+    webapp_deployed_files: []
+    -- for
+    webapp_deployed_files: "{{ webapp_find_files | map(attribute='path') | list }}"
+      - webapp_file_files holds a list of files
+      - map() gets the path of those files
+      - ordered as a list
+  - replace an empty set_fact
+    webapp_rel_deployed_files: [
+    -- for
+    webapp_rel_deployed_files: "{{ webapp_deployed_files | map('relpath', webapp_content_root_dir) | list }}"
+  - replace empty loop
+    loop: []
+    -- for
+    loop: "{{ webapp_rel_deployed_files | difference(webapp_file_list) }}"
+      - start with files in webapp_rel_deployed_files
+      - apply difference filter
+
+- data-filters
+  - lookup plugins
+    - syntax: hosts: "{{ lookup('ansible.builtin.file', '/etc/hosts') }}"
+    - info: ansible-navigator doc --mode stdout -t lookup PLUGIN_NAME
+    ! file plugin reads files on exec.env NOT on controller
+  - apply data with a template
+    - to process templates/my.template.j2:
+      {{ lookup('ansible.builtin.template', 'my.template.j2') }}
+  - reading command output:
+    raw output: {{ query('ansible.builtin.pipe', 'ls files') }}
+    list output: {{ query('ansible.builtin.lines', 'ls files') }}
+  - getting content from a URL:
+    {{ lookup('ansible.builtin.url', 'https://my.site.com/my.file') }}
+  - getting content from Kubernetes:
+    {{ lookup('kubernetes.core.k8s', kind='Deployment', namespace='ns', resource_name='my_res') }}
+  - handling plugin errors:
+    {{ lookup('ansible.builtin.file', 'my.file', errors='warn') }}
+  - set_fact user_groups
+    "{{ lookup('ansible.builtin.file', 'groups.yml') | from_yaml }}"
+    - use file plugin to read data from groups.yml
+    - filter from_yaml to structure data as yaml
+  - read user info from a file
+    "{{ query('ansible.builtin.lines', 'cat users.txt') }}"
+  - create random password,
+    - looping over items in previous list
+      "{{ lookup('ansible.builtin.password', 'credentials/' + item + ' length=9') }}"
+    - hash the password
+      password: "{{ password_plain | password_hash('sha512') }}"
+    - only set password for a NEW user
+      update_password: on_create
+- data-loops
+  - use data from a dictionary in a loop as items
+    name: "{{ item['key'] }}"
+    gid: "{{ item['value']['gid'] }}"
+    loop: "{{ rgroups | dict2items }}"
+  - use a nested loop with 'subelements' filter to transform variables into a list
+    - the dictionary also holds a list 'my_groups' that we need
+    - username will be "{{ item[0]['name'] }}"
+    - groups will come from "{{ item[1] }}"
+- data-netfilters
+  - requires ansible.utils.ipaddr collection
+

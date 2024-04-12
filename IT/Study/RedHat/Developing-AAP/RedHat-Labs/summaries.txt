@@ -81,3 +81,20 @@ You can use tags to select or skip tasks during play execution.
 Disabling fact gathering speeds up the execution of playbooks.
 
 You can use the timer, profile_tasks, and profile_roles callback plug-ins to profile playbooks.
+
+Chapter 7
+You can use filters in Jinja2 expressions and templates to format, transform, and parse data.
+
+Some filters are native to Jinja2 and some are provided by Ansible or by Ansible Content Collections.
+
+You can apply multiple filters sequentially in the same Jinja2 expression.
+
+Lookup plug-ins get data from external sources for plays.
+
+Lookup plug-ins and filters run in the execution environment, not on the managed host.
+
+You can combine filters and lookup plug-ins to implement sophisticated loops.
+
+Ansible provides many supplementary filters for processing networking-related data, such as ansible.utils.ipaddr.
+
+
