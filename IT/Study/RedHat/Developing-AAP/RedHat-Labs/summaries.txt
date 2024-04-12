@@ -66,3 +66,18 @@ A good practice is to keep most variables out of static inventory files.
 Take advantage of inventory groups and the group_vars/ and host_vars/ directories to improve project maintainability.
 
 Use the special inventory variables to control connections to hosts and use inventory hostnames to make playbook output more readable.
+
+Chapter 6
+You can configure privilege escalation at the play, role, block, or task level.
+
+Privilege escalation uses the become, become_user, become_method, and become_flags directives.
+
+Ansible runs the play sections in the following order: pre_tasks, roles, tasks, and post_tasks.
+
+Handlers run in the same order that they appear in the play.
+
+You can use tags to select or skip tasks during play execution.
+
+Disabling fact gathering speeds up the execution of playbooks.
+
+You can use the timer, profile_tasks, and profile_roles callback plug-ins to profile playbooks.

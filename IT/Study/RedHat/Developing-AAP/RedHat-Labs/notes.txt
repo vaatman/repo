@@ -146,3 +146,71 @@ Chapter 5
       servera.lab.example.com
     - note: no : appended to hostname
 
+Chapter 6
+- task-escalation
+  - playbook needs privilege escalation on only one of two plays
+    - become: false in ansible.cfg
+    - set become: true in head of play
+    - or set tasks in block: which has become: true
+- task-execution
+  - one task in pre_tasks: sets 2 facts
+  - then calls a handler to display the value
+  - in the handler listen: is used to respond to the handler call
+    - in two tasks
+    - no loop or something
+  - uninstall rpm then print and call a handler
+    notify: package check
+    - name: Check for the httpd package
+      ansible.builtin.debug:
+        msg: "httpd is not installed!"
+      when: "'httpd' not in ansible_facts['packages']"
+      listen: package check
+- task-tagging
+  - tags can be set on several levels
+    - default syntax is list:
+      tags:
+        - test
+    - tag a role:
+      roles:
+        - { role: databases, tags: ['production', 'staging'] }
+  - tags can be called on CLI
+    $ ansible-navigator ..... --tags tests
+    $ ansible-navigator ..... --skip-tags tests
+  - listing tags in playbook
+    $ ansible-navigator run -m stdout playbook.yml -i inventory --list-tags
+  - special tags:
+      always  - runs every time [except with '--skipped-tags always']
+      tagged  - runs any resource with an explicit tag
+      untagged  - runs any resource that does not have an explicit tag and excluded all tagged resources
+      all     - includes all tasks in a play, tag or not; default behavior of Ansible
+      
+  - get output from webserver
+    - ansible.builtin.uri:
+        url: http://localhost
+        return_content: true
+      register: test_url
+      failed_when: "'Hello from' not in test_url['content']"
+- task-speed
+  - set fact caching
+    false | true | smart
+  - increase parallelism
+    forks=<num>
+  - avoid loops in package manager
+    - specify multiple rpms as a list
+  - use synchronize module instead of copy
+  - use templates
+  - enable pipelining to reduce the number of SSH connections
+    - in ansible-navigator.yml under execution-environment:
+      environment-variables:
+        set:
+          ANSIBLE_PIPELINING: true
+  - profile playbook execution with callback plugins, eg.
+    [defaults]
+    callback_plugin=timer, profile_tasks, cgroup_perf_recap
+    - ansible-navigator doc -t callback -l -m stdout command to list the available callback plug-ins
+    - to help identify slow tasks and roles
+      [defaults]
+      callbacks_enabled=timer, profile_tasks, profile_roles
+      - timer displays duration of playbook
+      - profile_tasks displays starttime/timespent of/on each task, sorted descending at end
+      - profile_roles displays timespent on each role, sorted descending at end
