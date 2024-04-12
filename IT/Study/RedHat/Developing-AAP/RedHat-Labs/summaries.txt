@@ -51,3 +51,18 @@ You can configure automation content navigator settings by using the file define
 The ansible-navigator settings --sample command generates a sample ansible-navigator.yml configuration file.
 
 The ansible-navigator settings --effective command generates a configuration file that reflects your current effective configuration, including options specified on the command line, values of environment variables, and defaults.
+
+Chapter 5
+You can use inventory plug-ins provided by collections to dynamically obtain lists of hosts and groups from sources such as cloud, virtualization, and systems management platforms.
+
+Dynamic inventory scripts can generate host and group information from sources external to Ansible.
+
+You can use the yaml inventory plug-in to write static inventory files in YAML format.
+
+You can use the ansible-navigator inventory command to help you convert an inventory file in INI format into YAML format.
+
+A good practice is to keep most variables out of static inventory files.
+
+Take advantage of inventory groups and the group_vars/ and host_vars/ directories to improve project maintainability.
+
+Use the special inventory variables to control connections to hosts and use inventory hostnames to make playbook output more readable.

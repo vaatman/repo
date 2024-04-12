@@ -111,4 +111,38 @@ Chapter 4
       - ./ansible-navigator.yml
       - ~/.ansible-navigator.yml
 
-    
+Chapter 5
+- inventory-dynamic
+  - dynamic inventory scripts need to be executable [rwx]
+  - add placeholder groupname definition in static inventory
+    - for dynamic groups 
+- inventory-yaml
+  - convert INI inventory yo YAML:
+  $ ansible-navigator inventory --mode stdout -i origin_inventory --list --yaml
+  - in yaml inventory hostnames also have a : appended
+    web_servers:
+      hosts:
+        web1.example.com:
+        web2.example.com:
+  - in yaml inventory :children groups are broken up:
+  [all_servers]
+  servera.lab.example.com
+  [all_servers:children]
+  web_servers
+    -- becomes:
+  all_server:
+    hosts:
+      servera.lab.example.com:
+    children:
+      web_servers:
+  - note that hosts: is missing in the children: definition
+- inventory-variables
+  Split the location of host variable files across multiple directories to improve maintainability
+  - move vars lines from playbook to relevant group_vars/<group>/<varsfile>.yaml
+  - make hostname displayed more meaningfule [human]
+    servera.lab.example.com:
+    - becomes
+    load_balancer:
+      servera.lab.example.com
+    - note: no : appended to hostname
+
