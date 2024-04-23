@@ -1,0 +1,26 @@
+Summaries
+
+Chapter 1 - Introducing Ansible
+- Automation is a key tool to mitigate human error and quickly ensure that your IT infrastructure is in a consistent, correct state
+- Ansible is an open source automation platform that can adapt to many different workflows and environments
+- Ansible can be used to manage many different types of systems, including servers running Linux, Microsoft Windows, or UNIX and network devices
+- Ansible Playbokos are human-readable text files that describe the desired state of an IT infrastructure
+- Ansible is built around an agentless architecture in which Ansible is installed on a control node and clients do not need any special agent software
+- Ansible connects to managed hosts using standard network protocols such as SSH, and runs code or commands on the managed hosts to ensrue that they are in the state specified by Ansible
+
+Chapter 2 - Implementing an Ansible Playbook
+- A play is an ordered list of tasks, which runs against hsots selected from the inventory
+- A playbook is a text file that contains a list of one or more plays to run in order
+- Ansible PLaybooks are written in YAML format
+- YAML files are structured using space indentation to represent the data hierarchy
+- Tasks are implemented using standardized code packages as Ansible modules
+- The ansible-doc command can list instlled modules, and provide documentation and example code snippets of how to use them in playbooks
+- The ansible-playbook command is used to verify playbook syntax and to run playbooks
+
+Chapter 3 - Managing Variables and Facts
+- Ansible variables allow administrators to reuse values across files in an entire Ansible project
+- Variables can be defined for hosts and hostgroups in the inventory file
+- Variables can be defined for playbooks by using facts and external files, they can also be defined on the command line
+- The register keyword can be used to capture the output of a command in a variable
+- Ansible Vault is one way to protect sensitive data such as password hashes and private keys for deployment using Ansible playbooks
+- Ansible facts are variables that are autoamtically discovered by Ansible from a managed host
