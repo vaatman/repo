@@ -1,1 +1,0 @@
-#ffmpeg -v 5 -y -i Glad.m4a -acodec libmp3lame -ac 2 -ab 224k Glad.mp3

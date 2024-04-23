@@ -1,2 +1,0 @@
-set the date 1 year ahead:
-$ exiftool -m -AllDates+=8760 DSC_4390.JPG

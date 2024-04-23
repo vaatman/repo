@@ -1,9 +1,0 @@
-#--- Convert MidSide to LR Stereo:
-# sox <MS-stereo.wav> <LR-stereo.wav> remix -m 1,2 1,2i
-	;; '-m 1,2 1,2i' == -m <out.L:1,2> <out.R:1,2i>
-
-#-- Create .bin file:
-# sox -S <file.wav> -L -t raw <file.bin>
-	-S	== show progress
-	-L	== endian little
-	-t	== type of audio file (raw)

@@ -1,7 +1,0 @@
-I think you're confusing the clipping level of the main output, with the input clip level. The former is mainly determined by the power rails, and will typically be between +20 and +30dBu. I've seen higher, but rarely. The latter can be anything the designer likes and is determined mainly by the input attenuator, but is rarely over +12dBu and may be 0dBu or even lower.
-
-Remember that a typical dynamic mic has a sensitivity of around 2mV/Pa, which is around -52dBu for an SPL of 94dB. So to generate an output of +6dBu you'd need a source producing 152dB SPL... Which is pretty darn loud. If you're using a high output capacitor mic with a sensitivity of 30mV/Pa (-28dBu), you'd still need a source of 128dB SPL to reach the +6dBu input clip... And if the mic has its own 10 dB pad (as most do) you can cope with 138dB SPL.
-
-So it's really not a problem, is it?
-
-source: https://www.soundonsound.com/forum/viewtopic.php?f=15&t=34815

@@ -1,1 +1,0 @@
-ls *svg|while read F; do inkscape -z -e ${F/svg/png} $F; done

@@ -1,3 +1,0 @@
-#!/bin/bash
-
-sudo apt install dconf-editor ica*deb libwebkit libwebkitgtk libwebkit libwebkit2gtk libwebkit libwebkit2gtk-4.0-dev libwebkit2gtk-4.0-dev libwebkit-1.0-2 icaclient_13.10.0.20_amd64.deb teams*deb python-pip xfonts-terminus xterm tmux pdfgrep aptitude install poppler-utils poppler-utils ansible strace git jq

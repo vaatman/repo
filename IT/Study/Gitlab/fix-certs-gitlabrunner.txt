@@ -1,6 +1,0 @@
-# cd /etc/gitlab
-# mkdir certs
-# cd certs
-
-# openssl s_client -showcerts -connect rhel8-node1.local:443 -servername rhel8-node1.local < /dev/null 2>/dev/null | openssl x509 -outform PEM > rhel8-node1.local.crt
-# echo |openssl s_client -CAfile rhel8-node1.local.crt -connect rhel8-node1.local:443 -servername rhel8-node1.local

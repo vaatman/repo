@@ -1,8 +1,0 @@
-Flathub is recommended on non-Ubuntu distros.
-Install OBS Studio on Ubuntu 18.04 or newer using:
-
-$ sudo add-apt-repository ppa:obsproject/obs-studio
-
-$ sudo apt install obs-studio
-
-source: https://obsproject.com/kb/linux-installation
