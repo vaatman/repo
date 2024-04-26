@@ -448,8 +448,10 @@ Chapter 9
     - creates _build directory
     - creates context/Containerfile
 - copy motd.tar.gz to _build/ directory
+- login to automation hub
 - build the custom aut.ex.env
-  $ ansible-builder build
+  $ ansible-builder build -t ee-motd-minimal:1.0
+  hv: this runs: 'podman build -f context/Containerfile -t ee-motd-minimal:1.0 context'
 - list images
   $ podman images localhost/ee-motd-minial
 - examine the image using navigator
