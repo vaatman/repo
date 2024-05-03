@@ -280,6 +280,8 @@ Chapter 7
       password: "{{ password_plain | password_hash('sha512') }}"
     - only set password for a NEW user
       update_password: on_create
+    !! 'lookup' output is a string
+    !! 'query'  output is list
 - data-loops
   - use data from a dictionary in a loop as items
     name: "{{ item['key'] }}"
