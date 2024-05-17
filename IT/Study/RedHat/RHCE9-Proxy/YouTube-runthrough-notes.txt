@@ -1,6 +1,6 @@
 RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGGtSX_vHKv5vz&index=2
 
-1. Install and configure ansible on ctrole node as folow:
+1. Install and configure ansible on controle node as follow:
   - install the required package
   - create static inventory file called /home/student/ansible/inventory
       [dev]
@@ -25,3 +25,293 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
       become_method=sudo
       become_user=root
       become_ask_pass=false
+  - set your .vimrc [NOT a RedHat requirement]
+  autocmd FileType yaml setlocal ai ts=2 sw=2 et cuc nu
+
+2. Create a playbook adhoc.yml for configuring repository on all nodes
+  .use the ansible.builtin.yum_repository: module
+
+3. Install the collections
+  .create a directory
+  .use given URL to install ansible.posix collection under collections directory
+  .use given URL to install rhel_system_roles roles under collections directory
+  $ ansible-galaxy collection install <URL> -p collections/
+  $ ansible-navigator collections
+
+4. Install the roles
+  .create a directory
+  .create playbook requirements.yml
+  .add role name balancer and download it using given URL
+  .add role name phpinfo and download it using given URL
+  $ ansible-galaxy install -r requirements.yml -p <rolespath>
+
+5. Create offline role named apache under roles directory
+  .install httpd package, service should be started and enabled
+  $ ansible-galaxy init apache
+  . apache/tasks/main.yml
+    - ansible.builtin.dnf for httpd and firewalld
+    - ansible.builtin.service to start httpd and firewalld
+    - ansible.builtin.template to create index.html from template.j2
+  .host the web page using template.j2
+  .template.j2 should contain:
+    My host is HOSTNAME on IPADDRESS
+    where hostname is fully qualified domainname
+    {{ ansible_fqdn }} on {{ ansible_default_ipv4.address }}
+  . create playbook apache_role.yml and run the role on dev group
+    - hosts: dev
+      roles:
+        - apache
+
+6. Create a playbook cooled roles.yml to run balancer and phpinfo roles
+  - run the balancer role on the balancers group
+  - run the phpinfo role on the webservers group
+  .roles.yml
+  - hosts: webservers
+    roles:
+      - phpinfo
+  - hosts: balancers
+    roles:
+      - balancer
+
+7.1. Create a playbook called timesync.yml and use rhel_system_roles
+  - use given ntp server and enable iburst
+  - run playbook on all hosts
+  $ sudo yum install rhel-system-roles -y
+  $ cp -rf /usr/share/ansible/roles/rhel-system-roles.timesync /home/student/ansible/roles
+  $ vi timesync.yml
+  - hosts: all
+    vars:
+      timesync_ntp_servers:
+        - hostname: 172.25.254.254
+          iburst: yes
+      roles:
+        - rhel-system-roles.timesync
+  !! copy code from README.md in the role
+
+7.2. Create a playbook called selinux.yml and use system roles
+  - set selinux mode as enforcing on all nodes
+  $ sudo yum install rhel-system-roles -y
+  $ ls /usr/share/ansible/roles
+  $ cp -rf /usr/share/ansible/roles/rhel-system-roles.selinux /home/student/ansible/roles
+  $ vi selinux.yml
+  - hosts: all
+    vars:
+      selinux_polixy: targeted
+      selinux_tate: enforcing
+    roles:
+      - rhel-system-roles.selinux
+
+9. Create a playbook called webcontent.yml and run on dev group
+  - createdir /devweb owned by apache group
+  .user ansible.builtin.file: module
+  - /devweb dir should have context type "httpd"
+    - setype: httpd_sys_content_t
+  - assign permissions user=rwx,group=rwx,other=rx and group special permission to /devweb
+    - mode:'02775'
+  - create /devweb/index.html with content "Development"
+    ansible.builtin.file:
+      state: touch
+    ansible.builtin.copy:
+      content: "Development"
+  - link /devweb to /var/www/html/devweb
+    ansible.builtin.file:
+      state: link
+  ! requires httpd and firewalld installed en active
+
+8. Create a playbook called packages.yml
+  - install php and mariadb on dev, test and prod group
+      - hosts: dev,test,prod
+        ansible.builtin.dnf:
+  - install "RPM Development Tools" group package on dev group
+  .second play:
+      - hosts: dev
+        ansible.builtin.dnf:
+          name: "@RPM Development tools"
+  - update all packages on dev group
+        ansible.builtin.dnf:
+          name: "*"
+          state: latest
+  ! ansible.builtin.dnf doc for syntax
+
+10. Collect hardware report using a playbook on all nodes
+  - download hwreport.txt from URL and save it under /root
+  - if there is no information show "NONE"
+  - playbook name should be hwreport.yml
+    - hosts: all
+      ignore_errors: true
+      tasks:
+        - block:
+            get_url:
+            template: hwreport1.txt
+          rescue:
+            template: hwreport2.txt
+    .hwreport1.txt has:
+      HOSTNAME={{ ansible_hostname }} stanzas, AND:
+      DISK_SIZE_VDA={{ ansible_devices.nvme0n1.size | default('NONE') }} filters for defaults
+      DISK_SIZE_VDB={{ ansible_devices.nvme0n1.size | default('NONE') }} filters for defaults
+    .hwreport2.txt has:
+      DISK_SIZE_VDB=NONE
+
+11. Replace file /etc/issue on all nodes
+  - in dev group /etc/issue will get "Development"
+  - in test group /etc/issue will get "Test"
+  - in prod group /etc/issue will get "Production"
+  - playbook name should be issue.yml and run on all hosts
+  .use ansible.builtin.copy:
+  .with when: clause
+    when: inventory_hostname in groups['dev']
+    when: inventory_hostname in groups['test']
+    when: inventory_hostname in groups['prod']
+
+12. Download a template file
+  - has content like /etc/hosts
+  - should collect all node information like ipaddress,fqdn,hostname and save to /etc/myhosts
+  - create a playbook with name hosts.yml to run on dev group
+    - hosts: all
+        template:
+          src: myhosts.j2
+          dest : /etc/myhosts
+        when: inventory_hostname in groups['dev']
+    myhosts.j2 content:
+    127.0.0.1
+    ::1
+    {% for x in groups['all'] %}
+    {{ hostvars[x].ansible_default_ipv4.address }} {{ hostvars[x].ansible_fqdn }} {{ hostvars[x].ansible_hostname }}
+    {% endfor %}
+
+13. Create a variable file vault.yml to contain a variable and its value
+  pw_developer is value Iamdev
+  pw_manager is value Iammgr
+  - vault.yml is protected using password P@ssword
+  - store password in a file secret.txt which is used to encrypt the variable file
+  $ ansible-vault create vault.yml
+    > enter password
+    > then enter the key values
+      pw_developer: Iamdev
+      pw_manager: Iammgr
+  $ echo P@assword > secret.txt
+      
+14. Creating users and groups
+  - download variable file from given URL
+    - run on all nodes using two variable files user_list.yml and vault.yml
+  - create group opsdev
+    - create user from users var whose job is equal to developer and need to be in opsdev gorup
+    - assign a password using SHA512 format and run on dev and test group
+    - user password is {{ pw_developer }}
+  - create group opsmgr
+    - create user from users var whose job is equalt to manager and need to be in opsmgr group
+    - assign a password using SHA512 format and run on dev and test group
+    - user password is {{ pw_manager }}
+  - use when: condition for each play
+  user_list.yml:
+    myuser:
+      - name: david
+        job: developer
+        password_expire_days: 10
+      ...etc
+  user.yml:
+    name: Create users [1st play]
+    hosts:
+      - dev
+      - test
+    vars:
+      - vault.yml
+      - user_list.yml
+    tasks:
+      - name: Create opsdev group
+        group:
+          name: opsdev
+          state: present
+      - name: add users who are developer
+        user:
+          name: "{{ item.name }}"
+          groups: opsdev
+          state: present
+          password: "{{ pw_developer | password_hash('SHA512') }}"
+          password_expire_max: "{{ item.password_expire_days }}"
+        loop: "{{ mysers }}"
+        when: item.job == "developer"
+    name: create manager [2nd play]
+    hosts:
+      - dev
+      - test
+    vars_files:
+      - vault.yml
+      - user_list.yml
+    tasks:
+      - name: Create opsmgr group
+        group:
+          name: opsmgr
+          state: present
+      - name: add users who are manager
+        user:
+          name: "{{ item.name }}"
+          groups: opsmgr
+          state: present
+          password: "{{ pw_manager | password_hash('SHA512') }}"
+          password_expire_max: "{{ item.password_expire_days }}"
+        loop: "{{ mysers }}"
+        when: item.job == "manager"
+  $ ansible-navigator run users.yml -m stdout --vault-password-file=secret.txt
+
+15. Rekey a variable file
+  - get file from URL
+  - replace password
+  $ wget <URL>
+  $ ansible-vault create <file>
+    - set initial password
+    - add content
+  $ ansible-vault rekey <file>
+    - enter current password
+    - enter new password
+
+16. Create cronjob for user student on all nodes
+  - every 2 minutes the job will execute logger "EX294 in progress"
+  .cronjob.yml
+    - hosts: all
+      tasks:
+        - name: create cronjob
+          cron:
+            name: "logger job"
+            user: student
+            minute: "*/2"
+            job: logger "EX294 in progress"
+            state: present
+	.check: $ ansible all -a "crontab -lu student"
+
+17. Create logical volume named data of 1500M size from VG "research"
+	- verify if vg not exist then it should debug msg "vg not found"
+	- if 1500M lv size is not existing the is debug msg "Insufficient size of vg"
+	- if LV is created the assign file-system as ext4
+	- do not perform any mounting for this LV
+	- playbook name lv.yml, run on all nodes
+		- hosts: all
+			tasks:
+				- block:
+					- block:
+						- name: create lv of 1500m
+							lvol:
+								vg: research
+								lv: data
+								size: 1500m
+							when: ansible_lvm.vgs.research.size_g > "1500 MiB"
+					- block:
+						- name: display msg vg size is insufficient
+							debug:
+								msg: "INSUFFICIENT SIZE OF VG"
+							when: ansible_lvm.vgs.research.size_g < "1500 MiB"
+						- name: create lv of 800m
+							lvol:
+								vg: research
+								lv: data
+								size: 800m
+					when: ansible_lvm.vgs.research is defined
+					name: format the LV ext4
+					filesystem:
+						fstype: ext4
+						dev: /dev/research/data
+					when: ansible_lvm.vgs.research is defined
+					name: display message device not found
+					debug:
+						msg: "VG NOT FOUND"
+					when: ansible_lvm.vgs.research is not defined	
