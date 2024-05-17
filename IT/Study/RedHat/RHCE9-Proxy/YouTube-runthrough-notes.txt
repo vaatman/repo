@@ -1,0 +1,27 @@
+RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGGtSX_vHKv5vz&index=2
+
+1. Install and configure ansible on ctrole node as folow:
+  - install the required package
+  - create static inventory file called /home/student/ansible/inventory
+      [dev]
+      servera.lab.example.com
+      [test]
+      serverb.lab.example.com
+      [prod]
+      serverc.lab.example.com
+      [balancers]
+      serverd.lab.example.com
+      [webservers:children]
+      prod
+  - create a configuration file called ansible.cfg
+      [defaults]
+      remote_user=
+      inventory=
+      roles_path=
+      collections_path=
+
+      [privilege_escalation]
+      become=true
+      become_method=sudo
+      become_user=root
+      become_ask_pass=false
