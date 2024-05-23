@@ -1,0 +1,210 @@
+Source: https://drive.google.com/file/d/10QEGD04lug0P0UHySB6DEGKiAah1pN2a/view
+
+
+
+                                        RHEL-9 RHCE EXAM MODEL PAPER
+                                                EX294
+                                                                                        Duration: 4Hrs
+                                                                                        Total Marks: 300
+
+Instructions:
+
+control node: 	workstaion.lab.example.com 
+
+managed node: 	node1.lab.example.com
+		node2.lab.example.com
+		node3.lab.example.com
+		node4.lab.example.com
+                node5.lab.example.com
+
+__________
+ 
+
+1. Install and Configure Ansible on the control node as follows:
+
+  * Install the required packages.
+  * Create a static inventory file called /home/student/ansible/inventory as follows:
+          -- node1 is a member of the dev host group
+          -- node2 is a member of the test host group
+          -- node3 and node4 is a member of the prod host group
+          -- node5 is a member of the balancers host group
+          -- The prod group is a member of the webservers host group 
+  * Create a configuration file called ansible.cfg as follows:
+          -- The host inventory file /home/student/ansible/inventory is defined
+          -- The location of roles used in playbooks is defined as /home/student/ansible/roles
+          -- The Install Ansible Content Collection location /home/student/ansible/mycollection
+
+
+2. Create repo.yml for  configuring repository in all nodes.
+
+   i) Name = baseos-internal
+   Description = Baseos Description
+   Url = http://content/rhel9.0/x86_64/dvd/BaseOS
+   GPG is enabled.
+   Gpgkey = http://content.example.com/rhel9.0/x86_64/dvd/RPM-GPG-KEY-redhat-release
+   Repository is enabled.
+
+   ii) Name = appstream-internal
+   Description = App Description
+   Url = http://content/rhel9.0/x86_64/dvd/AppStream
+   GPG is enabled.
+   Gpgkey = http://content.example.com/rhel9.0/x86_64/dvd/RPM-GPG-KEY-redhat-release
+   Repository is enabled.
+
+
+3. Create a directory 'roles' under /home/student/ansible .
+
+  i)   Create a playbook called requirements.yml under the roles directory and download the given roles under the 'roles' directory using galaxy command under it.
+  ii)  Role name should be balancer and download using this url http://content.example.com/Rhce/balancer.tgz.
+  iii) Role name phpinfo and download using this url http://content.example.com/Rhce/phpinfo.tgz.
+
+
+4. Create offline role named apache under roles directory.
+
+  i)   Install httpd package and the service should be start and enable the httpd service.
+  ii)  Host the web page using the template.j2
+  iii) The template.j2 should contain 
+       Welcome to   HOSTNAME  ON IPADDRESS
+       Where HOSTNAME is fully qualified domain name.
+  iv)  Create a playbook named apache_role.yml and run the role in dev group.
+
+
+5. Create a playbook called roles.yml and it should run balancer and phpinfo roles.
+
+   Use roles from Ansible Galaxy
+Create a playbook called /home/admin/ansible/roles.yml
+* The palybook contains a play that runs on host in the balances host group and uses the balances role.
+- This role configures a service to load balance web server request between hosts in the webserver host group.
+- Browsing to host in the balances host group ( for example http://node5.lab.example.com) produces the following output:
+Welcome to node3.lab.example.com on 172.25.250.12
+- Reloading the Browser produces output from the alternet web server:
+Welcome to node4.lab.example.com on 172.25.250.13
+* The Playbook contains a play the runs on hosts in webserver host group and user the phpinfo role.
+- Browsing to host in the webserver host group with the URL /hell.php produces the following out[ut :
+Hello PHP World from FQDN
+- For example Browsing to http://node3.lab.example.com/hello.php produces the following output:
+Hello PHP World from node3.lab.example.com
+along with various details of the PHP configuration include the version of PHP that is installed.
+- Similarly, Browsing to http://node4.lab.example.com/hello.php, produces the following output:
+Hello PHP World from node4.lab.example.com
+along with various details of the PHP configuration including the version of PHP that is installed
+
+
+6. Installing Ansible Content Collections
+  installs the collection in the local collections directory.
+     download tar file url given on exam
+  collections:
+    http://server.lab.example.com/role-collections/redhat-insights-1.0.7.tar.gz
+    http://server.lab.example.com/role-collections/redhat-rhel_system_roles-1.19.3.tar.gz
+    http://server.lab.example.com/role-collections/community-general-5.5.0.tar.gz
+  
+
+7. Install packages in multiple group.
+
+  i)   Install vsftpd and mariadb-server packages in dev and test group.
+  ii)  Install "RPM Development Tools" group package in prod group.
+  iii) Update all packages in  group.
+  iv)  Use separate play for each task and playbook name should be packages.yml.
+
+8. Create a playbook webcontent.yml and it should run on dev group.
+
+  i)   Create a directory /devweb and it should be owned by devops group.
+  ii)  /devweb directory should have context type as "httpd" 
+  iii) Assign the permission for user=rwx,group=rwx,others=rx and group special permission should be applied to /devweb.
+  iv)  Create an index.html file under /devweb directory and the file should have the content "Developement".
+   v)  Link the /devweb directory to /var/www/html/devweb. 
+
+
+9. Collect hardware report using playbook in all nodes.
+
+  i)  Download hwreport.txt from the url http://content.example.com/Rhce/hwreport.empty and save as it under /root/hwreport.txt
+  ii)  If there is no information it have to show "NONE".
+  iii) playbook name should be hwreport.yml.
+ 
+
+10. Replace the file /etc/issue on all managed nodes.
+
+  i)   In dev  group /etc/issue should have the content "Developement".
+  ii)  In test group /etc/issue should have the content "Test".
+  iii) In prod group /etc/issue should have the content "Production".
+  iv)  Playbook name issue.yml and run in all managed nodes.
+
+
+11. Download the file http://content.example.com/Rhce/myhosts.j2.
+
+  i) myhosts.j2 is having the content.
+
+  127.0.0.1 localhost.localdomain localhost
+  192.168.0.1 localhost.localdomain localhost
+
+  ii) The file should collect all node information like ipaddress,fqdn,hostname 
+      and it should be the same as in the /etc/hosts file,
+      if playbook run in all the managed node it must store in /etc/myhosts.
+
+  Finally /etc/myhosts file should contains like.
+
+  127.0.0.1 localhost.localdomain localhost
+  192.168.0.1 localhost.localdomain localhost
+
+  172.25.250.10 node1.lab.example.com node1
+  172.25.250.11 node2.lab.example.com node2
+  172.25.250.12 node3.lab.example.com node3
+  172.25.250.13 node4.lab.example.com node4
+  172.25.250.14 node4.lab.example.com node5
+
+  iii) playbook name hosts.yml and run in dev group.
+
+
+12. Create a variable file vault.yml and that file should contains the variable and its value.
+
+  pw_developer is value lamdev
+  pw_manager is value lammgr
+
+  i)   vault.yml file should be encrpted using the password "P@sswOrd".
+  ii)  Store the password in secret.txt file and which is used for encrypt the variable file.
+
+13. Download the variable file http://content.example.com/Rhce/user_list.yml and 
+    Playbook name users.yml and run in all nodes using two variable files user_list.yml and vault.yml
+  i)  * Create a group opsdev
+      * Create user from users variable who's job is equal to developer and need to be in opsdev group
+      * Assign a password using SHA512 format and run the playbook on dev and test.
+      * User password is {{ pw_developer }}
+  ii) * Create a group opsmgr
+      * Create user from users variable who's job is equal to manager and need to be in opsmgr group
+      * Assign a password using SHA512 format and run the playbook on prod.
+      * User password is {{ pw_manager }}
+  iii)* Use when condition for each play.
+
+
+14. Rekey the variable file from http://content.example.com/Rhce/solaris.yml.
+
+  i)  Old password: cisco
+  ii) New password: redhat
+
+15. Create a cronjob for user student in all nodes, the playbook name crontab.yml and the job details are below
+  i) Every 2 minutes the job will execute logger  "EX294 in progress"
+
+16. Create & use a logical Volume
+Create a playbook called /home/admin/ansible/ansible/lv.yml that runs on all managed nodes that does the following:
+* Creates a logocal volume with these requirement:
+- The logical Volume is Created in the research volume group
+- The logical volume name is data
+- The logical volume size is 1500 Mib
+* Format the logical volume with the ext4 file system
+* if the requested logical volume size cannot be created, the error message
+Could not create logical volume of that size
+should be displayed and size 800 MiB should be used instead.
+* if the volume research does not exist, the error message
+volume group does not exist
+should be displayed
+* Does NOT mount the logical volume in any way.
+
+17. Use a RHEL timesysnc system role
+create a playbook called /home/admin/ansible/timesync.yml that:
+- Runs on all managed nodes
+- Uses the timesync role
+- Configures the role to use the currently active NTP provider
+- Configure the role to use the time server classroom.lab.example.com
+- Configure the role to enable the iburst parameter
+
+
