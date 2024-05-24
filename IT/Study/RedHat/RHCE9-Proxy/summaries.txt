@@ -33,3 +33,35 @@ Chapter 4 - Implementing Task Control
 - Tasks are configured to handle error conditions by ignoring task failure, forcing handlers to be called even if the task failed, mark a task as failed when it suceeded, or override the behavior that causes a task to be marked as changed
 - Blocks are used to group tasks as a unit and to execute other tasks depending upon whether or not all tasks in the block succeed
 
+Chapter 5 - Deploying Files to Managed Hosts
+- The file management modules in the ansible.builtin and ansible.posix Ansible Content Collections enable you to accomplish most tasks related to file management, such as creating, editing and modifying permissions and other attributes of files
+- Several file management modules can set the permissions mode and SELinux context for files
+- You can use Jinja2 templates to dynamically construct files for deployment
+- A Jinja2 template is usually composed of two elements: variables and expressions. Those variables and expressions are replaced with vaules when the Jinja2 template is rendered
+- You use the ansible.builtin.template module to deploy Jinja2 templates to managed hosts
+- Jinja2 filters transform template expressions from one kind or format of data into another
+
+Chpater 6 - Managing Complex Plays and Playbooks
+- Host patterns are used to specify the managed hosts to be targeted by plays
+- You can specify a list of multiple host patterns in the hosts directive of a play
+- You can use the import_playbook feature to incorporate external play files into playbooks
+- You can use the include_tasks or import_tasks features to incorporate external task files into playbooks
+- When you include content, Ansible processes it dynamically as content is reached
+- When you import content, Ansible preprocesses it before the run starts
+
+Chapter 7 - Simplifying Playbooks with Roles and Ansible Content Collections
+- Ansible Roles helps you to reuse and share Ansible code
+- Ansible Content Collections distribute related roles, modules and other Ansible plugins that you can use in ansible projects and automations execution environments
+- You use the ansible-galaxy command to manage Ansible Roles and Ansible Content Collections
+- RedHat provides Collections through a cloud-based service: automation-hub. RedHat and partners support thes
+- You can distribute RedHat Collection or your own Collections from an on-premise private automation hub
+- Ansible Galaxy provides a library of third-party Ansible Roles and Collections that are managed by the community and unsupported by RedHat
+- System Roles (redhat.rhel_system_roles) are provided as an RPM package or as an Ansible Content Collections that consists of several roles intended to help you configure managed host subsystems on multiple versione of RHEL
+- Roles and Collections tah a project needs can be specufied by requirements.yml files, and can be installed in you Ansible project manually by using the ansible-galaxy command
+
+Chapter 8 - Troubleshooting Ansible
+- The ansible-navigator command can produce playbook artifact files that store information about runs in JSON format
+- Use the 'ansible-navigator replay' command to review play execution
+- th ansible.builtin.debug module can provide additional debuggin information when you run a playbook (for example, the current value for a variable)
+- You can specify the -v option of the 'ansible-navigator run' command one or more times to provide several levels of additional output verbosity. This is useful for debugging Ansible tasks when running a playbook
+- The --check option enables Ansible modules that support check mode to display the changes to be performed, instead of applying those changes to the managed hosts
