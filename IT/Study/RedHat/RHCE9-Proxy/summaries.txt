@@ -37,7 +37,7 @@ Chapter 5 - Deploying Files to Managed Hosts
 - The file management modules in the ansible.builtin and ansible.posix Ansible Content Collections enable you to accomplish most tasks related to file management, such as creating, editing and modifying permissions and other attributes of files
 - Several file management modules can set the permissions mode and SELinux context for files
 - You can use Jinja2 templates to dynamically construct files for deployment
-- A Jinja2 template is usually composed of two elements: variables and expressions. Those variables and expressions are replaced with vaules when the Jinja2 template is rendered
+- A Jinja2 template is usually composed of two elements: variables and expressions. Those variables and expressions are replaced with values when the Jinja2 template is rendered
 - You use the ansible.builtin.template module to deploy Jinja2 templates to managed hosts
 - Jinja2 filters transform template expressions from one kind or format of data into another
 
@@ -53,11 +53,11 @@ Chapter 7 - Simplifying Playbooks with Roles and Ansible Content Collections
 - Ansible Roles helps you to reuse and share Ansible code
 - Ansible Content Collections distribute related roles, modules and other Ansible plugins that you can use in ansible projects and automations execution environments
 - You use the ansible-galaxy command to manage Ansible Roles and Ansible Content Collections
-- RedHat provides Collections through a cloud-based service: automation-hub. RedHat and partners support thes
-- You can distribute RedHat Collection or your own Collections from an on-premise private automation hub
+- RedHat provides Collections through a cloud-based service: automation-hub. RedHat and partners support these
+- You can distribute RedHat Collections or your own Collections from an on-premise private automation hub
 - Ansible Galaxy provides a library of third-party Ansible Roles and Collections that are managed by the community and unsupported by RedHat
-- System Roles (redhat.rhel_system_roles) are provided as an RPM package or as an Ansible Content Collections that consists of several roles intended to help you configure managed host subsystems on multiple versione of RHEL
-- Roles and Collections tah a project needs can be specufied by requirements.yml files, and can be installed in you Ansible project manually by using the ansible-galaxy command
+- System Roles (redhat.rhel_system_roles) are provided as an RPM package or as an Ansible Content Collection that consists of several roles intended to help you configure managed host subsystems on multiple versione of RHEL
+- Roles and Collections that a project needs can be specified by requirements.yml files, and can be installed in your Ansible project manually by using the ansible-galaxy command
 
 Chapter 8 - Troubleshooting Ansible
 - The ansible-navigator command can produce playbook artifact files that store information about runs in JSON format
