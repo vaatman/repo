@@ -1,0 +1,61 @@
+Comprehensive Review
+
+Objectives
+- After completing this section, you should have reviewed and refreshed the knowledge and skills that you learned in Red Hat Enterprise Linux Automation with Ansible.
+- Reviewing Red Hat Enterprise Linux Automation with Ansible
+- Before beginning the comprehensive review for this course, you should be comfortable with the topics covered in each chapter. Do not hesitate to ask the instructor for extra guidance or clarification on these topics.
+
+----- Chapter 1, Introducing Ansible
+- Describe the fundamental concepts of Ansible and how it is used, and install development tools from Red Hat Ansible Automation Platform.
+- Describe the motivation for automating Linux administration tasks with Ansible, fundamental Ansible concepts, and the basic architecture of Ansible.
+- Install Ansible on a control node and describe the distinction between community Ansible and Red Hat Ansible Automation Platform.
+
+----- Chapter 2, Implementing an Ansible Playbook
+- Create an inventory of managed hosts, write a simple Ansible Playbook, and run the playbook to automate tasks on those hosts.
+- Describe Ansible inventory concepts and manage a static inventory file.
+- Describe where Ansible configuration files are located, how Ansible selects them, and edit them to apply changes to default settings.
+- Write a basic Ansible Playbook and run it using the automation content navigator.
+- Write a playbook that uses multiple plays with per-play privilege escalation, and effectively use automation content navigator to find new modules in available Ansible Content Collections and use them to implement tasks for a play.
+
+----- Chapter 3, Managing Variables and Facts
+- Write playbooks that use variables to simplify management of the playbook and facts to reference information about managed hosts.
+- Create and reference variables that affect particular hosts or host groups, the play, or the global environment, and describe how variable precedence works.
+- Encrypt sensitive variables using Ansible Vault, and run playbooks that reference Vault-encrypted variable files.
+- Reference data about managed hosts using Ansible facts, and configure custom facts on managed hosts.
+
+----- Chapter 4, Implementing Task Control
+- Manage task control, handlers, and task errors in Ansible Playbooks.
+- Use loops to write efficient tasks and use conditions to control when to run tasks.
+- Implement a task that runs only when another task changes the managed host.
+- Control what happens when a task fails, and what conditions cause a task to fail.
+
+----- Chapter 5, Deploying Files to Managed Hosts
+- Deploy, manage, and adjust files on hosts managed by Ansible.
+- Create, install, edit, and remove files on managed hosts, and manage the permissions, ownership, SELinux context, and other characteristics of those files.
+- Deploy files to managed hosts that are customized by using Jinja2 templates.
+
+----- Chapter 6, Managing Complex Plays and Playbooks
+- Write playbooks for larger, more complex plays and playbooks.
+- Write sophisticated host patterns to efficiently select hosts for a play.
+- Manage large playbooks by importing or including other playbooks or tasks from external files, either unconditionally or based on a conditional test.
+
+----- Chapter 7, Simplifying Playbooks with Roles and Ansible Content Collections
+- Use Ansible Roles and Ansible Content Collections to develop playbooks more quickly and to reuse Ansible code.
+- Describe the purpose of an Ansible Role, its structure, and how roles are used in playbooks.
+- Create a role in a playbook's project directory and run it as part of one of the plays in the playbook.
+- Select and retrieve roles from external sources such as Git repositories or Ansible Galaxy, and use them in your playbooks.
+- Obtain a set of related roles, supplementary modules, and other content from an Ansible Content Collection and use them in a playbook.
+- Write playbooks that take advantage of system roles for Red Hat Enterprise Linux to perform standard operations.
+
+----- Chapter 8, Troubleshooting Ansible
+- Troubleshoot playbooks and managed hosts.
+- Troubleshoot generic issues with a new playbook and repair them.
+- Troubleshoot failures on managed hosts when running a playbook.
+
+----- Chapter 9, Automating Linux Administration Tasks
+- Automate common Linux system administration tasks with Ansible.
+- Subscribe systems, configure software channels and repositories, enable module streams, and manage RPM packages on managed hosts.
+- Manage Linux users and groups, configure SSH, and modify Sudo configuration on managed hosts.
+- Manage service startup, schedule processes with at, cron, and systemd, reboot managed hosts with reboot, and control the default boot target on managed hosts.
+- Partition storage devices, configure LVM, format partitions or logical volumes, mount file systems, and add swap spaces.
+- Configure network settings and name resolution on managed hosts, and collect network-related Ansible facts.
