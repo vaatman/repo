@@ -1,0 +1,98 @@
+Specifications
+
+Install the automation content navigator on workstation so that it can serve as the control node. The Yum repository containing the package has been configured on workstation for you.
+
+:::
+$ sudo dnf install ansible-navigator
+
+:::
+
+Your Ansible project directory is /home/student/review-cr1.
+
+On the control node, create the /home/student/review-cr1/inventory inventory file. The inventory must contain a group called dev that consists of the servera.lab.example.com and serverb.lab.example.com managed hosts.
+
+:::
+$ vi inventory
+[dev]
+servera.lab.example.com
+serverb.lab.example.com
+:::
+
+Create an Ansible configuration file named /home/student/review-cr1/ansible.cfg. This configuration file must use the /home/student/review-cr1/inventory file as the project inventory file.
+
+:::
+$ vi ansible.cfg
+[defaults]
+inventory = ./inventory]
+:::
+
+Log in to your private automation hub at utility.lab.example.com from the command line before attempting to run automation content navigator, so that you can pull automation execution environment images from its container registry. Your username is admin and your password is redhat.
+
+:::
+$ podman login utility.lab.example.com
+Username: admin
+Password: redhat
+Login Succeeded!
+:::
+
+Create a configuration file for automation content navigator named /home/student/review-cr1/ansible-navigator.yml. This configuration file must set the default automation execution environment image to utility.lab.example.com/ee-supported-rhel8:latest, and automation content navigator must only pull this image from the container repository if the image is missing on your control node.
+
+:::
+$ vi ansible-navigator
+---
+ansible-navigator:
+  execution-environment:
+    image: utility.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+
+$ podman login utility.lab.example.com
+
+$ ansible-navigator doc debug
+:::
+
+Create a playbook named users.yml in the project directory. It must contain one play that runs on managed hosts in the dev group. Its play must use one task to add the users joe and sam to all managed hosts in the dev group. Run the users.yml playbook and confirm that it works.
+
+:::
+---
+- name: Add users
+  hosts: dev
+  become: true
+  tasks:
+    - name: add two users
+      ansible.builtin.user:
+        name: "{{ itme }}"
+      loop:
+        - joe
+        - sam
+:::
+
+Inspect the existing packages.yml playbook. In the play in that playbook, define a play variable named packages with a list of two packages as its value: httpd and mariadb-server. Run the packages.yml playbook and confirm that both of those packages are installed on the managed hosts on which the playbook ran.
+
+:::
+  vars:
+    packages:
+      - httpd
+      - mariadb-server
+:::
+
+Add a task to the packages.yml playbook that installs the redis package if the total swap space on the managed host is greater than 10 MB. Run the packages.yml playbook again after adding this task.
+
+:::
+    - name: Install Redis
+      ansible.builtin.dnf:
+        name: redis
+        state: present
+      when: ansible_facts['swaptotal_mb'] > 10
+:::
+
+Troubleshoot the existing verify_user.yml playbook. It is supposed to verify that the sam user was created successfully, and it is not supposed to create the sam user if it is missing. Run the playbook with the --check option and resolve any errors. Repeat this process until you can run the playbook with the --check option and it passes, and then run the verify_user.yml playbook normally.
+
+:::
+    - name: Verify the sam user exists
+      ansible.buildin.user:
+                  ^
+
+        when: sam_check['changed'] == false
+      ^^
+:::
