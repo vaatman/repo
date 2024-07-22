@@ -1,0 +1,128 @@
+Install Vault and enable ACME with PKI secrets engine
+-----------------------------------------------------
+source: https://developer.hashicorp.com/vault/tutorials/secrets-management/pki-acme-caddy
+
+.create LAB dir
+$ mkdir /tmp/learn-vault-pki
+$ cd $_
+$ export HC_LEARN_LAB=/tmp/learn-vault-pki
+
+.create Docker network
+$ docker network create     --driver=bridge     --subnet=10.1.1.0/24     learn-vault
+
+.deploy Caddy server
+$ docker pull caddy:2.6.4
+.create dirs
+$ mkdir "$HC_LEARN_LAB"/caddy_config "$HC_LEARN_LAB"/caddy_data
+.create index.html
+$ echo "hello world" > "$HC_LEARN_LAB"/index.html
+.start Caddy server
+$ docker run     --name caddy-server     --hostname caddy-server     --network learn-vault     --ip 10.1.1.200     --publish 80:80     --volume "$HC_LEARN_LAB"/index.html:/usr/share/caddy/index.html     --volume "$HC_LEARN_LAB"/caddy_data:/data     --detach     --rm     caddy:2.6.4
+.check running
+$ docker ps -f name=caddy-server --format "table {{.Names}}\t{{.Status}}"
+.check http working
+$ curl http://localhost/
+.check https not working
+$ curl https://localhost/
+$ docker stop caddy-server
+
+.deploy Valut container
+$ docker pull hashicorp/vault:latest
+$ docker run       --name=learn-vault       --hostname=learn-vault       --network=learn-vault       --add-host caddy-server.learn.internal:10.1.1.200       --ip 10.1.1.100       --publish 8200:8200       --env VAULT_ADDR="http://localhost:8200"       --env VAULT_CLUSTER_ADDR="http://learn-vault:8201"       --env VAULT_API_ADDR="http://learn-vault:8200"       --cap-add=IPC_LOCK       --detach       --rm       hashicorp/vault vault server -dev -dev-listen-address 0.0.0.0:8200 -dev-root-token-id root
+$ docker ps -f name=learn-vault --format "table {{.Names}}\t{{.Status}}"
+$ export VAULT_ADDR=http://127.0.0.1:8200
+
+.install Vault on m2800 laptop
+$ cat /etc/debian_version 
+$ sudo apt update && sudo apt install gpg wget
+$ wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+$ gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
+$ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+$ sudo apt update && sudo apt install vault
+$ vault status
+$ vault login -no-print root
+
+.enable PKI secrets engine
+$ mkdir pki
+$ cd pki/
+$ vi enable_engines.sh
+#!/bin/bash
+
+set -euxo pipefail
+
+vault secrets enable pki
+vault secrets tune -max-lease-ttl=87600h pki
+vault write -field=certificate pki/root/generate/internal \
+   common_name="learn.internal" \
+   issuer_name="root-2023" \
+   ttl=87600h > root_2023_ca.crt
+vault write pki/config/cluster \
+   path=http://10.1.1.100:8200/v1/pki \
+   aia_path=http://10.1.1.100:8200/v1/pki
+vault write pki/roles/2023-servers \
+   allow_any_name=true \
+   no_store=false
+vault write pki/config/urls \
+   issuing_certificates={{cluster_aia_path}}/issuer/{{issuer_id}}/der \
+   crl_distribution_points={{cluster_aia_path}}/issuer/{{issuer_id}}/crl/der \
+   ocsp_servers={{cluster_path}}/ocsp \
+   enable_templating=true
+vault secrets enable -path=pki_int pki
+vault secrets tune -max-lease-ttl=43800h pki_int
+vault write -format=json pki_int/intermediate/generate/internal \
+   common_name="learn.internal Intermediate Authority" \
+   issuer_name="learn-intermediate" \
+   | jq -r '.data.csr' > pki_intermediate.csr
+vault write -format=json pki/root/sign-intermediate \
+   issuer_ref="root-2023" \
+   csr=@pki_intermediate.csr \
+   format=pem_bundle ttl="43800h" \
+   | jq -r '.data.certificate' > intermediate.cert.pem
+vault write pki_int/intermediate/set-signed certificate=@intermediate.cert.pem
+vault write pki_int/config/cluster \
+   path=http://10.1.1.100:8200/v1/pki_int \
+   aia_path=http://10.1.1.100:8200/v1/pki_int
+vault write pki_int/roles/learn \
+   issuer_ref="$(vault read -field=default pki_int/config/issuers)" \
+   allow_any_name=true \
+   max_ttl="720h" \
+   no_store=false
+vault write pki_int/config/urls \
+   issuing_certificates={{cluster_aia_path}}/issuer/{{issuer_id}}/der \
+   crl_distribution_points={{cluster_aia_path}}/issuer/{{issuer_id}}/crl/der \
+   ocsp_servers={{cluster_path}}/ocsp \
+   enable_templating=true
+
+$ chmod +x enable_engines.sh 
+$ ./enable_engines.sh 
+$ vault secrets list
+
+.configure ACME
+. ensure cluster config present
+$ vault read pki_int/config/cluster
+
+.tune intermediate CA PKI mount to enable ACME required headers
+$ vault secrets tune       -passthrough-request-headers=If-Modified-Since       -allowed-response-headers=Last-Modified       -allowed-response-headers=Location       -allowed-response-headers=Replay-Nonce       -allowed-response-headers=Link       pki_int
+
+. enable ACME functionality on the intermediate CA
+$ vault write pki_int/config/acme enabled=true
+
+.redeploy Caddy container
+$ rm -rf $HC_LEARN_LAB/caddy_data/caddy
+$ cat > "$HC_LEARN_LAB"/caddy_config/Caddyfile << EOF
+  {
+     acme_ca http://10.1.1.100:8200/v1/pki_int/acme/directory
+  }
+  
+  
+  caddy-server {
+     root * /usr/share/caddy
+     file_server browse
+  }
+EOF
+
+$ docker run     --name caddy-server     --hostname caddy-server     --network learn-vault     --ip 10.1.1.200     --publish 443:443     --volume "$HC_LEARN_LAB"/caddy_config/Caddyfile:/etc/caddy/Caddyfile     --volume "$HC_LEARN_LAB"/index.html:/usr/share/caddy/index.html     --volume "$HC_LEARN_LAB"/caddy_data:/data     --detach     --rm     caddy:2.6.4
+$ docker ps -f name=caddy-server --format "table {{.Names}}\t{{.Status}}"
+
+.make HTTPS request
+$ curl --cacert "$HC_LEARN_LAB"/pki/root_2023_ca.crt --resolve caddy-server:443:127.0.0.1 https://caddy-server
