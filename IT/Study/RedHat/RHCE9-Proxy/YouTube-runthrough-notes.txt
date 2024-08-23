@@ -47,7 +47,7 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
 
 5. Create offline role named apache under roles directory
   .install httpd package, service should be started and enabled
-  $ ansible-galaxy init apache
+  $ ansible-galaxy init roles/apache
   . apache/tasks/main.yml
     - ansible.builtin.dnf for httpd and firewalld
     - ansible.builtin.service to start httpd and firewalld
