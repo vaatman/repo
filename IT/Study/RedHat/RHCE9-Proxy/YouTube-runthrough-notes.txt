@@ -62,7 +62,7 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
       roles:
         - apache
 
-6. Create a playbook cooled roles.yml to run balancer and phpinfo roles
+6. Create a playbook called roles.yml to run balancer and phpinfo roles
   - run the balancer role on the balancers group
   - run the phpinfo role on the webservers group
   .roles.yml
