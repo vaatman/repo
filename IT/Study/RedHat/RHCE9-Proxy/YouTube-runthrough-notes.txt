@@ -107,7 +107,7 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
   - /devweb dir should have context type "httpd"
     - setype: httpd_sys_content_t
   - assign permissions user=rwx,group=rwx,other=rx and group special permission to /devweb
-    - mode:'02775'
+    - mode:'2775'
   - create /devweb/index.html with content "Development"
     ansible.builtin.file:
       state: touch
