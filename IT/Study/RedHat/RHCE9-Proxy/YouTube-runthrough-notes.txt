@@ -288,30 +288,31 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
   - hosts: all
     tasks:
       - block:
-        - block:
-          - name: create lv of 1500m
-            lvol:
-            vg: research
-            lv: data
-            size: 1500m
-           when: ansible_lvm.vgs.research.size_g > "1500 MiB"
-        - block:
-          - name: display msg vg size is insufficient
-            debug:
-              msg: "INSUFFICIENT SIZE OF VG"
-            when: ansible_lvm.vgs.research.size_g < "1500 MiB"
-          - name: create lv of 800m
-            lvol:
+         - block:
+           - name: create lv of 1500m
+             lvol:
              vg: research
              lv: data
-             size: 800m
-          when: ansible_lvm.vgs.research is defined
-          - name: format the LV ext4
-            filesystem:
-            fstype: ext4
-            dev: /dev/research/data
-            when: ansible_lvm.vgs.research is defined
-          - name: display message device not found
-            debug:
-             msg: "VG NOT FOUND"
-            when: ansible_lvm.vgs.research is not defined 
+             size: 1500m
+           when: ansible_lvm.vgs.research.size_g > "1500 MiB"
+         - block:
+           - name: display msg vg size is insufficient
+             debug:
+               msg: "INSUFFICIENT SIZE OF VG"
+             when: ansible_lvm.vgs.research.size_g < "1500 MiB"
+          - name: create lv of 800m
+            lvol:
+              vg: research
+              lv: data
+              size: 800m
+            when: ansible_lvm.vgs.research.size_g < "1500 MiB"
+      when: ansible_lvm.vgs.research is defined
+      - name: format the LV ext4
+        filesystem:
+          fstype: ext4
+          dev: /dev/research/data
+        when: ansible_lvm.vgs.research is defined
+      - name: display message device not found
+        debug:
+          msg: "VG NOT FOUND"
+        when: ansible_lvm.vgs.research is not defined 
