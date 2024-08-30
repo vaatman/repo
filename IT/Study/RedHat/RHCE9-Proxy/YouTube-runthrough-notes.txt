@@ -47,7 +47,7 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
 
 5. Create offline role named apache under roles directory
   .install httpd package, service should be started and enabled
-  $ ansible-galaxy init apache
+  $ ansible-galaxy init roles/apache
   . apache/tasks/main.yml
     - ansible.builtin.dnf for httpd and firewalld
     - ansible.builtin.service to start httpd and firewalld
@@ -62,7 +62,7 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
       roles:
         - apache
 
-6. Create a playbook cooled roles.yml to run balancer and phpinfo roles
+6. Create a playbook called roles.yml to run balancer and phpinfo roles
   - run the balancer role on the balancers group
   - run the phpinfo role on the webservers group
   .roles.yml
@@ -107,7 +107,7 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
   - /devweb dir should have context type "httpd"
     - setype: httpd_sys_content_t
   - assign permissions user=rwx,group=rwx,other=rx and group special permission to /devweb
-    - mode:'02775'
+    - mode:'2775'
   - create /devweb/index.html with content "Development"
     ansible.builtin.file:
       state: touch
@@ -288,30 +288,31 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
   - hosts: all
     tasks:
       - block:
-        - block:
-          - name: create lv of 1500m
-            lvol:
-            vg: research
-            lv: data
-            size: 1500m
-           when: ansible_lvm.vgs.research.size_g > "1500 MiB"
-        - block:
-          - name: display msg vg size is insufficient
-            debug:
-              msg: "INSUFFICIENT SIZE OF VG"
-            when: ansible_lvm.vgs.research.size_g < "1500 MiB"
-          - name: create lv of 800m
-            lvol:
+         - block:
+           - name: create lv of 1500m
+             lvol:
              vg: research
              lv: data
-             size: 800m
-          when: ansible_lvm.vgs.research is defined
-          - name: format the LV ext4
-            filesystem:
-            fstype: ext4
-            dev: /dev/research/data
-            when: ansible_lvm.vgs.research is defined
-          - name: display message device not found
-            debug:
-             msg: "VG NOT FOUND"
-            when: ansible_lvm.vgs.research is not defined 
+             size: 1500m
+           when: ansible_lvm.vgs.research.size_g > "1500 MiB"
+         - block:
+           - name: display msg vg size is insufficient
+             debug:
+               msg: "INSUFFICIENT SIZE OF VG"
+             when: ansible_lvm.vgs.research.size_g < "1500 MiB"
+          - name: create lv of 800m
+            lvol:
+              vg: research
+              lv: data
+              size: 800m
+            when: ansible_lvm.vgs.research.size_g < "1500 MiB"
+      when: ansible_lvm.vgs.research is defined
+      - name: format the LV ext4
+        filesystem:
+          fstype: ext4
+          dev: /dev/research/data
+        when: ansible_lvm.vgs.research is defined
+      - name: display message device not found
+        debug:
+          msg: "VG NOT FOUND"
+        when: ansible_lvm.vgs.research is not defined 

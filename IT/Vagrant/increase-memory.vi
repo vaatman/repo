@@ -1,0 +1,8 @@
+.in Vagrantfile add before last line:
+
+  config.vm.provider "libvirt" do |v|
+    v.memory = 2048
+    v.cpus = 2
+  end
+
+.NO virt-manager changes needed
