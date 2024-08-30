@@ -65,3 +65,10 @@ Chapter 8 - Troubleshooting Ansible
 - th ansible.builtin.debug module can provide additional debuggin information when you run a playbook (for example, the current value for a variable)
 - You can specify the -v option of the 'ansible-navigator run' command one or more times to provide several levels of additional output verbosity. This is useful for debugging Ansible tasks when running a playbook
 - The --check option enables Ansible modules that support check mode to display the changes to be performed, instead of applying those changes to the managed hosts
+
+Chapter 9 - Automating linxu Administration Tasks
+- The ansible-navigator command can produce playbook artifact files that store information about runs in JSON format.
+- Use the ansible-navigator replay command to review play execution.
+- The ansible.builtin.debug module can provide additional debugging information when you run a playbook (for example, the current value for a variable).
+- You can specify the -v option of the ansible-navigator run command one or more times to provide several levels of additional output verbosity. This is useful for debugging Ansible tasks when running a playbook.
+- The --check option enables Ansible modules that support check mode to display the changes to be performed, instead of applying those changes to the managed hosts.
