@@ -1,7 +1,10 @@
 RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGGtSX_vHKv5vz&index=2
 
-1. Install and configure ansible on controle node as follow:
+1. Install and configure ansible on controle node as follows:
   - install the required package
+    $ sudo dnf install ansible-core ansible-navigator
+  - login to podman
+    $ podman login <registry>
   - create static inventory file called /home/student/ansible/inventory
       [dev]
       servera.lab.example.com
@@ -27,6 +30,7 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
       become_ask_pass=false
   - set your .vimrc [NOT a RedHat requirement]
   autocmd FileType yaml setlocal ai ts=2 sw=2 et cuc nu
+  HV: maybe 'set paste' is enough
 
 2. Create a playbook adhoc.yml for configuring repository on all nodes
   .use the ansible.builtin.yum_repository: module
@@ -86,7 +90,7 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
           iburst: yes
       roles:
         - rhel-system-roles.timesync
-  !! copy code from README.md in the role
+  !! copy/check code from README.md in the role
 
 7.2. Create a playbook called selinux.yml and use system roles
   - set selinux mode as enforcing on all nodes
@@ -102,8 +106,8 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
       - rhel-system-roles.selinux
 
 9. Create a playbook called webcontent.yml and run on dev group
-  - createdir /devweb owned by apache group
-  .user ansible.builtin.file: module
+  - create dir /devweb owned by apache group
+  .use ansible.builtin.file: module
   - /devweb dir should have context type "httpd"
     - setype: httpd_sys_content_t
   - assign permissions user=rwx,group=rwx,other=rx and group special permission to /devweb
@@ -151,6 +155,9 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
       DISK_SIZE_VDB={{ ansible_devices.nvme0n1.size | default('NONE') }} filters for defaults
     .hwreport2.txt has:
       DISK_SIZE_VDB=NONE
+  HV: vergelijkbaar voorbeeld
+      debug:
+        msg: ansible_devices['vdb']['size']
 
 11. Replace file /etc/issue on all nodes
   - in dev group /etc/issue will get "Development"
