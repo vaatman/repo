@@ -88,8 +88,8 @@ RHCE9 - https://www.youtube.com/watch?v=R8uwRtgkmCQ&list=PLYB6dfdhWDePZf4fd4YgGG
       timesync_ntp_servers:
         - hostname: 172.25.254.254
           iburst: yes
-      roles:
-        - rhel-system-roles.timesync
+    roles:
+      - rhel-system-roles.timesync
   !! copy/check code from README.md in the role
 
 7.2. Create a playbook called selinux.yml and use system roles
