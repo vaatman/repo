@@ -1,0 +1,219 @@
+Use the ansible-httpd.yml playbook to create a new Ansible role named ansible-httpd.
+
+Change into the /home/student/review-cr4 directory.
+
+[student@workstation ~]$ cd ~/review-cr4
+[student@workstation review-cr4]$
+Create the roles subdirectory.
+
+[student@workstation review-cr4]$ mkdir -v roles
+mkdir: created directory 'roles'
+Using the ansible-galaxy command, create the directory structure for the new ansible-httpd role in the roles subdirectory.
+
+[student@workstation review-cr4]$ cd roles
+[student@workstation roles]$ ansible-galaxy role init ansible-httpd
+- Role ansible-httpd was created successfully
+[student@workstation roles]$ cd ..
+[student@workstation review-cr4]$
+Use the tree command to verify the directory structure created for the new role.
+
+[student@workstation review-cr4]$ tree roles
+roles
+└── ansible-httpd
+    ├── defaults
+    │   └── main.yml
+    ├── files
+    ├── handlers
+    │   └── main.yml
+    ├── meta
+    │   └── main.yml
+    ├── README.md
+    ├── tasks
+    │   └── main.yml
+    ├── templates
+    ├── tests
+    │   ├── inventory
+    │   └── test.yml
+    └── vars
+        └── main.yml
+
+9 directories, 8 files
+Copy any variables, tasks, templates, files, and handlers into the appropriate files inside the new role.
+
+Copy the variables from the ansible-httpd.yml file into the roles/ansible-httpd/defaults/main.yml file. The roles/ansible-httpd/defaults/main.yml file should contain the following content:
+
+---
+# defaults file for ansible-httpd
+web_package: httpd
+web_service: httpd
+web_config_file: /etc/httpd/conf/httpd.conf
+web_root: /var/www/html/index.html
+web_fw_service: http
+Note
+Variables defined in a role's defaults/main.yml file can be overridden by inventory variables, but variables defined in a role's vars/main.yml file cannot be overridden by inventory variables.
+
+Copy the httpd configuration file template from templates/httpd.conf.j2 into the roles/ansible-httpd/templates/ directory.
+
+[student@workstation review-cr4]$ cp \
+> -v templates/httpd.conf.j2 roles/ansible-httpd/templates/
+'templates/httpd.conf.j2' -> 'roles/ansible-httpd/templates/httpd.conf.j2'
+Copy the tasks from the ansible-httpd.yml file into the roles/ansible-httpd/tasks/main.yml file. The roles/ansible-httpd/tasks/main.yml file should contain the following content:
+
+---
+# tasks file for ansible-httpd
+- name: Packages are installed
+  ansible.builtin.dnf:
+    name: "{{ web_package }}"
+    state: present
+
+- name: Ensure service is started
+  ansible.builtin.service:
+    name: "{{ web_service }}"
+    state: started
+    enabled: true
+
+- name: Deploy configuration file
+  ansible.builtin.template:
+    src: templates/httpd.conf.j2
+    dest: "{{ web_config_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+    setype: httpd_config_t
+  notify: Restart httpd
+
+- name: Deploy index.html file
+  ansible.builtin.copy:
+    src: files/index.html
+    dest: "{{ web_root }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Web port is open
+  ansible.posix.firewalld:
+    service: "{{ web_fw_service }}"
+    permanent: true
+    state: enabled
+    immediate: true
+Copy the files/index.html file into the roles/ansible-httpd/files/ directory.
+
+[student@workstation review-cr4]$ cp \
+> -v files/index.html roles/ansible-httpd/files/
+'files/index.html' -> 'roles/ansible-httpd/files/index.html'
+Copy the handlers from the ansible-httpd.yml file into the roles/ansible-httpd/handlers/main.yml file. The roles/ansible-httpd/handlers/main.yml file should contain the following content:
+
+---
+# handlers file for ansible-httpd
+- name: Restart httpd
+  ansible.builtin.service:
+    name: "{{ web_service }}"
+    state: restarted
+Update the roles/ansible-httpd/meta/main.yml file in the role according to the specifications.
+
+Change the value of the author entry to Red Hat Training.
+
+  author: Red Hat Training
+Change the value of the description entry to example role for RH294.
+
+  description: example role for RH294
+Change the value of the company entry to Red Hat.
+
+  company: Red Hat
+Change the value of the license entry to BSD.
+
+  license: BSD
+Edit the roles/ansible-httpd/README.md file so that it provides pertinent information regarding the role. The file should consist of the following content:
+
+ansible-httpd
+=========
+Example ansible-httpd role from "Red Hat Enterprise Linux Automation with Ansible" (RH294)
+
+Role Variables
+--------------
+
+* `web_package`: the RPM package
+* `web_service`: the systemd service
+* `web_config_file`: the path to the main configuration file
+* `web_root`: the path to an index.html file
+* `web_fw_service`: the name of a firewalld service
+
+Dependencies
+------------
+
+None.
+
+Example Playbook
+----------------
+
+    - hosts: servers
+      roles:
+        - ansible-httpd
+
+License
+-------
+
+BSD
+
+Author Information
+------------------
+
+Red Hat (training@redhat.com)
+Remove the unused directories from the new role.
+
+Remove the roles/ansible-httpd/vars/ directory.
+
+[student@workstation review-cr4]$ rm -rfv roles/ansible-httpd/vars/
+removed 'roles/ansible-httpd/vars/main.yml'
+removed directory 'roles/ansible-httpd/vars/'
+Remove the roles/ansible-httpd/tests/ directory.
+
+[student@workstation review-cr4]$ rm -rfv roles/ansible-httpd/tests/
+removed 'roles/ansible-httpd/tests/inventory'
+removed 'roles/ansible-httpd/tests/test.yml'
+removed directory 'roles/ansible-httpd/tests/'
+In the project directory, write a site.yml playbook that runs the new ansible-httpd role on the managed hosts in the webdev inventory group. The site.yml playbook should contain content similar to the following example:
+
+---
+- name: Apply the ansible-httpd role
+  hosts: webdev
+
+  roles:
+    - ansible-httpd
+Run the site.yml playbook.
+
+[student@workstation review-cr4]$ ansible-navigator run -m stdout site.yml
+
+PLAY [Apply the ansible-httpd role] ********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [serverb.lab.example.com]
+ok: [serverc.lab.example.com]
+
+TASK [ansible-httpd : Packages are installed] **********************************
+changed: [serverb.lab.example.com]
+changed: [serverc.lab.example.com]
+
+TASK [ansible-httpd : Ensure service is started] *******************************
+changed: [serverb.lab.example.com]
+changed: [serverc.lab.example.com]
+
+TASK [ansible-httpd : Deploy configuration file] *******************************
+changed: [serverb.lab.example.com]
+changed: [serverc.lab.example.com]
+
+TASK [ansible-httpd : Deploy index.html file] **********************************
+changed: [serverb.lab.example.com]
+changed: [serverc.lab.example.com]
+
+TASK [ansible-httpd : Web port is open] ****************************************
+changed: [serverb.lab.example.com]
+changed: [serverc.lab.example.com]
+
+RUNNING HANDLER [ansible-httpd : Restart httpd] ********************************
+changed: [serverb.lab.example.com]
+changed: [serverc.lab.example.com]
+
+PLAY RECAP *********************************************************************
+serverb.lab.example.com    : ok=7    changed=6    unreachable=0    failed=0  ...
+serverc.lab.example.com    : ok=7    changed=6    unreachable=0    failed=0  ...

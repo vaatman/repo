@@ -1,0 +1,16 @@
+Managing Settings for Ansible Content Navigator
+- sets default image
+- sets pull policy
+- disables artifacts
+- set stdout as default output mode
+
+$ vi ansible-navigator.yml
+---
+ansible-navigator:
+  execution-environment:
+    image: utility.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+  playbook-artifact:
+    enable: false
+  mode: stdout

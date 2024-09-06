@@ -1,0 +1,207 @@
+Create a playbook named dev_deploy.yml that contains one play that runs on the webservers host group. Enable privilege escalation for the play. Add a task that installs the httpd package.
+
+Change into the /home/student/review-cr2 directory.
+
+[student@workstation ~]$ cd ~/review-cr2
+[student@workstation review-cr2]$
+Create a playbook named dev_deploy.yml with one play that runs on the webservers host group. Enable privilege escalation for the play.
+
+---
+- name: Install and configure web servers
+  hosts: webservers
+  become: true
+
+  tasks:
+Add a task that installs the httpd package.
+
+    - name: Install httpd package
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+Add a task to the dev_deploy.yml playbook that starts the httpd service and enables it to start on boot.
+
+    - name: Start httpd service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+Add a task to the dev_deploy.yml playbook that deploys the templates/vhost.conf.j2 template to /etc/httpd/conf.d/vhost.conf on the managed hosts. This task should notify the Restart httpd handler.
+
+    - name: Deploy configuration template
+      ansible.builtin.template:
+        src: templates/vhost.conf.j2
+        dest: /etc/httpd/conf.d/vhost.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart httpd
+Add a task to the dev_deploy.yml playbook that copies the files/index.html file to the /var/www/vhosts/{{ ansible_facts['hostname'] }} directory on the managed hosts.
+
+Ensure that the destination directory is created if it does not already exist.
+
+    - name: Copy index.html
+      ansible.builtin.copy:
+        src: files/
+        dest: "/var/www/vhosts/{{ ansible_facts['hostname'] }}/"
+        owner: root
+        group: root
+        mode: '0644'
+Add a task to the dev_deploy.yml playbook that configures the firewall to allow the httpd service.
+
+    - name: Ensure web server port is open
+      ansible.posix.firewalld:
+        state: enabled
+        permanent: true
+        immediate: true
+        service: http
+Add the Restart httpd handler to the dev_deploy.yml playbook that restarts the httpd service.
+
+The completed playbook contains the following content:
+
+---
+- name: Install and configure web servers
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Install httpd package
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+
+    - name: Start httpd service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Deploy configuration template
+      ansible.builtin.template:
+        src: templates/vhost.conf.j2
+        dest: /etc/httpd/conf.d/vhost.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart httpd
+
+    - name: Copy index.html
+      ansible.builtin.copy:
+        src: files/
+        dest: "/var/www/vhosts/{{ ansible_facts['hostname'] }}/"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure web server port is open
+      ansible.posix.firewalld:
+        state: enabled
+        permanent: true
+        immediate: true
+        service: http
+
+  handlers:
+    - name: Restart httpd
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+Create a playbook named get_web_content.yml. Add a play named Test web content that runs on the workstation managed host. Enable privilege escalation for the play.
+
+---
+- name: Test web content
+  hosts: workstation
+  become: true
+
+  tasks:
+Add a task named Retrieve web content and write to error log on failure to the play in the get_web_content.yml playbook. Make that task a block that contains a single task named Retrieve web content. The Retrieve web content task must use the ansible.builtin.uri module to return content from the URL http://servera.lab.example.com. Register the retrieved content in a variable named content.
+
+---
+- name: Test web content
+  hosts: workstation
+  become: true
+
+  tasks:
+    - name: Retrieve web content and write to error log on failure
+      block:
+        - name: Retrieve web content
+          ansible.builtin.uri:
+            url: http://servera.lab.example.com
+            return_content: true
+          register: content
+In the get_web_content.yml playbook, add a rescue clause to the block task. Add a task to that rescue clause, named Write to error file, that writes the content variable to the /home/student/review-cr2/error.log file when the Retrieve web content task fails. Create the error.log file if it does not already exist.
+
+The get_web_content.yml playbook now contains the following content:
+
+---
+- name: Test web content
+  hosts: workstation
+  become: true
+
+  tasks:
+    - name: Retrieve web content and write to error log on failure
+      block:
+        - name: Retrieve web content
+          ansible.builtin.uri:
+            url: http://servera.lab.example.com
+            return_content: true
+          register: content
+      rescue:
+        - name: Write to error file
+          ansible.builtin.lineinfile:
+            path: /home/student/review-cr2/error.log
+            line: "{{ content }}"
+            create: true
+Create a new site.yml playbook that imports the plays from both the dev_deploy.yml and the get_web_content.yml playbooks.
+
+---
+- name: Deploy web servers
+  ansible.builtin.import_playbook: dev_deploy.yml
+
+- name: Retrieve web content
+  ansible.builtin.import_playbook: get_web_content.yml
+Run the site.yml playbook. You might see some tasks report as changed if you have not yet run the individual playbooks for testing. A second run of the playbook should succeed with no further changes.
+
+[student@workstation review-cr2]$ ansible-navigator run \
+> -m stdout site.yml
+
+PLAY ***************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [serverb.lab.example.com]
+ok: [servera.lab.example.com]
+
+TASK [Install httpd package] ***************************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+TASK [Start httpd service] *****************************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+TASK [Deploy configuration template] *******************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+TASK [Copy index.html] *********************************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+TASK [Ensure web server port is open] ******************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+RUNNING HANDLER [Restart httpd] ************************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+PLAY [Test web content] ********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [workstation]
+
+TASK [Retrieve web content] ****************************************************
+ok: [workstation]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=7    changed=6    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+serverb.lab.example.com    : ok=7    changed=6    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+workstation                : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0

@@ -1,0 +1,462 @@
+Install the redhat.rhel_system_roles collection from the redhat-rhel_system_roles-1.19.3.tar.gz file into the collections directory in the project directory.
+
+Change into the review-cr3 directory.
+
+[student@workstation ~]$ cd ~/review-cr3
+[student@workstation review-cr3]$
+Use the ansible-galaxy command to install the redhat.rhel_system_roles collection from the redhat-rhel_system_roles-1.19.3.tar.gz file into the collections directory.
+
+[student@workstation review-cr3]$ ansible-galaxy collection install \
+> ./redhat-rhel_system_roles-1.19.3.tar.gz -p collections
+...output omitted...
+redhat.rhel_system_roles:1.19.3 was installed successfully
+Write a playbook named storage.yml that uses the redhat.rhel_system_roles.storage system role to configure logical volumes for the managed hosts in the webservers group specified by the inventory file in your project directory. The playbook must set up the logical volumes as follows:
+
+Create a volume group named vg_web on the /dev/vdb storage device.
+
+Create a logical volume named lv_content, 128 MB in size, from the vg_web volume group, format it with an XFS file system, and mount it on the /var/www/html/content directory.
+
+Create a logical volume named lv_uploads, 256 MB in size, from the vg_web volume group, format it with an XFS file system, and mount it on the /var/www/html/uploads directory.
+
+Create the storage.yml playbook that targets the webservers group and applies the redhat.rhel_system_roles.storage role.
+
+---
+- name: Configure storage on webservers
+  hosts: webservers
+
+  roles:
+    - name: redhat.rhel_system_roles.storage
+Define the storage_pools variable. Set the volume group name to vg_web, the type to lvm, and the disks to use the /dev/vdb device.
+
+      storage_pools:
+        - name: vg_web
+          type: lvm
+          disks:
+            - /dev/vdb
+Define the volumes variable within storage_pools.
+
+          volumes:
+Create a logical volume within volumes with the name lv_content, a size of 128 MB, a file system type of xfs, and a mount point of /var/www/html/content.
+
+            - name: lv_content
+              size: 128m
+              mount_point: "/var/www/html/content"
+              fs_type: xfs
+              state: present
+Create another logical volume within volumes with the name lv_uploads, a size of 256 MB, a file system type of xfs, and a mount point of /var/www/html/uploads.
+
+            - name: lv_uploads
+              size: 256m
+              mount_point: "/var/www/html/uploads"
+              fs_type: xfs
+              state: present
+The final playbook should consist of the following content:
+
+---
+- name: Configure storage on webservers
+  hosts: webservers
+
+  roles:
+    - name: redhat.rhel_system_roles.storage
+      storage_pools:
+        - name: vg_web
+          type: lvm
+          disks:
+            - /dev/vdb
+          volumes:
+            - name: lv_content
+              size: 128m
+              mount_point: "/var/www/html/content"
+              fs_type: xfs
+              state: present
+            - name: lv_uploads
+              size: 256m
+              mount_point: "/var/www/html/uploads"
+              fs_type: xfs
+              state: present
+Run the storage.yml playbook to configure the storage.
+
+[student@workstation review-cr3]$ ansible-navigator run \
+> -m stdout storage.yml
+
+PLAY [Configure storage on webservers] ************************************************
+
+TASK [Gathering Facts] ****************************************************************
+ok: [servera.lab.example.com]
+...output omitted...
+TASK [redhat.rhel_system_roles.storage : make sure blivet is available] ***************
+changed: [servera.lab.example.com]
+...output omitted...
+TASK [redhat.rhel_system_roles.storage : set up new/current mounts] *******************
+changed: [servera.lab.example.com] => (item={'src': '/dev/mapper/vg_web-lv_content', 'path': '/var/www/html/content', 'fstype': 'xfs', 'opts': 'defaults', 'dump': 0, 'passno': 0, 'state': 'mounted'})
+changed: [servera.lab.example.com] => (item={'src': '/dev/mapper/vg_web-lv_uploads', 'path': '/var/www/html/uploads', 'fstype': 'xfs', 'opts': 'defaults', 'dump': 0, 'passno': 0, 'state': 'mounted'})
+...output omitted...
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=21   changed=3    unreachable=0    failed=0    skipped=12   rescued=0    ignored=0
+Write a playbook named dev-users.yml that creates the developer user on managed hosts in the webservers inventory group. It must do so as follows:
+
+You must set the password for the developer user using the pwhash variable provided in the pass-vault.yml file, which is encrypted with Ansible Vault. The Ansible Vault password for the pass-vault.yml file is redhat.
+
+The developer user must be a member of the webdev group.
+
+Members of the webdev group must be able to run sudo commands without a password prompt. Create or modify the sudoers file in /etc/sudoers.d/webdev by using the ansible.builtin.lineinfile module. Any edits to the sudoers file should be validated before changes are applied.
+
+Start writing the dev-users.yml playbook. Define a single play in the playbook that targets the webservers host group.
+
+Add a vars_files key to access the pass-vault.yml file.
+
+Add the tasks key to the playbook.
+
+---
+- name: Create local users
+  hosts: webservers
+  vars_files:
+    - pass-vault.yml
+  tasks:
+Add the first task to the playbook. Use the ansible.builtin.group module to create the webdev group on the managed host.
+
+The task should consist of the following content:
+
+    - name: Add webdev group
+      ansible.builtin.group:
+        name: webdev
+        state: present
+Add a second task to the playbook that uses the ansible.builtin.user module. Use the ansible.builtin.user module to create the developer user on the managed host. The developer user must be a member of the webdev group.
+
+The task should consist of the following content:
+
+    - name: Create user accounts
+      ansible.builtin.user:
+        name: developer
+        groups: webdev
+        password: "{{ pwhash }}"
+Add a third task to the play that uses the ansible.builtin.lineinfile module to modify the sudo configuration file and allow the webdev group members to use sudo without a password on the managed host. Use the validate parameter to validate the new sudoers entry.
+
+The task should consist of the following content:
+
+    - name: Modify sudo config to allow webdev members sudo without a password
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/webdev
+        state: present
+        create: true
+        mode: 0440
+        line: "%webdev ALL=(ALL) NOPASSWD: ALL"
+        validate: /usr/sbin/visudo -cf %s
+The completed playbook should consist of the following content:
+
+---
+- name: Create local users
+  hosts: webservers
+  vars_files:
+    - pass-vault.yml
+  tasks:
+    - name: Add webdev group
+      ansible.builtin.group:
+        name: webdev
+        state: present
+
+    - name: Create user accounts
+      ansible.builtin.user:
+        name: developer
+        groups: webdev
+        password: "{{ pwhash }}"
+
+    - name: Modify sudo config to allow webdev members sudo without a password
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/webdev
+        state: present
+        create: true
+        mode: 0440
+        line: "%webdev ALL=(ALL) NOPASSWD: ALL"
+        validate: /usr/sbin/visudo -cf %s
+Run the dev-users.yml playbook. Verify that the developer user can log in to a managed host, and execute commands using sudo without a password.
+
+Run the dev-users.yml playbook:
+
+[student@workstation review-cr3]$ ansible-navigator run -m stdout \
+> --pae false dev-users.yml --vault-id @prompt
+Vault password (default): redhat
+
+PLAY [Create local users] ****************************************************
+
+TASK [Gathering Facts] *******************************************************
+ok: [servera.lab.example.com]
+
+TASK [Add webdev group] ******************************************************
+changed: [servera.lab.example.com]
+
+TASK [Create user accounts] **************************************************
+changed: [servera.lab.example.com]
+
+TASK [Modify sudo config to allow webdev members sudo without a password] ****
+changed: [servera.lab.example.com]
+
+PLAY RECAP *******************************************************************
+servera.lab.example.com    : ok=4    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+Use SSH as the developer user and log in to the servera.lab.example.com server.
+
+[student@workstation review-cr3]$ ssh developer@servera
+...output omitted...
+[developer@servera ~]$
+Change to the root user and confirm that no password is required.
+
+[developer@servera ~]$ sudo -i
+[root@servera ~]#
+Log out from servera.lab.example.com.
+
+[root@servera ~]# exit
+logout
+[developer@servera ~]$ exit
+logout
+Connection to servera closed.
+[student@workstation review-cr3]$
+Write a playbook named network.yml that uses the redhat.rhel_system_roles.network system role to configure the eth1 network interface on managed hosts in the webservers inventory group with the 172.25.250.45/24 IP address.
+
+Create the network.yml playbook with one play that targets the webservers inventory group. Include the redhat.rhel_system_roles.network role in the roles section of the play.
+
+---
+- name: NIC Configuration
+  hosts: webservers
+
+  roles:
+    - redhat.rhel_system_roles.network
+The /home/student/review-cr3/collections/ansible_collections/redhat/rhel_system_roles/roles/network/README.md file lists all available variables and options for the redhat.rhel_system_roles.network role.
+
+Review the Setting the IP configuration: section in the README.md file and determine which variable is required to configure the eth1 network interface with the 172.25.250.45 IP address.
+
+[student@workstation review-cr3]$ cat \
+> collections/ansible_collections/redhat/rhel_system_roles/roles/network/README.md
+...output omitted...
+Setting the IP configuration:
+
+```yaml
+network_connections:
+  - name: eth0
+    type: ethernet
+    ip:
+      route_metric4: 100
+      dhcp4: no
+      #dhcp4_send_hostname: no
+      gateway4: 192.0.2.1
+
+      dns:
+        - 192.0.2.2
+        - 198.51.100.5
+      dns_search:
+        - example.com
+        - subdomain.example.com
+      dns_options:
+        - rotate
+        - timeout:1
+
+      route_metric6: -1
+      auto6: no
+      gateway6: 2001:db8::1
+
+      address:
+        - 192.0.2.3/24
+        - 198.51.100.3/26
+        - 2001:db8::80/7
+
+...output omitted...
+Create the group_vars/webservers subdirectory.
+
+[student@workstation review-cr3]$ mkdir -pv group_vars/webservers
+mkdir: created directory 'group_vars'
+mkdir: created directory 'group_vars/webservers'
+Create a vars.yml file to define the required role variable.
+
+Because the variable value applies to the hosts on the webservers host group, you need to create the file in the group_vars/webservers directory.
+
+Add the variable definition to support the configuration of the eth1 network interface.
+
+When completed, the file contains the following content:
+
+---
+network_connections:
+  - name: eth1
+    type: ethernet
+    ip:
+      address:
+        - 172.25.250.45/24
+Run the network.yml playbook to configure the eth1 network interface on managed hosts in the webservers inventory group.
+
+[student@workstation review-cr3]$ ansible-navigator run \
+> -m stdout network.yml
+
+PLAY [NIC Configuration] *******************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Check which services are running] *****
+ok: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Check which packages are installed] ***
+ok: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Print network provider] ***************
+ok: [servera.lab.example.com] => {
+    "msg": "Using network provider: nm"
+}
+
+TASK [redhat.rhel_system_roles.network : Install packages] *********************
+skipping: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Restart NetworkManager due to wireless or team interfaces] ***
+skipping: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Enable and start NetworkManager] ******
+ok: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Enable and start wpa_supplicant] ******
+skipping: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Enable network service] ***************
+skipping: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Ensure initscripts network file dependency is present] ***
+skipping: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Configure networking connection profiles] ***
+changed: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Show stderr messages] *****************
+ok: [servera.lab.example.com] => {
+    "__network_connections_result.stderr_lines": [
+        "[002] <info>  #0, state:None persistent_state:present, 'eth1': add connection eth1, 3ddd5197-7a96-4d05-abec-c586089145ff"
+    ]
+}
+
+TASK [redhat.rhel_system_roles.network : Show debug messages] ******************
+skipping: [servera.lab.example.com]
+
+TASK [redhat.rhel_system_roles.network : Re-test connectivity] *****************
+ok: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=10   changed=1    unreachable=0    failed=0    skipped=12   rescued=0    ignored=0
+Write a playbook named log-rotate.yml to set up a system Cron job as follows:
+
+Use the ansible.builtin.cron module to create the /etc/cron.d/rotate_web system Cron job on managed hosts in the webservers inventory group.
+
+The job must run as the devops user every night at midnight.
+
+The job must run the logrotate -f /etc/logrotate.d/httpd command to rotate the logs in the /var/log/httpd/ directory.
+
+Run the log-rotate.yml playbook.
+
+Create the log-rotate.yml playbook and add the lines needed to start the play. It must target the managed hosts in the webservers group and enable privilege escalation.
+
+---
+- name: Recurring cron job
+  hosts: webservers
+  become: true
+Define a task that uses the ansible.builtin.cron module to schedule a recurring Cron job.
+
+  tasks:
+    - name: Crontab file exists
+      ansible.builtin.cron:
+        name: Rotate HTTPD logs
+Configure the job to run every night at midnight.
+
+        minute: "0"
+        hour: "0"
+        weekday: "*"
+Use the cron_file parameter to create the job in the /etc/cron.d/rotate_web system Cron job file instead of an individual user's crontab in /var/spool/cron/.
+
+Using a relative path places the file in the /etc/cron.d directory.
+
+If the cron_file parameter is used, you must also specify the user parameter to fill in the field that specifies which user runs the system Cron job.
+
+        user: devops
+        job: "logrotate -f /etc/logrotate.d/httpd"
+        cron_file: rotate_web
+        state: present
+When completed, the playbook must contain the following content. Review the playbook for accuracy.
+
+---
+- name: Recurring cron job
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Crontab file exists
+      ansible.builtin.cron:
+        name: Rotate HTTPD logs
+        minute: "0"
+        hour: "0"
+        weekday: "*"
+        user: devops
+        job: "logrotate -f /etc/logrotate.d/httpd"
+        cron_file: rotate_web
+        state: present
+Run the ansible-navigator run --syntax-check command to verify the playbook syntax. Correct any errors before moving to the next step.
+
+[student@workstation review-cr3]$ ansible-navigator run \
+> -m stdout log-rotate.yml --syntax-check
+playbook: /home/student/review-cr3/log-rotate.yml
+Run the log-rotate.yml playbook.
+
+[student@workstation review-cr3]$ ansible-navigator run \
+> -m stdout log-rotate.yml
+
+PLAY [Recurring cron job] *************************************************
+
+TASK [Gathering Facts] ****************************************************
+ok: [servera.lab.example.com]
+
+TASK [Crontab file exists] ************************************************
+changed: [servera.lab.example.com]
+
+PLAY RECAP ****************************************************************
+servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+Run the following command to verify that the /etc/cron.d/rotate_web Cron file exists, and its content is correct.
+
+[student@workstation review-cr3]$ ssh devops@servera \
+> "cat /etc/cron.d/rotate_web"
+#Ansible: Rotate HTTPD logs
+0 0 * * * devops logrotate -f /etc/logrotate.d/httpd
+[student@workstation review-cr3]$
+Write a playbook named site.yml that imports the four playbooks that you wrote in the preceding steps, in the order in which they were created:
+
+storage.yml
+
+dev-users.yml
+
+network.yml
+
+log-rotate.yml
+
+Run the site.yml playbook, and ensure that there are no errors.
+
+Create the site.yml playbook. Use the ansible.builtin.import_playbook module for each playbook created in the previous steps.
+
+Note
+The following playbook uses the play names for each imported playbook, but you can use any names you want.
+
+---
+- name: Configure storage on webservers
+  ansible.builtin.import_playbook: storage.yml
+
+- name: Create local users
+  ansible.builtin.import_playbook: dev-users.yml
+
+- name: NIC Configuration
+  ansible.builtin.import_playbook: network.yml
+
+- name: Recurring cron job
+  ansible.builtin.import_playbook: log-rotate.yml
+Run the site.yml playbook.
+
+[student@workstation review-cr3]$ ansible-navigator run -m stdout \
+> --pae false site.yml --vault-id @prompt
+Vault password (default): redhat
+
+...output omitted...
+
+TASK [Crontab file exists] ************************************************
+ok: [servera.lab.example.com]
+
+PLAY RECAP ****************************************************************
+servera.lab.example.com    : ok=37   changed=0    unreachable=0    failed=0    skipped=24   rescued=0    ignored=0
