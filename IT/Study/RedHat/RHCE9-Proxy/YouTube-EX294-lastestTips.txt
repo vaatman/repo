@@ -60,3 +60,59 @@ vid.06. Create offline role
   - check werbserver running:
     $ curl http://node1.lab.example.com
     My host is node1 on 192.168.1.10
+
+vid.07 Install roles
+  - create playbook to import roles
+    $ vi <playbook>
+    - hosts: webservers
+      roles:
+        - phpinfo
+    - hosts: balancers
+      roles:
+        - balancers
+  - run balancer and phpinfo roles
+   $ ansible-navigator run -m stdout <playbook> 
+
+vid.08 Installation of RHEL system roles
+  - you get either timesync or SELinux
+  - install systemroles RPM (!)
+    $ sudo dnf install rhel-system-roles -y
+  - check:
+    $ ls /usr/share/ansible/roles
+  !! he copies ~/ansible/collections/rhel-system-roles.timesync to ~/ansible/roles
+  - create timesync playbook
+    - hosts:
+      vars:
+        timesync_ntp_servers:
+          - hostname: <IP>
+            iburst: yes
+      roles:
+        - rhel-system-roles.timesync
+  !! see README.md in role
+  - run
+    $ ansible-navigator run -m stdout <playbook.yml>
+
+vid.09 Install of SELinux systemroles
+  - see vid.08
+  - install systemroles RPM
+    $ sudo dnf install rhel-system-roles -y
+  - again: copy from collections/ to roles/
+  - create selinux playbook
+    - hosts: all
+      vars:
+        selinux_state: enforcing
+        selinux_policy: targeted
+      roles:
+        - rhel-system-roles.selinux 
+  - run
+    $ ansible-navigator run -m stdout <playbook>
+  - check
+    $ ansible all -m command "cat /etc/selinux/config"
+
+vid.10 Creation of web content
+  !! check firewalld/httpd installed/running on target hosts
+     - install/enable if needed
+  - create playbook
+  - use modules:
+    file:,copy:,firewalld:,
+
