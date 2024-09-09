@@ -1,0 +1,62 @@
+vid.01
+vid.02 Ansible inventory & configfile
+  - ansible.cfg:
+    [defaults]
+      remote_user,inventory,roles_path.collections_path,ask_pass=false
+    [privilege_escalation]
+      become,become_user,become_method,become_ask_pass
+  - inventory:
+      [dev],[test],[prod],[balancers],[webservers:children]
+  - check:
+      $ ansible --version
+      $ ansible all --list-hosts
+      $ ansible all -m ping
+
+vid.03 Configuration of local YUM repo
+  - maak playbook met 2 tasks
+    - task 1 AppStream
+      gpgcheck: http://content.....
+    - task 2 BaseOS
+      gpgcheck: http://content.....
+  - run playbook
+      $ ansible-navigator run -m stdout <playbook>
+  - check:
+      $ ansible all -m command -a "ls /etc/yum.repos.d"
+      $ ansible all -m command -a "yum clean all"
+      $ ansible all -m command -a "yum repolist all"
+
+vid.04 Installation of collections
+  !! gebruik full-pathnames met galaxy
+  $ ansible-galaxy collection install <URL> -p /home/student/ansible/collections/
+  - check:
+      $ ansible-navigator collections
+  - check [ansible.posix]
+      $ ansible-navigator doc -m stdout firewalld
+
+vid.05. Installation of roles
+- install 2 roles: balancer en phpinfo
+  - doe phpinfo eerst, dan balancer
+  - requirements.yml:
+    - src: http://github.com/.......git
+      name: phpinfo
+    - src: http://github.com/.......git
+      name: balancer
+  - install:
+    $ ansible-galaxy install -r /home/student/ansible/roles/requirements.yml -p /home/student/ansible/roles/
+  !! gebruik full-pathnames met galaxy
+
+vid.06. Create offline role
+  $ cd roles/
+    $ ansible-galaxy init <rolename>
+  - in template:
+    My host is {{ ansible_facts['hostname'] }} on {{ ansible_facts['default_ipv4']['address'] }}
+  - playbook to import role:
+    - host: dev
+      roles:
+        - apache
+  - check:
+    $ ansible-navigator run -m stdout --syntax-check
+    $ ansible-navigator run -m stdout
+  - check werbserver running:
+    $ curl http://node1.lab.example.com
+    My host is node1 on 192.168.1.10
