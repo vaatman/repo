@@ -116,3 +116,139 @@ vid.10 Creation of web content
   - use modules:
     file:,copy:,firewalld:,
 
+vid.11 Installation of packages
+  - php and mariadb on dev,test,prod
+  - 'Development tools' group on dev
+    !! use quotes around group name
+  - update all packages on dev
+  !! he does it with 2 plays
+    - one play for dev,test,prod
+    - second for dev  
+
+ vic.12 Collection of hwreport
+  - download hwreport.txt from url to /root
+    - fill in the key=value lines with real values
+    - if no information it should show "NONE"
+  - first check info
+    $ ansible all -a "lsblk"
+      - for disk names
+    $ ansible <node> -m setup
+      - for all variables 
+  !! he uses a block: rescue: playbook
+     - and first downloads the hwreport.txt to control node to use as template
+     - then get_url: to put file on target host
+     - then template: to fill in values
+     - next rescue: if first two fail to put another file in place
+  ?? can't it be done with lineinfile: for each line ??
+  - template:
+    HOSTNAME={{ ansible_hostname }}
+    MEMORY={{ ansible_memtotal_mb }}
+    BIOS={{ ansible_bios_version }}
+    CPU={{ ansible_processor }}
+    DISK_SIZE_VDA={{ ansible_facts['devices']['vda']['size'] | default('NONE')  }}
+    DISK_SIZE_VDB={{ ansible_facts['devices']['vdb']['size'] | default('NONE')  }}
+
+vid.13 Replacing the contents
+  - replace content in /etc/issue
+  - copy: module
+      content:
+      dest:
+  - use when: clause
+    when: inventory_hostname in groups['dev']
+  - check:
+    $ ansible dev,test,prod -a "cat /etc/issue"
+
+vid.14 Collection of nodes info
+  - download file from URL
+    - to control node
+  - use it as template to create an /etc/hosts like file /etc/myhosts
+  - since several lines of all nodes need to be entered, use a loop in jinja2 template
+  - loop:
+    {% for myhost in groups['all'] %}
+    {{ hostvars[myhost].ansible_default_ipv4.address }} {{ hostvars[myhost].ansible_fqdn }} {{ hostvars[myhost].ansible_hostname }}
+    {% endfor %}
+  - run
+  - check:
+    $ ansible all -m command "cat /etc/myhosts"
+
+vid.15 Creation of a vault file
+  - create an ansible vault file
+    $ ansible-vault create lock.yml
+  - contains a variable an its value
+    pwdeveloper: Iamdev
+    pwmanager: Iammgr
+  - store passwd 'P@ssword' of vault file in secret.txt
+    echo 'P@assword' > secret.txt
+
+vid.16 Create user and groups
+  - download variable file to control node
+  - play for group opsdev
+    - create group
+    - create user when job is developer
+    - assign passwd {{ pwdeveloper }} with SHA512
+      passwd: "{{ pwdeveloper | password_hash('sah512') }}
+  - play for group opsmgr
+    - create group
+    - create user when job is manager
+    - assign passwd {{ pwmanager }} with SHA512
+  - use vars_files: to add in user_list.yml and vault.yml
+  - use loop: to iterate over the myusers dict in user_list.yml
+    loop: {{ myusers }}
+    use {{ item.user }} for the username
+  - HE also uses passsword_expire_max: "{{ item.password_expire_days }}"
+  - use when: condition for each play
+    when: item.job == "developer"
+  !! to run use extra options to disable playbookartifacts and specify secret for vault
+     --pae false
+     --vault-password-file=secret.txt
+  $ ansible-navigator -m stdout run <playbook> --pae false --vault-password-file=<secretfile>
+  - check:
+  $ ansible dev,test -m command -a "tail /etc/group"
+
+vid.17 Resetting the vault passwd
+  - download vaulted file
+  - rekey
+    $ ansible-vault rekey <file>
+  - check:
+    $ ansible vault view <file>
+    use new password
+
+vid.18 Creating a cron job
+  - use cron: module
+  - read carefully and use correct options
+    - see ansible-doc cron
+  - check:
+    $ ansible all -m command -a "ls /var/spool/cron"
+    $ ansible all -a crontab -a "crontab -lu <username>"
+
+vid.19 Creating a Logical Volume
+  - create LV of 1500MB in vg research
+       lvol:
+       when: ansible_lvm.vgs.research.size_g > "1500 MiB"
+    - verify if vg not exists
+      - then write error message
+       debug:
+       when: ansible_lvm.vgs.research.size_g < "1500 MiB"
+    - if no 1500MB free then write error
+  - format 1500m LV as ext4
+  - NO mounting
+  > check first
+    $ ansible all -m command "vgs"
+    $ ansible all -m command "lvs"
+    $ ansible all -m command "lsblk"
+  - HIS structure:
+    block:
+      block:
+        lvol: 1500
+        when: vg research > 1500
+      block:
+        debug: insufficient space
+        lvol: 800
+        when: vg research < 1500
+    when: ansible_lvm.vg.research is defined
+
+    name: format the LV
+    filesystem: 
+
+    name: no vg.research
+    debug:
