@@ -1,4 +1,5 @@
-vid.01
+vid.01 Setup the environment for this video
+
 vid.02 Ansible inventory & configfile
   - ansible.cfg:
     [defaults]
