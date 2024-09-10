@@ -1,0 +1,350 @@
+Lab: Deploying Ansible
+Install Ansible on workstation, configure it as a control node, and configure an inventory for connections to the servera.lab.example.com and serverb.lab.example.com managed hosts. You create, modify, and troubleshoot simple playbooks that use variables and facts.
+
+Outcomes
+
+Install and configure Ansible.
+
+Create, modify, and troubleshoot playbooks.
+
+As the student user on the workstation machine, use the lab command to prepare your system for this exercise.
+
+This command prepares your environment and ensures that all required resources are available.
+
+[student@workstation ~]$ lab start review-cr1
+Specifications
+
+Install the automation content navigator on workstation so that it can serve as the control node. The Yum repository containing the package has been configured on workstation for you.
+
+Your Ansible project directory is /home/student/review-cr1.
+
+On the control node, create the /home/student/review-cr1/inventory inventory file. The inventory must contain a group called dev that consists of the servera.lab.example.com and serverb.lab.example.com managed hosts.
+
+Create an Ansible configuration file named /home/student/review-cr1/ansible.cfg. This configuration file must use the /home/student/review-cr1/inventory file as the project inventory file.
+
+Log in to your private automation hub at utility.lab.example.com from the command line before attempting to run automation content navigator, so that you can pull automation execution environment images from its container registry. Your username is admin and your password is redhat.
+
+Create a configuration file for automation content navigator named /home/student/review-cr1/ansible-navigator.yml. This configuration file must set the default automation execution environment image to utility.lab.example.com/ee-supported-rhel8:latest, and automation content navigator must only pull this image from the container repository if the image is missing on your control node.
+
+Create a playbook named users.yml in the project directory. It must contain one play that runs on managed hosts in the dev group. Its play must use one task to add the users joe and sam to all managed hosts in the dev group. Run the users.yml playbook and confirm that it works.
+
+Inspect the existing packages.yml playbook. In the play in that playbook, define a play variable named packages with a list of two packages as its value: httpd and mariadb-server. Run the packages.yml playbook and confirm that both of those packages are installed on the managed hosts on which the playbook ran.
+
+Add a task to the packages.yml playbook that installs the redis package if the total swap space on the managed host is greater than 10 MB. Run the packages.yml playbook again after adding this task.
+
+Troubleshoot the existing verify_user.yml playbook. It is supposed to verify that the sam user was created successfully, and it is not supposed to create the sam user if it is missing. Run the playbook with the --check option and resolve any errors. Repeat this process until you can run the playbook with the --check option and it passes, and then run the verify_user.yml playbook normally.
+
+Install automation content navigator on workstation so that it can serve as the control node.
+
+[student@workstation ~]$ sudo dnf install ansible-navigator
+[sudo] password for student: student
+Last metadata expiration check: 1:51:10 ago on Fri 26 Aug 2022 02:42:43 PM EDT.
+Dependencies resolved.
+...output omitted...
+Is this ok [y/N]: y
+...output omitted...
+Complete!
+On the control node, create the /home/student/review-cr1/inventory inventory file. It must contain a group called dev that consists of the servera.lab.example.com and serverb.lab.example.com managed hosts.
+
+Change into the /home/student/review-cr1 directory.
+
+[student@workstation ~]$ cd ~/review-cr1
+[student@workstation review-cr1]$
+Create the inventory file with the following content:
+
+[dev]
+servera.lab.example.com
+serverb.lab.example.com
+Create an Ansible configuration file named /home/student/review-cr1/ansible.cfg. The configuration file must use the /home/student/review-cr1/inventory file as the project inventory file.
+
+Add the following entries to configure the ./inventory inventory file as the inventory source. Save and close the file.
+
+[defaults]
+inventory=./inventory
+Create an automation content navigator configuration file named /home/student/review-cr1/ansible-navigator.yml. This configuration file should set the default execution environment image to utility.lab.example.com/ee-supported-rhel8:latest, and ansible-navigator should only pull this image from the container registry if the image is missing.
+
+Make sure to log in to your private automation hub on utility.lab.example.com with the podman login command. Your username is admin and your password is redhat.
+
+Run ansible-navigator to download the execution environment image.
+
+Create the /home/student/review-cr1/ansible-navigator.yml file with the following content:
+
+---
+ansible-navigator:
+  execution-environment:
+    image: utility.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+Run the podman login utility.lab.example.com command.
+
+[student@workstation review-cr1]$ podman login utility.lab.example.com
+Username: admin
+Password: redhat
+Login Succeeded!
+Run the ansible-navigator command.
+
+[student@workstation review-cr1]$ ansible-navigator
+------------------------------------------------------------------------------------
+Execution environment image and pull policy overview
+------------------------------------------------------------------------------------
+Execution environment image name:     utility.lab.example.com/ee-supported-rhel8:latest
+Execution environment image tag:      latest
+Execution environment pull arguments: None
+Execution environment pull policy:    missing
+Execution environment pull needed:    True
+------------------------------------------------------------------------------------
+Updating the execution environment
+------------------------------------------------------------------------------------
+Running the command: podman pull utility.lab.example.com/ee-supported-rhel8:latest
+Trying to pull utility.lab.example.com/ee-supported-rhel8:latest...
+...output omitted...
+In the project directory, create and run the users.yml playbook to add the users joe and sam to the inventory hosts in the dev group. Only use a single task in this playbook.
+
+Create the users.yml playbook with the following content:
+
+---
+- name: Add users
+  hosts: dev
+
+  tasks:
+
+    - name: Add the users joe and sam
+      ansible.builtin.user:
+        name: "{{ item }}"
+      loop:
+        - joe
+        - sam
+Run the users.yml playbook.
+
+[student@workstation review-cr1]$ ansible-navigator run \
+> -m stdout users.yml
+
+PLAY [Add users] ***************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+ok: [serverb.lab.example.com]
+
+TASK [Add the users joe and sam] ***********************************************
+changed: [serverb.lab.example.com] => (item=joe)
+changed: [servera.lab.example.com] => (item=joe)
+changed: [serverb.lab.example.com] => (item=sam)
+changed: [servera.lab.example.com] => (item=sam)
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+Inspect the packages.yml playbook. In the play in that playbook, define a play variable named packages with a list of two packages as its value: httpd and mariadb-server. Run the packages.yml playbook.
+
+Define the packages variable.
+
+---
+- name: Install packages
+  hosts: dev
+  vars:
+    packages:
+      - httpd
+      - mariadb-server
+
+  tasks:
+
+    - name: Install the required packages
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: latest
+Run the packages.yml playbook.
+
+[student@workstation review-cr1]$ ansible-navigator run \
+> -m stdout packages.yml
+
+PLAY [Install packages] ********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+ok: [serverb.lab.example.com]
+
+TASK [Install the required packages] *******************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+Add a task to the packages.yml playbook that installs the redis package if the available swap space on the managed host is greater than 10 MB. Run the packages.yml playbook again after adding this task.
+
+Add the new task to the packages.yml playbook.
+
+---
+- name: Install packages
+  hosts: dev
+  vars:
+    packages:
+      - httpd
+      - mariadb-server
+
+  tasks:
+
+    - name: Install the required packages
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: latest
+
+    - name: Install redis
+      ansible.builtin.dnf:
+        name: redis
+        state: latest
+      when: ansible_facts['swaptotal_mb'] > 10
+Run the packages.yml playbook again.
+
+[student@workstation review-cr1]$ ansible-navigator run \
+> -m stdout packages.yml
+
+PLAY [Install packages] ********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [serverb.lab.example.com]
+ok: [servera.lab.example.com]
+
+TASK [Install the required packages] *******************************************
+ok: [servera.lab.example.com]
+ok: [serverb.lab.example.com]
+
+TASK [Install redis] ***********************************************************
+skipping: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=2    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+serverb.lab.example.com    : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+Troubleshoot the existing verify_user.yml playbook. It is supposed to verify that the sam user was created successfully, and it is not supposed to create the sam user if it is missing. Run the playbook with the --check option and resolve any errors. Repeat this process until you can run the playbook with the --check option and it passes, and then run the verify_user.yml playbook normally.
+
+Run the verify_user.yml playbook with the --check option.
+
+[student@workstation review-cr1]$ ansible-navigator run \
+> -m stdout verify_user.yml --check
+ERROR! couldn't resolve module/action 'ansible.buildin.user'. This often indicates a misspelling, missing collection, or incorrect module path.
+
+The error appears to be in '/home/student/review-cr1/verify_user.yml': line 7, column 7, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+
+    - name: Verify the sam user exists
+      ^ here
+Please review the log for errors.
+Correct the spelling error in the verify_user.yml playbook.
+
+---
+- name: Verify the sam user was created
+  hosts: dev
+
+  tasks:
+
+    - name: Verify the sam user exists
+      ansible.builtin.user:
+        name: sam
+      check_mode: true
+      register: sam_check
+
+    - name: Sam was created
+      ansible.builtin.debug:
+        msg: "Sam was created"
+      when: sam_check['changed'] == false
+
+    - name: Output sam user status to file
+      ansible.builtin.lineinfile:
+        path: /home/student/verify.txt
+        line: "Sam was created"
+        create: true
+        when: sam_check['changed'] == false
+Run the verify_user.yml playbook with the --check option again.
+
+[student@workstation review-cr1]$ ansible-navigator run \
+> -m stdout verify_user.yml --check
+
+...output omitted...
+
+TASK [Output sam user status to file] ******************************************
+fatal: [servera.lab.example.com]: FAILED! => {"changed": false, "msg": "Unsupported parameters for (ansible.builtin.lineinfile) module: when. Supported parameters include: backup, group, firstmatch, setype, create, path (dest, destfile, name), selevel, serole, backrefs, regexp (regex), mode, seuser, attributes (attr), insertafter, line (value), insertbefore, search_string, state, owner, unsafe_writes, validate."}
+fatal: [serverb.lab.example.com]: FAILED! => {"changed": false, "msg": "Unsupported parameters for (ansible.builtin.lineinfile) module: when. Supported parameters include: path (dest, destfile, name), search_string, backrefs, serole, validate, unsafe_writes, regexp (regex), state, setype, firstmatch, backup, selevel, create, mode, insertbefore, insertafter, group, owner, attributes (attr), seuser, line (value)."}
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=3    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
+serverb.lab.example.com    : ok=3    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
+Please review the log for errors.
+Correct the indentation error in the verify_user.yml playbook.
+
+---
+- name: Verify the sam user was created
+  hosts: dev
+
+  tasks:
+
+    - name: Verify the sam user exists
+      ansible.builtin.user:
+        name: sam
+      check_mode: true
+      register: sam_check
+
+    - name: Sam was created
+      ansible.builtin.debug:
+        msg: "Sam was created"
+      when: sam_check['changed'] == false
+
+    - name: Output sam user status to file
+      ansible.builtin.lineinfile:
+        path: /home/student/verify.txt
+        line: "Sam was created"
+        create: true
+      when: sam_check['changed'] == false
+Run the verify_user.yml playbook with the --check option again.
+
+[student@workstation review-cr1]$ ansible-navigator run \
+> -m stdout verify_user.yml --check
+
+...output omitted...
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+serverb.lab.example.com    : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+Run the verify_user.yml playbook.
+
+[student@workstation review-cr1]$ ansible-navigator run \
+> -m stdout verify_user.yml
+
+PLAY [Verify the sam user was created] *****************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+ok: [serverb.lab.example.com]
+
+TASK [Verify the sam user exists] **********************************************
+ok: [servera.lab.example.com]
+ok: [serverb.lab.example.com]
+
+TASK [Sam was created] *********************************************************
+ok: [servera.lab.example.com] => {
+    "msg": "Sam was created"
+}
+ok: [serverb.lab.example.com] => {
+    "msg": "Sam was created"
+}
+
+TASK [Output sam user status to file] ******************************************
+changed: [serverb.lab.example.com]
+changed: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+serverb.lab.example.com    : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+Evaluation
+
+As the student user on the workstation machine, use the lab command to grade your work. Correct any reported failures and rerun the command until successful.
+
+[student@workstation ~]$ lab grade review-cr1
+Finish
+
+On the workstation machine, change to the student user home directory and use the lab command to complete this exercise. This step is important to ensure that resources from previous exercises do not impact upcoming exercises.
+
+[student@workstation ~]$ lab finish review-cr1

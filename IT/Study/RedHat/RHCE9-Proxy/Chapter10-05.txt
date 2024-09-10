@@ -1,0 +1,81 @@
+Lab: Creating Roles
+Create an Ansible role from an existing Ansible Playbook on workstation, and then create a playbook to apply the role to serverb.lab.example.com and serverc.lab.example.com.
+
+Outcomes
+
+Create a role from an existing playbook.
+
+Create a playbook to apply the role to managed hosts.
+
+As the student user on the workstation machine, use the lab command to prepare your system for this exercise.
+
+This command prepares your environment and ensures that all required resources are available.
+
+[student@workstation ~]$ lab start review-cr4
+Specifications
+
+The review-cr4 directory contains your Ansible project for this activity.
+
+Convert the ansible-httpd.yml playbook in the project directory into a new Ansible role named ansible-httpd. The new role must be created in the /home/student/review-cr4/roles/ansible-httpd directory.
+
+Copy any variables, tasks, templates, files, and handlers that were used in or by the playbook into the appropriate files or directories in the new role. Copy the playbook variables to the roles/ansible-httpd/defaults/main.yml file.
+
+Update the meta/main.yml file in the role with the following content:
+
+Variable	Value
+author	Red Hat Training
+description	example role for RH294
+company	Red Hat
+license	BSD
+Edit the roles/ansible-httpd/README.md file so that it provides the following information about the role:
+
+ansible-httpd
+=========
+Example ansible-httpd role from "Red Hat Enterprise Linux Automation with Ansible" (RH294)
+
+Role Variables
+--------------
+
+* `web_package`: the RPM package
+* `web_service`: the systemd service
+* `web_config_file`: the path to the main configuration file
+* `web_root`: the path to an index.html file
+* `web_fw_service`: the name of a firewalld service
+
+Dependencies
+------------
+
+None.
+
+Example Playbook
+----------------
+
+    - hosts: servers
+      roles:
+        - ansible-httpd
+
+License
+-------
+
+BSD
+
+Author Information
+------------------
+
+Red Hat (training@redhat.com)
+Remove any unused directories and files within the role.
+
+In the project directory, write a site.yml playbook that runs the new ansible-httpd role on the managed hosts in the webdev inventory group.
+
+Run the site.yml playbook.
+
+Evaluation
+
+As the student user on the workstation machine, use the lab command to grade your work. Correct any reported failures and rerun the command until successful.
+
+[student@workstation ~]$ lab grade review-cr4
+Finish
+
+On the workstation machine, change to the student user home directory and use the lab command to complete this exercise. This step is important to ensure that resources from previous exercises do not impact upcoming exercises.
+
+[student@workstation ~]$ lab finish review-cr4

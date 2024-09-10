@@ -1,0 +1,80 @@
+Lab: Managing Linux Hosts and Using System Roles
+In this review, on managed hosts running Red Hat Enterprise Linux, you write playbooks that use two system roles to set up new storage with a logical volume and configure network interfaces, and use modules to set up a Cron job and a user with Sudo privileges.
+
+Outcomes
+
+Use the redhat.rhel_system_roles.storage role to create, format, and persistently mount an LVM volume on a managed host.
+
+Create a user with sudo access.
+
+Configure network settings on managed hosts, and collect network-related Ansible facts.
+
+Schedule a Cron job.
+
+As the student user on the workstation machine, use the lab command to prepare your system for this exercise.
+
+This command prepares your environment and ensures that all required resources are available.
+
+[student@workstation ~]$ lab start review-cr3
+Specifications
+
+Use the /home/student/review-cr3 project directory to perform this activity.
+
+Install the redhat.rhel_system_roles Ansible Content Collection in the collections subdirectory of your project directory.
+
+Write a playbook named storage.yml that uses the redhat.rhel_system_roles.storage system role to configure logical volumes for the managed hosts in the webservers group specified by the inventory file in your project directory. The playbook must set up the logical volumes as follows:
+
+Create a volume group named vg_web on the /dev/vdb storage device.
+
+Create a logical volume named lv_content, 128 MB in size, from the vg_web volume group, format it with an XFS file system, and mount it on the /var/www/html/content directory.
+
+Create a logical volume named lv_uploads, 256 MB in size, from the vg_web volume group, format it with an XFS file system, and mount it on the /var/www/html/uploads directory.
+
+Run the storage.yml playbook to configure the storage.
+
+Write a playbook named dev-users.yml that creates the developer user on managed hosts in the webservers inventory group. It must do so as follows:
+
+You must set the password for the developer user using the pwhash variable provided in the pass-vault.yml file, which is encrypted with Ansible Vault. The Ansible Vault password for the pass-vault.yml file is redhat.
+
+The developer user must also be a member of the webdev group.
+
+Members of the webdev group must be able to run sudo commands without a password prompt. Create or modify the sudoers file in /etc/sudoers.d/webdev by using the ansible.builtin.lineinfile module. Any edits to the sudoers file should be validated before changes are applied.
+
+Run the dev-users.yml playbook. Verify that the developer user can log in to a managed host in the webservers group, and can execute commands as root on that host by using sudo without a password.
+
+Write a playbook named network.yml that uses the redhat.rhel_system_roles.network system role to configure the eth1 network interface on the managed hosts in the webservers inventory group with the 172.25.250.45/24 IP address.
+
+Run the network.yml playbook.
+
+Write a playbook named log-rotate.yml to set up a system Cron job as follows:
+
+Use the ansible.builtin.cron module to create the /etc/cron.d/rotate_web system Cron job on managed hosts in the webservers inventory group.
+
+The job must run as the devops user every night at midnight.
+
+The job must run the logrotate -f /etc/logrotate.d/httpd command to rotate the logs in the /var/log/httpd/ directory.
+
+Run the log-rotate.yml playbook.
+
+Write a playbook named site.yml that imports the four playbooks that you wrote in this activity, in the following order:
+
+storage.yml
+
+dev-users.yml
+
+network.yml
+
+log-rotate.yml
+
+Run the site.yml playbook, and ensure that there are no errors.
+
+Evaluation
+
+As the student user on the workstation machine, use the lab command to grade your work. Correct any reported failures and rerun the command until successful.
+
+[student@workstation ~]$ lab grade review-cr3
+Finish
+
+On the workstation machine, change to the student user home directory and use the lab command to complete this exercise. This step is important to ensure that resources from previous exercises do not impact upcoming exercises.
+
+[student@workstation ~]$ lab finish review-cr3

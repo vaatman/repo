@@ -1,0 +1,54 @@
+Lab: Creating Playbooks
+Create three playbooks. The first playbook, dev_deploy.yml, installs and starts the web server. The second playbook, get_web_content.yml, ensures that the web server is serving content. The third playbook, site.yml, runs the other two playbooks.
+
+Outcomes
+
+Create and execute playbooks to perform tasks on managed hosts.
+
+Use Jinja2 templates, blocks, and handlers in playbooks.
+
+As the student user on the workstation machine, use the lab command to prepare your system for this exercise.
+
+This command prepares your environment and ensures that all required resources are available.
+
+[student@workstation ~]$ lab start review-cr2
+Specifications
+
+Create the playbooks specified by this activity in the /home/student/review-cr2 project directory.
+
+Create a playbook named dev_deploy.yml with one play that runs on the webservers host group (which contains the servera.lab.example.com and serverb.lab.example.com managed hosts). Enable privilege escalation for the play. Add the following tasks to the play:
+
+Install the httpd package.
+
+Start the httpd service and enable it to start on boot.
+
+Deploy the templates/vhost.conf.j2 template to /etc/httpd/conf.d/vhost.conf on the managed hosts. This task should notify the Restart httpd handler.
+
+Copy the files/index.html file to the /var/www/vhosts/hostname directory on the managed hosts. Ensure that the destination directory is created if it does not already exist.
+
+Configure the firewall to allow the httpd service.
+
+Add a Restart httpd handler to the play that restarts the httpd service.
+
+Create a playbook named get_web_content.yml with one play named Test web content that runs on the workstation managed host. This playbook tests whether the dev_deploy.yml playbook was run successfully and ensures that the web server is serving content. Enable privilege escalation for the play. Structure the play as follows:
+
+Create a block and rescue task named Retrieve web content and write to error log on failure.
+
+Inside the block, create a task named Retrieve web content that uses the ansible.builtin.uri module to return content from http://servera.lab.example.com. Register the results in a variable named content.
+
+Inside the rescue clause, create a task named Write to error file that writes the value of the content variable to the /home/student/review-cr2/error.log file if the block fails. The task must create the error.log file if it does not already exist.
+
+Create a new site.yml playbook that imports the plays from both the dev_deploy.yml and the get_web_content.yml playbooks.
+
+After you have completed the rest of the specifications, run the site.yml playbook. Make sure that all three playbooks run successfully.
+
+Evaluation
+
+As the student user on the workstation machine, use the lab command to grade your work. Correct any reported failures and rerun the command until successful.
+
+[student@workstation ~]$ lab grade review-cr2
+Finish
+
+On the workstation machine, change to the student user home directory and use the lab command to complete this exercise. This step is important to ensure that resources from previous exercises do not impact upcoming exercises.
+
+[student@workstation ~]$ lab finish review-cr2
