@@ -27,16 +27,16 @@ vid.03 Configuration of local YUM repo
       $ ansible all -m command -a "yum repolist all"
 
 vid.04 Installation of collections
-  !! gebruik full-pathnames met galaxy
+  !! gebruik full-pathnames met galaxy "just to be sure"
   $ ansible-galaxy collection install <URL> -p /home/student/ansible/collections/
   - check:
       $ ansible-navigator collections
-  - check [ansible.posix]
+  - check [for ansible.posix present]
       $ ansible-navigator doc -m stdout firewalld
 
 vid.05. Installation of roles
 - install 2 roles: balancer en phpinfo
-  - doe phpinfo eerst, dan balancer
+  !! hij doet phpinfo eerst, dan balancer
   - requirements.yml:
     - src: http://github.com/.......git
       name: phpinfo
@@ -58,7 +58,7 @@ vid.06. Create offline role
   - check:
     $ ansible-navigator run -m stdout --syntax-check
     $ ansible-navigator run -m stdout
-  - check werbserver running:
+  - check webserver running:
     $ curl http://node1.lab.example.com
     My host is node1 on 192.168.1.10
 
@@ -105,17 +105,18 @@ vid.09 Install of SELinux systemroles
         selinux_policy: targeted
       roles:
         - rhel-system-roles.selinux 
+  !! see README.md in role
   - run
     $ ansible-navigator run -m stdout <playbook>
   - check
     $ ansible all -m command "cat /etc/selinux/config"
 
 vid.10 Creation of web content
-  !! check firewalld/httpd installed/running on target hosts
+  !! check eerst of firewalld/httpd installed/running on target hosts
      - install/enable if needed
   - create playbook
   - use modules:
-    file:,copy:,firewalld:,
+    file: copy: firewalld: [service: ?]
 
 vid.11 Installation of packages
   - php and mariadb on dev,test,prod
@@ -136,18 +137,21 @@ vid.11 Installation of packages
     $ ansible <node> -m setup
       - for all variables 
   !! he uses a block: rescue: playbook
+     - set ignore_errors: true on play level
      - and first downloads the hwreport.txt to control node to use as template
      - then get_url: to put file on target host
      - then template: to fill in values
-     - next rescue: if first two fail to put another file in place
+     - next rescue: if first two fail use template 2
   ?? can't it be done with lineinfile: for each line ??
-  - template:
-    HOSTNAME={{ ansible_hostname }}
-    MEMORY={{ ansible_memtotal_mb }}
-    BIOS={{ ansible_bios_version }}
-    CPU={{ ansible_processor }}
-    DISK_SIZE_VDA={{ ansible_facts['devices']['vda']['size'] | default('NONE')  }}
-    DISK_SIZE_VDB={{ ansible_facts['devices']['vdb']['size'] | default('NONE')  }}
+  - template 1:
+      HOSTNAME={{ ansible_hostname }}
+      MEMORY={{ ansible_memtotal_mb }}
+      BIOS={{ ansible_bios_version }}
+      CPU={{ ansible_processor }}
+      DISK_SIZE_VDA={{ ansible_facts['devices']['vda']['size'] | default('NONE')  }}
+      DISK_SIZE_VDB={{ ansible_facts['devices']['vdb']['size'] | default('NONE')  }}
+  - template 2: is the same except for:
+      DISK_SIZE_VDB=NONE
 
 vid.13 Replacing the contents
   - replace content in /etc/issue
