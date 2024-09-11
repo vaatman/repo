@@ -1,0 +1,27 @@
+---
+- name: Create an LV
+  hosts: dev,test
+
+  tasks:
+    - name: Main block for LV creation
+      when: ansible_lvm.vgs.research is defined
+      block:
+        - name: First try 1800m
+          block:
+            - name: Create 1800m LV
+              community.general.lvol:
+                vg: research
+                lv: data
+                size: 1800m
+              when: ansible_lvm.vgs.research is defined
+          rescue:
+            - name: Print error for the rescue
+              ansible.builtin.debug:
+                msg: "Insufficient space, creating 800m LV"
+              when: ansible_lvm.vgs.research.size_g < "1.8GiB"
+            - name: Create 800m LV
+              community.general.lvol:
+                vg: research
+                lv: data
+                size: 800m
+              when: ansible_lvm.vgs.research.size_g < "1.8GiB"
