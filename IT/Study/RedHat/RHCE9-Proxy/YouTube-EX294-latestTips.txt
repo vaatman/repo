@@ -4,7 +4,9 @@ vid.02 Ansible inventory & configfile
   - ansible.cfg:
     [defaults]
       remote_user,inventory,roles_path.collections_path,ask_pass=false
-    HV: separate muliple paths with :
+    HV:
+      - separate muliple paths with :
+      - for collections maybe also set ~/.ansible/collections and /usr/share/ansible/collections
     [privilege_escalation]
       become,become_user,become_method,become_ask_pass
   - inventory:
@@ -47,6 +49,12 @@ vid.05. Installation of roles
     $ ansible-galaxy install -r /home/student/ansible/roles/requirements.yml -p /home/student/ansible/roles/
   !! gebruik full-pathnames met galaxy
   HV: for requirements.yml see 'Galaxy User Guide' at docs.ansible.com
+    - -r option to specify a requirements.file
+    - syntax in course is:
+      - name:
+        src:
+	scm:
+	version:
 
 vid.06. Create offline role
   $ cd roles/
@@ -80,6 +88,7 @@ vid.07 Install roles
    $ ansible-galaxy collection install community.general
    ! and selinux related rpms:
    $ sudo dnf install python3-libselinux python3-policycoreutils
+
 vid.08 Installation of RHEL system roles
   - you get either timesync or SELinux
   - install systemroles RPM (!)
@@ -96,6 +105,7 @@ vid.08 Installation of RHEL system roles
       roles:
         - rhel-system-roles.timesync
   !! see README.md in role
+  !! vars may also be specified under group_vars/<group>/<file>.yml
   - run
     $ ansible-navigator run -m stdout <playbook.yml>
 
