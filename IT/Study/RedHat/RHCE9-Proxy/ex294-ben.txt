@@ -1,0 +1,156 @@
+EX294 Ben
+
+Je krijgt een control node, waar je je werk op moet doen. Daarnaast zijn er 5 client nodes. De client nodes worden door Redhat gereset voor het grading script.
+
+Alles moet onder user admin (ssh keyless en sudo zonder wachtwoord); alle files moeten in directory /home/admin/ansible
+
+Collections moeten in /home/admin/ansible/mycollections
+Roles moeten in /home/admin/ansible/roles
+
+Taak 1: Install ansible op control node 
+$ sudo dnf install ansible-core ansible-navigator
+$ podman login registry.redhat.io
+
+Taak 2: Ansible config en Inventory
+$ ansible-config init --disabled > ansible.cfg
+of
+$ vi ansible.cfg
+- collections_path, roles_path, inventory, become=true er in gezet
+Inventory (5 nodes, 1x dev, 1x test, 2x prod, 1x balancers, webservers vallen onder prod)
+
+Taak 3: Yum Repo 
+#Playbook: voeg 2 yum repos toe aan alle machines, gebruik de volgende modules, zie ook 9.2 in RH294-0.0 lab
+ansible.builtin.yum_repository:
+ansible.builtin.rpm_key:
+
+Taak 4: Packages
+- Packages (packages en group) voor dev, test en prod, installeer packages mariadb-server + php
+- Voor dev: @RPM Developer Tools
+- Ook voor dev: all packages latest installeren (name: “*” state: latest)
+ansible.builtin.dnf:
+
+Taak 5: Collections installeren (vanuit url). 
+- wget tar.gz files
+- ansible-galaxy collection install <file> -p /home/admin/ansible/mycollections
+Of
+- ansible-galaxy collection install <url> -p <path>
+
+Taak 6: 2 Roles installeren 
+- Moet via requirements.yml waarbij je de url opgeeft
+- ansible-galaxy role install -r requirements.yml -p /home/admin/ansible/roles
+
+Taak 7: Playbook om de 2 roles toe te passen
+- Playbook om de 2 roles toe te passen
+- Balancer role (haproxy) gaf issues/foutmelding
+  - tip vanuit YT: mss eerst phpinfo dan balancer?
+-  maak playbook, met daarin 2 plays die de role toepast op de goede groep
+
+Taak 8: Role maken voor apache
+- Role maken om apache te installeren (packages, services, index.html, firewalld)
+$ ansible-galaxy role init apache
+vi roles/apache/tasks/main.yml (modules voor dns, service, copy, firewalld)
+- Er moest ook een template in, die de hostname en IP-adres zet in index.html via een ansible_fact
+$ vi roles/apache/templates/index.html.j2
+  Welcome to {{ ansible_facts [‘hostname’] }} on {{ ansible_facts [‘default_ipv4’][‘address’] }}
+
+Taak 9: Playbook voor apache role
+- Vervolgens playbook om apache role uit te voeren op de webservers group
+
+Taak 10: SElinux met RHEL System Role
+- SElinux playbook met rhel system role
+- set (enforcing, targeted)
+- haal de variabelen uit de README.md van de role en voeg deze in playbook toe
+  - of in groupvars/elders
+  
+Taak 11: Web content aanmaken 
+- modules: directory, content, verschillende host groups, link, setgid bit, rwx, rwx, r-x rechten
+- denk aan Selinux content zodat hij gelezen kan worden
+- /webdev dir aanmaken
+- /var/www/html/webdev symbolic link naar /webdev
+- http://node1.domain2.example.com/index.html moet respons geven en “Development” laten zien (stond niet echt beschreven, maar heb dus ook apache en firewalld geconfigureerd)
+
+Taak 12: Hardware report 
+- Je krijgt een hwreport.empty (via een url, met daarin volgende tekst):
+HOSTNAME=inventory_hostname
+MEMORY=total_mb
+BIOS=bios_version
+DISK_SIZE_VDA=disk_size_vda
+DISK_SIZE_VDB=disk_size_vdb
+- Je moet bovenstaande file via die url naar de machine zetten in /root/hwreport.txt.
+- Vervolgens elke regel modifyen met de daadwerkelijke waardes.
+- Als een device niet bestaat, moet je =NONE in je file zetten.
+- ansible.builtin.get_url om bestand te zetten op /root/hwreport.txt
+- ansible.builtin.lineinfile om lines te replacen
+  - heeft ben per regel apart gedaan
+- voor de vdb disk een when: toegevoegd
+    when: ansible_facts[‘ansible_devices’][‘vdb’] is not defined
+  kan ook met filter?
+    line: "DISK_SIZE_VDB={{ ansible_devices['vdb']['size'] | default('none') }}"
+
+Taak 13: Vault (aanmaken, secrets file met password, rekey).
+$ ansible-vault create locker.yml
+  - pwdeveloper + pwmanager variabelen maken
+- wachtwoord dat je gebruikt moet je in secrets.txt zetten
+- je krijgt via een url een salaries.yml die encrypted is, moet ander wachtwoord op
+$ wget http://utility.lab.domain2.com/salaries.yml 
+$ ansible-vault rekey salaries.yml 
+
+Taak 14 Users aanmaken:
+- Users aanmaken adhv. een user list, met vault en vars_files, conditionals met job
+- users_list.yml krijg je via url en bevat dit:
+users:
+  - name: bob
+    job: developer
+    uid: 3001
+  - name: truss
+    Job: manager
+    uid: 4001
+- eerst zorgen dat group bestaat
+- Playbook maken met vars_files: locker.yml + users_list.yml
+- Play 1: Indien job developer, user op dev
+  when: item.name == "developer"
+- Play 2: Indien job manager, user op prod
+  when: item.name = "manager"
+- loop: "{{ users }}"
+- password met password_hash('sha512') filter
+
+Taak 15: Storage 
+- (primary partition met parted, filesystem, mount). Vervelende conditionals met sizes
+- ik heb parted, filesystem en mount modules gebruikt, maar het kan denk ik ook met de redhat_system_roles.storage
+- Size moet 1500MiB. Als dat niet past, geef een error melding: “device is too small” en maak dan de partitie 800MiB
+- Als er geen /dev/vdd device is, moet er een error message komen met: Device not found.
+- parted: en filesystem: in community.general collection
+- mount: in ansible.posix
+- moet mss met LVM en/of system_roles.storage?
+- Ben heeft block: resuce: always gemaakt
+  block:
+    fail: <1500MB
+	parted: 1500MB
+	filesystem: ext4 vdb1
+	mount: /newpart
+  rescue:
+    parted: 800MB
+	filesystem: ext4 vdb1
+	mount: /newpart
+  always:
+    fail: vdd not defined
+
+Taak 16: /etc/issue afhankelijk van group vullen
+- Dev, test en prod verschillende content
+- 3 plays in 1 playbook gezet
+- copy:
+
+Taak 17: Cron entry
+- User Natascha elke 2m een job afvuren: logger “EX294 is in progress”
+ansible.builtin.cron:
+  - name: logger-job
+    user: Natascha
+    minute: “*/2”
+    job: ‘logger “EX294 is in progress”’
+
+Taak 18: /etc/myhosts vullen met een .j2 jinja template dat net zo lijkt als /etc/hosts
+- template:
+<static regels /etc/hosts>
+{% for myhost in groups[‘all’] %}
+{{ hostvars[myhost][‘ansible_facts’][‘default_ipv4’][‘address’] }} {{ hostvars[myhost][‘ansible_facts’][‘fqdn’] }} {{ hostvars[myhost][‘ansible_facts’][‘hostname’] }}
+{% endfor %}
