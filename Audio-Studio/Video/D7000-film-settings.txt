@@ -1,1 +1,22 @@
-source: https://www.youtube.com/watch?v=JkRB9dPf8ak&t=672s
+- Light, lights and lights!
+- Shutter speed: 1/30
+- Aperture: min. f/3.5
+- Lens: 16mm to 28mm
+- ISO 640 to 800
+  optimal: 640
+- choose White balance
+  here: 2700K
+  A-B B2
+  G-M M4
+- choose Picture Control
+  Standard
+  Sharpening 2
+  Contrast -2
+  Brightness +
+  Saturation lowest -
+  Hue lowest -
+- set anything to Manual
+- get things right when filming,
+  do a little in-post
+
+source:https://www.youtube.com/watch?v=JkRB9dPf8ak&t=672s
