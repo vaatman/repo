@@ -1,0 +1,87 @@
+. user curtis
+  rootpw = thuchtive
+  control.area8.example.com
+  - ssh_keys in place
+  - passwordless sudo in place
+- Installeren packages voor Ansible
+  - ansible-core
+  - ansible-navigator
+  - podman login <registry>
+- Inventory en Config
+  inventory
+  - [dev]node1, [test]node2, [prod]node3,node4 [balancer]node5
+  - [webserver:children]prod
+  - ansible.cfg
+    - roles_path = roles/
+    - collections_path = mycollections/
+- yum_repositories maken
+  - BaseOS
+  - AppStream
+  - yum_repository
+    ?? twijfels over name: en description
+    ?? rpm_key niet gebruik, was geen expliciete opdract om key te installeren
+- packages installeren
+  - dev,test,prod: mariadb-server + php
+    ?? mariadb opgegeven
+  - dev: '@RPM Development Tools'
+  - dev: all
+- SELinux role toepassen met system role
+  - gebruikt redhat.rhel_system_role.selinux
+  - selinux_policy en selinux_state vars opgegeven zoals in de opdracht
+- 3 collections downloaden en installeren
+  - wget .tar.gz
+  - ansible-galaxy collection install .tar.gz -p mycollections/
+- custom role apache maken
+  - cd roles
+  - ansible-galaxy role init apache
+- playbook maken om apache role toe te passen
+  - tasks/main.yml opzetten van webserver
+  - met template die facts fqdn en default_ipv4.address gebruikt
+    - templates/index.html.j2
+      Welcome to {{ ansible_facts['fqdn'] }} on {{ ansible_facts['default_ipv4']['address'] }}
+- 2 roles installeren met requirements.yml
+  - balancer
+  - phpinfo
+- 2 roles installeren met playbook
+  ! zelfde fout als in rhce8
+  > fix? eerst phpinfo dan balancer gedaan
+- partities maken
+  - 1x 1500MB vdb, format ext4, mount /newpart
+    community.general.[parted|filesystem],ansible.builtin.mount
+  - 1x 1500MB vdc, forman ext4, mount /newpart1
+    - als te klein dan 800MB maken
+  - fout melden als vdd niet bestaat
+  : 2e en 3e taak in block-rescue-always gedaan
+  ! gezeur over de msg: met het woord 'not' er in 
+  > tekst in single quotes gezet
+- Web content aanmaken
+  - content, host groups webservers, link, setgid bit, rwx, rwx, r-x rechten
+  - Selinux context
+    - setype: httpd_sys_content_t
+  - /webdev dir aanmaken
+  - /var/www/html/webdev symbolic link naar /webdev
+  - http://node1.domain2.example.com/index.html moet respons geven en “Development” laten zien (stond niet echt beschreven, maar heb dus ook apache en firewalld geconfigureerd)
+- ansible-vault locker.yml maken password in secret.txt
+  pw_developer: Imadev
+  pw_manager: Imamgr
+- ansible-vault rekey salaries.yml
+  - download file
+  - rekey
+- create users
+  - vars_files: user_list1.yml locker.yml
+  - 2 plays
+    - 1e dev
+    - 2e mgr
+  - loop over "{{ users }}"
+- create myhosts.txt template
+  - {% for myhost in groups['all'] %}
+  - het bekende voorbeeld
+  - myhosts.yml downloaden, NIET aanpassen en uitvoeren
+- vervang /etc/issue
+  - dev Development
+  - test Test
+  - prod Production
+  - 3 plays
+  - when: clause
+- Cron entry
+  - User Natascha elke 2m een job afvuren: logger “EX294 is in progress”
