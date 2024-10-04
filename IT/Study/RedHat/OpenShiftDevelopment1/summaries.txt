@@ -1,0 +1,11 @@
+Ch.1
+- Containers differ from VMs by providing only the necessary runtime dependencies, such as the required application-specific libraries for a program to run, rahter, than a full operating system
+- Use container images to create container instances. Container instances are executables versions of the image, and include references to networking, disks and other runtime necessities
+- Podman is container engine to build and run containers on an individual host
+- Kubernetes and Red Hat OpenShift Container Platform orchestrate containers accross multiple hosts called nodes
+- RHOCP is a set of modular components and services that are built on Kubernetes to add capabilities for the following features:
+	- remote management
+	- multiple tenants
+	- increased security
+	- continuous integration
+	- continuous development
