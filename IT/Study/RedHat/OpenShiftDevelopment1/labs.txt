@@ -1,0 +1,108 @@
+Chapter 2
+
+Lab: Podman Basics
+Use Podman to manage local containers.
+
+Outcomes
+
+You should be able to:
+
+Manage local containers.
+
+Copy files in and out of containers.
+
+Run a set of application containers that connect to one another via a Podman network.
+
+Forward a port from a container so that it is accessible from the host machine.
+
+As the student user on the workstation machine, use the lab command to prepare your system for this exercise.
+
+This command starts the basics-podman-secret local container, and copies the necessary files for this lab. The command also verifies that Podman is available and can pull from the required registries. You can find the source code for the basics-podman-secret container in the $HOME/DO188/solutions/basics-podman/secret-container directory.
+
+The lab script continuously evaluates the objectives of this lab. Keep the script running in a terminal window, and complete the objectives of this lab from a new terminal window.
+
+After each objective, return to the lab script evaluation to see if you have finished the objective successfully. When you have finished all of the objectives, the lab command prompts you to execute the finish function.
+
+[student@workstation ~]$ lab start basics-podman
+Instructions
+
+The lab command starts the basics-podman-secret container, which contains the /etc/secret-file file.
+
+Copy the /etc/secret-file file from the container to the $HOME/DO188/labs/basics-podman/solution file.
+
+Start a new container with the following parameters:
+
+Name: basics-podman-server
+
+Image: registry.ocp4.example.com:8443/ubi8/httpd-24
+
+Ports: Route traffic from port 8080 on your machine to port 8080 inside of the container
+
+Network: lab-net
+
+You can start the container in the detached mode for greater convenience.
+
+Create the lab-net Podman network.
+
+[student@workstation ~]$ podman network create lab-net
+lab-net
+The next objective of the lab script is passing.
+
+Execute the podman run command to start the container.
+
+[student@workstation basics-podman]$ podman run -d --name basics-podman-server \
+--net lab-net -p 8080:8080 registry.ocp4.example.com:8443/ubi8/httpd-24
+8b747...3616
+Additional objectives of the lab script are passing.
+
+Copy the $HOME/DO188/labs/basics-podman/index.html file to /var/www/html/ in the basics-podman-server container.
+
+Verify that you are in the correct directory.
+
+[student@workstation basics-podman]$ ls
+index.html  solution
+Copy the index.html file in to the container.
+
+[student@workstation basics-podman]$ podman cp index.html \
+basics-podman-server:/var/www/html/
+In a web browser, navigate to localhost:8080 and verify that you see the Hello from Podman Basics lab text.
+
+The next objective of the lab script is passing.
+
+Start a new container with the following parameters:
+
+Name: basics-podman-client
+
+Image: registry.ocp4.example.com:8443/ubi8/httpd-24
+
+Network: lab-net
+
+You can start the container in the detached mode for greater convenience.
+
+Execute the podman run command to start the container.
+
+[student@workstation basics-podman]$ podman run -d --name basics-podman-client \
+--net lab-net registry.ocp4.example.com:8443/ubi8/httpd-24
+8b747...3616
+Confirm that the basics-podman-client container can access the basics-podman-server container by its DNS name. Use the podman exec and curl commands to make a request to the basics-podman-server container at port 8080 from the basics-podman-client container.
+
+Confirm that DNS is enabled on the lab-net network.
+
+[student@workstation basics-podman]$ podman network inspect lab-net
+...output omitted...
+          "dns_enabled": true,
+...output omitted...
+Use the curl command inside of the basics-podman-client to confirm that the basics-podman-server container is accessible from the lab-net network by its DNS name.
+
+[student@workstation basics-podman]$ podman exec basics-podman-client \
+curl -s http://basics-podman-server:8080 && echo
+<h1>Hello from Podman Basics lab</h1>
+All remaining objectives are passing.
+
+Finish
+
+As the student user on the workstation machine, change to the student user home directory and use the lab command to complete this exercise. This is important to ensure that resources from previous exercises do not impact upcoming exercises.
+
+Press y when the lab start command prompts you to execute the finish function. Alternatively, execute the following command:
+
+[student@workstation ~]$ lab finish basics-podman
