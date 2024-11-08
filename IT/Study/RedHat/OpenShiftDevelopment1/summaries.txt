@@ -1,4 +1,4 @@
-Ch.1
+Chapter 1
 - Containers differ from VMs by providing only the necessary runtime dependencies, such as the required application-specific libraries for a program to run, rahter, than a full operating system
 - Use container images to create container instances. Container instances are executables versions of the image, and include references to networking, disks and other runtime necessities
 - Podman is container engine to build and run containers on an individual host
@@ -10,7 +10,8 @@ Ch.1
 	- continuous integration
 	- continuous development
 
-Ch.2
+---
+Chapter 2
 - Use 'podman run' command to start a container
 - Implement container-to-container communication using Podman networks, which include the following tasks:
 	- managing podman networks by using 'podman network' subcommands
@@ -20,3 +21,22 @@ Ch.2
 - Use the 'podman ps' command to list containers
 - Use the 'podman cp' command to copy files into and out of containers
 - Manage the lifecycle of containers by using the 'podman start,podman pause,podman restart' and other Podman commands
+
+---
+Chapter 3
+Summary
+Use container registries to store and share container images.
+
+Red Hat provides several container registries for both official Red Hat images and for uploading your own.
+
+Configure container registries for Podman.
+
+Manage container images with Podman, including the following image operations:
+
+Listing
+Pulling
+Building
+Pushing
+Inspecting
+Tagging
+Removing
