@@ -40,3 +40,20 @@ Pushing
 Inspecting
 Tagging
 Removing
+
+---
+Chapter 4
+Summary
+Containerize a process by choosing a base image and by using the Containerfile instructions.
+
+Create rootless containers by creating Containerfiles that do not run as a privileged user.
+
+You can implement advanced container build and runtime patterns, which includes:
+
+The use of the ENV instruction to create containers that can be deployed in different environments.
+
+The use of the VOLUME instruction to store container data outside the container layered file system.
+
+The use of ENTRYPOINT, CMD, and their interactions.
+
+Creating multistage Containerfiles to build smaller images that do not contain build-time dependencies.
