@@ -70,3 +70,12 @@ You can mount volumes and bind mounts to persist container data.
 Some workloads, such as databases, might experience performance problems with the COW file system.
 
 You can use Podman volumes to avoid using the COW file system.
+
+---
+Chapter 6
+Summary
+You can view logs for an application running in a container.
+
+Using a debugger speeds up application troubleshooting.
+
+You can attach a debugger to an application running in a container.
