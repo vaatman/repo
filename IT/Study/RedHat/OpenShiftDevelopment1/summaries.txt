@@ -79,3 +79,26 @@ You can view logs for an application running in a container.
 Using a debugger speeds up application troubleshooting.
 
 You can attach a debugger to an application running in a container.
+
+---
+Chapter 7
+Summary
+Podman Compose is an open source tool to run Compose files.
+
+Podman Compose removes the need to run the Podman service that provides the API socket, to save resources and to provide a more native and lightweight solution.
+
+Podman Compose translates Compose files into Podman CLI commands.
+
+The podman generate kube command generates a Kubernetes YAML file from existing Podman containers, pods, and volumes.
+
+The podman play kube command reads the Kubernetes YAML file, and then recreates the defined resources in a Kubernetes or an RHOCP cluster.
+
+You can use Podman Compose to quickly build a stateful, multi-container environment for your applications.
+
+You can restrict communication between specific containers by defining additional networks for the pod and then defining the network settings.
+
+You can use Podman Compose to approximate a production environment on your local machine by providing applications, databases, or cache systems configuration in a single file.
+
+You can use Podman Compose to execute your application and database containers in isolated local environments.
+
+Using Podman Compose in a production environment is not recommended, because it does not support advanced features that you might need in a production environment, such as load balancing and distributing containers to multiple host machines, or nodes. Instead, use Kubernetes or RHOCP for a production container orchestration solution.
