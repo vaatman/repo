@@ -7,13 +7,10 @@ Outcomes
 
 You should be able to:
 
-Manage local containers.
-
-Copy files in and out of containers.
-
-Run a set of application containers that connect to one another via a Podman network.
-
-Forward a port from a container so that it is accessible from the host machine.
+- Manage local containers.
+- Copy files in and out of containers.
+- Run a set of application containers that connect to one another via a Podman network.
+- Forward a port from a container so that it is accessible from the host machine.
 
 As the student user on the workstation machine, use the lab command to prepare your system for this exercise.
 
@@ -115,12 +112,9 @@ Use Podman to create and pull an image from a container registry.
 Outcomes
 
 You should be able to:
-
-Create a container image from a Containerfile by using Quay.
-
-Pull an image from the Quay container registry.
-
-Add a tag to a container image.
+- Create a container image from a Containerfile by using Quay.
+- Pull an image from the Quay container registry.
+- Add a tag to a container image.
 
 As the student user on the workstation machine, use the lab command to prepare your system for this exercise.
 
@@ -206,18 +200,12 @@ Complete the Containerfile for an application that generates a QR code from a gi
 Outcomes
 
 You should be able to:
-
-Understand multistage builds.
-
-Run commands within a container.
-
-Set environment variables.
-
-Set a working directory.
-
-Set an entry point.
-
-Change the user that executes commands.
+- Understand multistage builds.
+- Run commands within a container.
+- Set environment variables.
+- Set a working directory.
+- Set an entry point.
+- Change the user that executes commands.
 
 As the student user on the workstation machine, use the lab command to prepare your system for this exercise.
 
@@ -455,8 +443,10 @@ Lab: Persisting Data
 Use volumes to provide persistence to an application.
 
 Outcomes
-
-You should be able to create volumes, import data into volumes, and use volumes in an application.
+- You should be able to
+  - create volumes
+  - import data into volumes
+  - use volumes in an application
 
 This lab uses a URL shortener application, which consists of three components: a database container, a back-end container, and a front-end container.
 
@@ -604,16 +594,11 @@ Acts as a reverse proxy to route the UI requests to the version specified in the
 Outcomes
 
 You should be able to:
-
-Check container logs.
-
-Run container commands.
-
-Troubleshoot container networking problems.
-
-Configure containers by using environment variables.
-
-Configure containers by overriding container configuration files with host files.
+- Check container logs.
+- Run container commands.
+- Troubleshoot container networking problems.
+- Configure containers by using environment variables.
+- Configure containers by overriding container configuration files with host files.
 
 As the student user on the workstation machine, use the lab command to prepare your system for this exercise.
 
