@@ -102,3 +102,16 @@ You can use Podman Compose to approximate a production environment on your local
 You can use Podman Compose to execute your application and database containers in isolated local environments.
 
 Using Podman Compose in a production environment is not recommended, because it does not support advanced features that you might need in a production environment, such as load balancing and distributing containers to multiple host machines, or nodes. Instead, use Kubernetes or RHOCP for a production container orchestration solution.
+
+---
+Chapter 8
+Summeary
+Deploy applications by using the Red Hat OpenShift Container Platform (RHOCP) web console, or command-line utilities, such as kubectl or oc.
+
+The smallest unit of deployment for RHOCP is a pod, which represents a group of one or multiple containers that share resources.
+
+Use controller objects, such as Deployment, to create managed pods.
+
+Services provide a stable IP address and a resolvable DNS name for a pod or a set of pods.
+
+Routes expose an application outside of an RHOCP cluster.
