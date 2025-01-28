@@ -1,4 +1,4 @@
-Chapter 2
+--- Chapter 2
 
 Lab: Podman Basics
 Use Podman to manage local containers.
@@ -104,8 +104,7 @@ Press y when the lab start command prompts you to execute the finish function. A
 
 [student@workstation ~]$ lab finish basics-podman
 
----
-Chapter 3
+--- Chapter 3
 Lab: Container Images
 Use Podman to create and pull an image from a container registry.
 
@@ -192,8 +191,7 @@ Press y when the lab start command prompts you to execute the finish function. A
 
 [student@workstation ~]$ lab finish images-lab
 
----
-Chapter 4
+--- Chapter 4
 Lab: Custom Container Images
 Complete the Containerfile for an application that generates a QR code from a given text.
 
@@ -437,8 +435,7 @@ Press y when the lab start command prompts you to execute the finish function. A
 
 [student@workstation ~]$ lab finish custom-lab
 
----
-Chapter 5
+--- Chapter 5
 Lab: Persisting Data
 Use volumes to provide persistence to an application.
 
@@ -572,8 +569,7 @@ Press y when the lab start command prompts you to execute the finish function. A
 
 [student@workstation ~]$ lab finish persisting-lab
 
----
-Chapter 6
+--- Chapter 6
 Lab: Troubleshooting Containers
 Troubleshoot the quotes-api application.
 
