@@ -1,0 +1,81 @@
+.install dependencies
+$ sudo apt-get install -y build-essential git
+
+.remove libimobiledevice [and ifuse]
+$ sudo apt-get purge libimobiledevice6
+NOTE:
+The following packages will be REMOVED:
+  gvfs-backends* libgpod-common* libgpod4* libimobiledevice6* upower* usbmuxd* wmbattery* xfce4-power-manager* xfce4-power-manager-plugins*
+
+.install development packages discovered through trial and error.
+$ sudo apt-get install automake libtool pkg-config libplist-dev libplist++-dev python-dev libssl-dev libusb-1.0-0-dev libfuse-dev
+
+.set paths
+$ vi ~/.bashrc add:
+export PKG_CONFIG_PATH="${HOME}/usr/lib/pkgconfig:${PKG_CONFIG_PATH}"
+export CPATH="${HOME}/usr/include"
+export MANPATH="${HOME}/usr/share/man:${MANPATH}"
+export PATH="${HOME}/usr/bin:${PATH}"
+export LD_LIBRARY_PATH="${HOME}/usr/lib"
+
+.source
+$ . ~/.bashrc
+
+.clone the sources
+$ mkdir -p ~/usr/src
+$ cd ~/usr/src
+$ for x in libusbmuxd usbmuxd libimobiledevice ifuse; do git clone https://github.com/libimobiledevice/${x}.git;done
+
+.now build in order (the order matters):
+1. [libplist](https://github.com/libimobiledevice/libplist) (not required on Ubuntu 16.04)
+2. libusbmuxd
+3. libimobiledevice
+4. usbmuxd
+5. ifuse
+
+--libusbmuxd
+cd ~/usr/src/libusbmuxd
+./autogen.sh --prefix="$HOME/usr"
+make && make install
+
+--libimobiledevice
+cd ~/usr/src/libimobiledevice
+./autogen.sh --prefix="$HOME/usr"
+make && make install
+
+--usbmuxd [sudo required]
+cd ~/usr/src/usbmuxd
+./autogen.sh --prefix="$HOME/usr"
+make && sudo make install
+
+--ifuse
+cd ~/usr/src/ifuse
+./autogen.sh --prefix="$HOME/usr"
+make && make install
+
+.create mountpoint for iPhone
+$ mkdir ~/IPHONE
+
+.connect iPhone
+
+.attempt to mount
+$ idevicepair pair
+ERROR: Please accept the trust dialog on the screen of device 7491fd85ffa69e92f61d73569434785bec55dfab, then attempt to pair again.
+>>> tap on iPhone
+
+$ idevicepair pair
+SUCCESS: Paired with device 7491fd85ffa69e92f61d73569434785bec55dfab
+
+$ ifuse ~/IPHONE
+$ ls ~/IPHONE
+AirFair  CloudAssets                 DCIM       HighlandPark    PhotoData  PhotoStreamsData  Radio       Safari
+Books    com.apple.itunes.lock_sync  Downloads  iTunes_Control  Photos     Purchases         Recordings
+
+.unmount when finished
+$ fusermount -u ~/IPHONE
+
+.re-install wmbattery
+$ sudo apt-get install wmbattery
+	The following NEW packages will be installed:
+	 libimobiledevice6 upower usbmuxd wmbattery
+
