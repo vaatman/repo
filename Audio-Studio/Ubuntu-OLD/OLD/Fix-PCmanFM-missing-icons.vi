@@ -1,0 +1,4 @@
+1. sudo apt-get install tango-icon-theme*
+
+2. vi ~/.gtkrc-2.0
+	gtk-icon-theme="Tango"

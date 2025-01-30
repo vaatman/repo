@@ -1,0 +1,16 @@
+Install meterec on ubuntu 17.04
+===============================
+
+1. get source code
+ $ git clone git://git.code.sf.net/p/meterec/code meterec-code
+
+2. configure
+ $ cd meterec-code
+ $ ./autotool/autotool.sh
+ $ ./configure
+
+3. compile
+ $ make all
+
+4. install
+ $ sudo make install

@@ -1,0 +1,110 @@
++-------------------------------------------------------------------------------
+# DEBUGGING
+
+. start DBUS
+$ dbus-monitor "member=setValue"
+
+:it will show following:
+signal time=1519288544.077225 sender=org.freedesktop.DBus -> destination=:1.6 serial=2 path=/org/freedesktop/DBus; interface=org.freedesktop.DBus; member=NameAcquired
+   string ":1.6"
+signal time=1519288544.077288 sender=org.freedesktop.DBus -> destination=:1.6 serial=4 path=/org/freedesktop/DBus; interface=org.freedesktop.DBus; member=NameLost
+   string ":1.6"
+
++-------------------------------------------------------------------------------
+. start ffado-mixer [from Alt+F2]
+: the dbus-monitor will show:
+
+----- in ffado-mixer click Phantom Power OFF -----
+method call time=1519288576.293403 sender=:1.11 -> destination=:1.12 serial=1082 path=/org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 0
+----- in ffado-mixer click Phantom Power ON -----
+method call time=1519288584.974947 sender=:1.11 -> destination=:1.12 serial=1795 path=/org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 1
+
+----- in ffado-mixer click Channel 3 PAD [was ON [= -10dB], now turned OFF [= +4dB]] -----
+method call time=1519288600.976194 sender=:1.11 -> destination=:1.12 serial=3086 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN2Nominal; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 0
+
+----- in ffado-mixer click Channel 3 PAD [was OFF [= +4dB], now turned ON [= -10dB]] -----
+method call time=1519288601.819285 sender=:1.11 -> destination=:1.12 serial=3162 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN2Nominal; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 1
+
+----- in ffado-mixer click Channel 4 PAD [was ON [= -10dB], now turned OFF [= +4dB]] -----
+method call time=1519288607.067239 sender=:1.11 -> destination=:1.12 serial=3589 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN3Nominal; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 0
+----- in ffado-mixer click Channel 4 PAD [was OFF [= +4dB], now turned ON [= -10dB]] -----
+method call time=1519288608.170871 sender=:1.11 -> destination=:1.12 serial=3681 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN3Nominal; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 1
+
++-------------------------------------------------------------------------------
+----- in ffado-mixer mute ch3 on ch1output:
+method call time=1519291056.243092 sender=:1.46 -> destination=:1.47 serial=16303 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute; interface=org.ffado.Control.Element.MatrixMixer; member=setValue
+   int32 2
+   int32 0
+   double 1
+
+----- in ffado-mixer mute ch4 on ch2output:
+method call time=1519291069.077639 sender=:1.46 -> destination=:1.47 serial=17350 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute; interface=org.ffado.Control.Element.MatrixMixer; member=setValue
+   int32 3
+   int32 1
+   double 1
+
+----- in ffado-mixer UNmute ch3 on ch1output:
+method call time=1519291082.886140 sender=:1.46 -> destination=:1.47 serial=18478 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute; interface=org.ffado.Control.Element.MatrixMixer; member=setValue
+   int32 2
+   int32 0
+   double 0
+
+----- in ffado-mixer UNmute ch4 on ch2output:
+method call time=1519291093.512552 sender=:1.46 -> destination=:1.47 serial=19344 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute; interface=org.ffado.Control.Element.MatrixMixer; member=setValue
+   int32 3
+   int32 1
+   double 0
+
++-------------------------------------------------------------------------------
+
+# Commandline tools:
+
+1. 'ffado-dbus-server' daemon MUST be running
+$ ffado-dbus-server
+
+2a. enable P48 [int32:0 = OFF | int32:1 = ON]
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower org.ffado.Control.Element.Discrete.setValue int32:1
+
+2b. disable P48 [int32:0 = OFF | int32:1 = ON]
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower org.ffado.Control.Element.Discrete.setValue int32:0
+
+3a. activate PAD on CHANNEL.1 [set it to -10dB, note: it's IN0 from HW pov]:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN0Nominal org.ffado.Control.Element.Discrete.setValue int32:1
+
+3b. de-activate PAD on CHANNEL.1 [set it to =$dB, note: it's IN0 from HW pov]:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN0Nominal org.ffado.Control.Element.Discrete.setValue int32:0
+
+4a. activate PAD on CHANNEL.1-4 cmds:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN0Nominal org.ffado.Control.Element.Discrete.setValue int32:1
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN1Nominal org.ffado.Control.Element.Discrete.setValue int32:1
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN2Nominal org.ffado.Control.Element.Discrete.setValue int32:1
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN3Nominal org.ffado.Control.Element.Discrete.setValue int32:1
+
+4b. de-activate PAD on CHANNEL.1-4 cmds:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN0Nominal org.ffado.Control.Element.Discrete.setValue int32:0
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN1Nominal org.ffado.Control.Element.Discrete.setValue int32:0
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN2Nominal org.ffado.Control.Element.Discrete.setValue int32:0
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN3Nominal org.ffado.Control.Element.Discrete.setValue int32:0
+
+5a. mute CH4 on ch2 output:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:3 int32:1 double:1
+
+5b. UNmute CH4 on ch2 output:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:3 int32:1 double:0
+
+6a. mute CHANNEL1-4 on CH1-2 output:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:0 int32:1 double:1
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:1 int32:1 double:1
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:2 int32:1 double:1
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:3 int32:1 double:1
+6a. UNmute CHANNEL1-4 on CH1-2 output:
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:0 int32:1 double:0
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:1 int32:1 double:0
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:2 int32:1 double:0
+$ dbus-send --session --print-reply --dest=org.ffado.Control /org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/MonitorMute org.ffado.Control.Element.MatrixMixer.setValue int32:3 int32:1 double:0

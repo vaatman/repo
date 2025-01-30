@@ -1,0 +1,47 @@
+1. install git (if not yet present)
+
+2. download the source
+	$ git clone git://git.tuxfamily.org/gitroot/non/non.git
+
+3. read README.build
+	$ cd non
+	$ view README.build
+
+4. pull down latest NTK code required by NON
+	$ git submodule update --init
+
+5. build NTK
+	$ cd lib/ntk
+	$ ./waf configure
+	; first time this failed, check build/config.log
+		err: sys/stdtypes.h: No such file or directory
+		same for jpeg
+		$ sudo apt-get install libjpeg8-dev
+
+Fedora21:
+sudo yum install gcc gcc-c++ libX11-devel fontconfig-devel libXft-devel cairo-devel openjpeg-devel libjpeg-turbo-devel
+
+	$ ./waf configure
+	$ ./waf
+
+6. install NTK systemwide
+	$ sudo ./waf install
+
+7. build all projects
+	$ cd ../..
+	$ ./waf configure
+	; failed, [liblo|liliblrdf|libsigc++] needed
+		$ sudo apt-get install liblo-dev liblrdf0-dev libsigc++-2.0-dev
+		: ... read the dependencies
+
+Fedora21:
+sudo yum install non-ntk non-nt-devel jack-audio-connection-kit-devel liblo-devel libsndfile-devel libsndfile-utils ladspa-devel liblrdf-devel libsigc++20-devel
+
+	$ ./waf configure
+	$ ./waf
+	Waf: Leaving directory `/root/non/build'
+	'build' finished successfully (1m30.939s)
+
+8. install all projects
+	$ sudo ./waf install
+

@@ -1,0 +1,2 @@
+--- call a script:
+("TestShut", EXEC, "$HOME/bin/sure.sh %a(Shutdown,Shutdown now [y|n]?)"),

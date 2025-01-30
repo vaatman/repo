@@ -1,0 +1,11 @@
+1. install some dependencies:
+
+	# aptitude install liboggz2-dev libifp-dev libifp4 liblua5.1-dev
+
+2. download aqualung from 14.04 repo:
+
+	# wget archive.ubuntu.com/ubuntu/pool/universe/a/aqualung/aqualung_0.9~beta11-2_i386.deb
+
+3. install this version of aqualung:
+
+	# dpkg -i aqualung_0.9~beta11-2_i386.deb

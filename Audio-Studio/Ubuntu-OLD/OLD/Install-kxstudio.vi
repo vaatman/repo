@@ -1,0 +1,9 @@
+1. apt-get install software-properties-common wget
+
+2. sudo apt-add-repository ppa:kxstudio-debian/kxstudio
+
+3. sudo apt-get update
+
+4. apt-get install kxstudio-repos
+
+5. sudo apt-get update

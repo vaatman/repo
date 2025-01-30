@@ -1,0 +1,48 @@
+1. rip dvd to .mkv with 'handbrake'
+
+File> /dev/sr0 - <movie>
+
+Select Destination
+
+TAB Video: @Video Encoder: MPEG-2 (FFmpeg), QP:4
+
+Click 'Picture Settings' > @Anamorphic: Off
+
+Start
+
+1a. to rip encrypted dvd's
+
+	- install DeCSS library
+	# /usr/share/doc/libdvdread4/install-css.sh
+
+	- start handbrake
+	- open device '/dev/sr0' (NOT the movie)
+
+
+2. in avidemux convert to avi
+
+open .mkv file
+
+@Video:
+ MPEG-4ASP (Xvid)
+ Configure:
+	@Main: Two Pass - Video Size - TargetSize 500MB
+	@Quantization: type: MPEG
+	OK
+ Filters:
+	add MPlayer resize
+	Source: 16:9
+	Destination: 16:9
+	v 16 round up
+	set slide to 60 so:
+	width=608
+	Close
+
+@Audio:
+ MP3 (lame)
+
+@Format:
+AVI
+
+Save
+<movie>.avi

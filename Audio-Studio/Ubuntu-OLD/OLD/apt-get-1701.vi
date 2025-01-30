@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# extra pkgs for 17.04, installed as Xubuntu minimal with audio stuff
+
+apt-get install \
+	aptitude icewm icewm-common gmrun \
+	wicd-gtk wpagui ethtool \
+	jack-mixer soundconverter \
+	wodim icedax cue2toc cuetools devede k3b \
+	alsamixergui jaaa japa jnoisemeter \
+	zita-bls1 wavbreaker \
+	libreoffice-writer libreoffice-calc abiword mirage scribus mousepad \
+	evince flashplugin-installer \
+	filezilla pcmanfm lxrandr\
+	ufraw ufraw-batch rawtherapee scrot \
+	kino openshot shotwell coriander ristretto handbrake vlc \
+	indicator-cpufreq bchunk pwgen git \
+	libmodplug-dev \
+	libfreetype6-dev libclthreads-dev libclxclient-dev libcairo2-dev libasound2-dev \
+	libncurses5-dev libconfig-dev libsndfile1-dev \
+	libavc1394-dev libavc1394-tools libraw1394-dev libraw1394-tools \
+	libjpeg8-dev liblo-dev liblrdf0-dev libsigc++-2.0-dev

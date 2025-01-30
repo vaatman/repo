@@ -1,0 +1,6 @@
+Original (YT) Video plays too fast
+==================================
+
+hennie@d430:~/dwhelper$ mencoder Downton\ Abbey\ Season\ 5\ Episode\ 9\ Christmas\ Special.mp4 -speed 0.9 -ovc lavc -oac pcm -o tt.avi
+
+-speed 0.9 == 90%

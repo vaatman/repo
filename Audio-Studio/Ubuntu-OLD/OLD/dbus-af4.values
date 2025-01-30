@@ -1,0 +1,27 @@
+pad3
+ON:
+method call sender=:1.23 -> dest=:1.24 serial=2807 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN2Nominal; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 1
+OFF:
+method call sender=:1.23 -> dest=:1.24 serial=3014 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN2Nominal; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 0
+
+pad4
+ON:
+method call sender=:1.23 -> dest=:1.24 serial=3587 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN3Nominal; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 1
+OFF:
+method call sender=:1.23 -> dest=:1.24 serial=3680 path=/org/ffado/Control/DeviceManager/00148607d99bc435/Mixer/IN3Nominal; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 0
+
+p48
+ON:
+method call sender=:1.23 -> dest=:1.24 serial=4588 path=/org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 1
+OFF:
+method call sender=:1.23 -> dest=:1.24 serial=4876 path=/org/ffado/Control/DeviceManager/00148607d99bc435/PhantomPower; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 0
+
+save settings:
+method call sender=:1.5 -> dest=:1.0 serial=3474 path=/org/ffado/Control/DeviceManager/00148607d99bc435/SaveSettings; interface=org.ffado.Control.Element.Discrete; member=setValue
+   int32 1
