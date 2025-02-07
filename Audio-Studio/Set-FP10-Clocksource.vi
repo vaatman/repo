@@ -1,0 +1,33 @@
+1. List devices
+	# ffado-test -v3 ListDevices
+
+=== 1394 PORT 0 ===
+  Node id  GUID                  VendorId     ModelId   Vendor - Model
+   0       0x000a9200c9030142  0x00000A92  0x00010066   Presonus  - PreSonus FP10
+   1       0xd100000000003200  0x00D10000  0x00000000   Linux Firewire -
+=== 1394 PORT 1 ===
+  Node id  GUID                  VendorId     ModelId   Vendor - Model
+   0       0x354fc00021e51090  0x00354FC0  0x00000000   Linux Firewire -
+no message buffer overruns
+
+
+2. Set clock to INTERNAL (31) or S/PDIF (37)
+	# ffado-test -v3 -n 0 SetClockSource 31
+
+Type: Compound Syt Match, Id: 32, Valid: 1, Active: 0, Description: Syt Match
+ Type: Internal          , Id: 31, Valid: 1, Active: 0, Description: Internal (CSP)
+ Type: SPDIF             , Id: 37, Valid: 1, Active: 1, Description: Ext SPDIF Input
+  set clock source to 31
+no message buffer overruns
+
+	or
+
+	# ffado-test -v3 -n 0 SetClockSource 37
+
+ Type: Compound Syt Match, Id: 32, Valid: 1, Active: 0, Description: Syt Match
+ Type: Internal          , Id: 31, Valid: 1, Active: 1, Description: Internal (CSP)
+ Type: SPDIF             , Id: 37, Valid: 1, Active: 0, Description: Ext SPDIF Input
+  set clock source to 37
+no message buffer overruns
+
+	: omit the [31|37] to display current value

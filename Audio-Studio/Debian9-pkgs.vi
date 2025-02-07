@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# extra pkgs for Debian9
+
+sudo apt-get install \
+	apt-transport-https software-properties-common wget \
+	aptitude apt-file icewm icewm-common gmrun \
+	xterm rsync git \
+	wmaker wmaker-data wmaker-common wmbattery wmcalclock \
+	wicd-gtk wpagui ethtool \
+	qjackctl patchage \
+	ffado-dbus-server ffado-mixer-qt4 ffado-tools \
+	sox lame jack-mixer soundconverter calf-plugins wavbreaker \
+	wodim icedax cue2toc cuetools devede k3b \
+	alsamixergui jaaa japa jnoisemeter jkmeter meterbridge\
+	zita-mu1 zita-rev1 zita-bls1 wavbreaker asunder \
+	totem spek audacity ardour \
+	libreoffice-writer libreoffice-calc abiword mousepad \
+	mirage scribus inkscape \
+	evince \
+	filezilla pcmanfm lxrandr\
+	ufraw ufraw-batch rawtherapee scrot \
+	kino openshot shotwell coriander ristretto handbrake vlc \
+	dosbox bchunk pwgen \
+	libmodplug-dev \
+	libfreetype6-dev libclthreads-dev libclxclient-dev libcairo2-dev libasound2-dev \
+	libncurses5-dev libconfig-dev libsndfile1-dev \
+	libavc1394-dev libavc1394-tools libraw1394-dev libraw1394-tools \
+	liblo-dev liblrdf0-dev libsigc++-2.0-dev

@@ -1,0 +1,16 @@
+Install Postfish on ubuntu 17.04
+================================
+
+. install dependencies
+	$ sudo apt-get install subversion fftw3-dev libgtk2.0-dev libao-dev
+
+. get postfish source
+	$ cd ~/src
+	$ svn co http://svn.xiph.org/trunk/postfish postfish
+
+. compile
+	$ cd postfish
+	$ make
+
+. install
+	$ sudo make install

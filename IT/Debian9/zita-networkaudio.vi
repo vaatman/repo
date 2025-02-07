@@ -1,0 +1,28 @@
+--- PREPARE
+. connect fw devices on pc
+. connect rj45 cross to laptop
+. boot pc
+. set network
+	static 192.168.10.10/24
+
+. connect laptop echo2, speakers etc.
+. boot laptop
+. set network
+	static 192.168.10.20/24
+
+--- NETWORK
+. start sender on pc
+	# zita-j2n --chann 1-16 <!!receiver ip!!> <port>
+	# zita-j2n --chann 1-16 192.168.10.20 5500
+. connect fw inputs to zita-j2n outputs
+
+. start receiver on laptop
+	# zita-n2j --chan 24 <receiver ip> <port>
+	# zita-j2n --chann 24 192.168.10.20 5500
+	. optionally specify a higher buffer
+	# zita-n2j --buf 30 --chan 1-16 192.168.10.20 5500
+. connect zita-j2n inputs to playback outputs
+
+. status:
+	.it did work
+	.quite some pops and click on receiver

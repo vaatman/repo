@@ -1,0 +1,35 @@
+Install postfish tool
+=====================
+
+1. install dependencies
+	$ sudo apt-get install subversion fftw3-dev libao-dev
+
+1a. install libao from xiph
+	$ wget http://downloads.xiph.org/releases/ao/libao-1.2.0.tar.gz
+	$ cd src
+	$ tar zxvf libao-1.2.0-tar.gz
+	$ cd libao-1.2.0
+	$ ./configure
+	$ make 
+	$ sudo make install
+
+2. check out source
+	$ svn co http://svn.xiph.org/trunk/postfish postfish
+
+3. compile
+	$ cd postfish
+	$ make
+
+4. install
+	$ sudo make install
+
+=== Tips & Tricks ===
+
+:- MidSide decoding
+1. click 'Attn//Mix' channels 1 and 2 [windows pop up]
+2. click ch1. to 'master' and '1' AND 'master' and '2'  [so: MID goes to ch1&2 - mono]
+3. click ch2. to 'master' and '1' AND 'master'+'invert source' and '2'  [so: SIDE goes to ch1&2 - outofphase]
+
+:- Save mix
+$ postfish [infile] > [outfile]
+	: this opens the postfish, then press 'play' (space) to dump [well, play rather] to file

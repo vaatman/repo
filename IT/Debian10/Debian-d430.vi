@@ -1,0 +1,9 @@
+sudo apt-get install xterm rsync \
+	xauth xinit icewm icewm-common \
+	jkmeter jnoisemeter japa jaaa meterbridge \
+	qjackctl patchage totem \
+	alsamixergui ffado-mixer-qt4 \
+	zita-at1 zita-rev1 zita-bls1 zita-mu1 \
+	soundconverter sox \
+	jamin jack-mixer \
+	gcc sysstat

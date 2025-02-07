@@ -1,0 +1,67 @@
+Install libraries to enable connection to iOS9+/iPhone5+ on linux
+=================================================================
+
+source: https://gist.github.com/samrocketman/70dff6ebb18004fc37dc5e33c259a0fc
+
+1. install build tools
+ $ sudo apt-get install -y build-essential git
+
+2. Build libimobiledevice and ifuse from HEAD
+ $ sudo apt-get install automake libtool pkg-config libplist-dev libplist++-dev python-dev libssl-dev libusb-1.0-0-dev libfuse-dev
+
+3. Clone the sources.
+ $ cd ~/src
+ $ for x in libusbmuxd usbmuxd libimobiledevice ifuse; do git clone https://github.com/libimobiledevice/${x}.git;done
+
+4. Now build in order (the order matters):
+If you have a system package installed which is in the above list then I recommend uninstalling it.
+
+ $ sudo apt-get purge libusbmuxd4 
+
+Build libusbmuxd
+
+cd ../libusbmuxd
+./autogen.sh --prefix="$HOME/usr"
+make && make install
+
+Build libimobiledevice
+
+cd ../libimobiledevice
+./autogen.sh --prefix="$HOME/usr"
+make && make install
+
+Build usbmuxd
+
+Unfortunately, sudo make install is required because it needs to write to /lib/udev/rules.d and /lib/systemd/system.
+
+cd ../usbmuxd
+./autogen.sh --prefix="$HOME/usr"
+make && sudo make install
+
+Build ifuse
+
+cd ../ifuse
+./autogen.sh --prefix="$HOME/usr"
+make && make install
+
+5. Connect iPhone
+
+Connect your iPhone, select to trust this computer.
+Create a mount point and verify the paths of the tools before executing.
+
+$ mkdir -p ~/IPHONE
+
+Now attempt to mount using ifuse.
+
+$ idevicepair pair
+SUCCESS: Paired with device 37b633350ab83dc815a6a97dcd6d327b12c41968
+
+$ ifuse ~/IPHONE
+
+$ ls ~/IPHONE
+AirFair  Books  CloudAssets  DCIM  Downloads  FactoryLogs  iTunes_Control  MediaAnalysis  PhotoData  Photos  PhotoStreamsData  PublicStaging  Purchases  Radio  Recordings  Safari  Vibrations
+
+When you're finished. Unmount ~/IPHONE using fusermount. For example,
+
+$ fusermount -u ~/IPHONE
+

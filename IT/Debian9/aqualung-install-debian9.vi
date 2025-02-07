@@ -1,0 +1,42 @@
+We wants AQUALUNG as media player on Debian9
+============================================
+
+: some dev stuff was already installed for other programs
+
+. add non-free repos for apt if not enabled on systeminstallation:
+	$ sudo vi /etc/apt/sources.list
+	add:
+	# HV: added for aqualung [needs libfaac = non-free]
+	deb http://deb.debian.org/debian stretch contrib non-free
+	deb-src http://deb.debian.org/debian stretch contrib non-free
+	deb http://deb.debian.org/debian stretch-updates contrib non-free
+	deb-src http://deb.debian.org/debian stretch-updates contrib non-free
+	deb http://security.debian.org/debian-security/ stretch/updates contrib non-free
+	deb-src http://security.debian.org/debian-security/ stretch/updates contrib non-free
+
+	:first two lines may already be present [for firmware-iwlwifi]
+
+1. download source
+ $ cd src
+ $ git clone git://github.com/jeremyevans/aqualung.git
+
+2. install dependencies
+ : enable contrib and non-free repos in /etc/apt/sources.list, see above
+ : [just appending 'contrib non-free' to each 'main' line will do]
+
+ $ sudo apt-get install libxml2-dev libglib2.0-dev libgtk2.0-dev libsndfile1-dev libavcodec-dev libavcodec-extra libmp3lame-dev libtwolame-dev libmpg123-dev mpg123 mpg321 mpgtx libfaac0 libfaac-dev libasound2-dev libjack-jackd2-dev libpulse-dev libsamplerate0-dev libavformat-dev libmad0-dev liblrdf0-dev swh-plugins bs2b-ladspa libmodplug-dev
+
+3. configure
+ $ cd aqualung
+ $ ./autogen.sh
+ $ ./configure --with-jack --with-alsa --with-pulse --with-src --with-lavc --with-mpeg --with-ladspa --with-mod
+
+4. compile
+ $ make
+
+5. test
+ $ src/aqualung
+ :note that buttons are crap when running from src dir
+
+6. install
+ $ sudo make install
