@@ -1,0 +1,71 @@
+Chapter 9.  Comprehensive Review
+Objectives
+After completing this section, you should have reviewed and refreshed the knowledge and skills that you learned in Red Hat OpenShift Development I: Introduction to Containers with Podman.
+
+Reviewing Red Hat OpenShift Development I: Introduction to Containers with Podman
+Before beginning the comprehensive review for this course, you should be comfortable with the topics covered in each chapter. Do not hesitate to ask the instructor for extra guidance or clarification on these topics.
+
+Chapter 1, Introduction and Overview of Containers
+Describe how containers facilitate application development.
+
+Describe the basics of containers and how containers differ from Virtual Machines.
+
+Describe container orchestration and the features of Red Hat OpenShift.
+
+Chapter 2, Podman Basics
+Manage and run containers with Podman.
+
+Run a containerized service with Podman.
+
+Describe how containers communicate with each other.
+
+Expose ports to access containerized services.
+
+Explore running containers.
+
+List, stop, and delete containers with Podman.
+
+Chapter 3, Container Images
+Navigate container registries to find and manage container images.
+
+Navigate container registries.
+
+Pull and manage container images.
+
+Chapter 4, Custom Container Images
+Build custom container images to containerize applications.
+
+Create a Containerfile by using basic commands.
+
+Create a Containerfile that uses best practices.
+
+Run rootless containers with Podman.
+
+Chapter 5, Persisting Data
+Run database containers with persistence.
+
+Describe the process for mounting volumes and common use cases.
+
+Build containerized databases.
+
+Chapter 6, Troubleshooting Containers
+Analyze container logs and configure a remote debugger.
+
+Read container logs and troubleshoot common container problems.
+
+Configure a remote debugger during application development.
+
+Chapter 7, Multi-container Applications with Compose
+Run multi-container applications with Podman Compose.
+
+Describe compose and its common use cases.
+
+Configure a repeatable developer environment with Compose.
+
+Chapter 8, Container Orchestration with OpenShift and Kubernetes
+Orchestrate containerized applications with Kubernetes and OpenShift.
+
+Deploy an application in OpenShift.
+
+Deploy a multi-pod application to OpenShift and make it externally available.
+
