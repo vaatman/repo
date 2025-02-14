@@ -1,0 +1,227 @@
+Lab: Comprehensive Review
+Deploy a social media application consisting of multiple containerized components:
+
+A PostgreSQL database
+
+A Spring Boot API
+
+A React UI hosted with NGINX
+
+Use what you have learned throughout this course to create and start a set of containers that host the application and its resources. The Beeper application consists of a UI and an API. The API uses a PostgreSQL database to persist user messages.
+
+Outcomes
+
+You should be able to:
+
+Run a container from a public image.
+
+Manage a container's lifecycle.
+
+Build efficient container images.
+
+Create and publish container images.
+
+Manage container communication and Podman networking.
+
+Troubleshoot containers.
+
+Use container storage.
+
+As the student user on the workstation machine, use the lab start command to prepare your system for this exercise.
+
+This command copies the application source code to the workstation and checks that Podman has access to the required images.
+
+The lab script continuously evaluates the objectives of this lab. Keep the script running in a terminal window, and complete the objectives of this lab from a new terminal window.
+
+After each objective, return to the lab script evaluation to see if you have finished the objective successfully. When you finish the objectives, the lab command prompts you to execute the finish function.
+
+[student@workstation ~]$ lab start comprehensive-review
+The script copies applications and related files into the ~/DO188/labs/comprehensive-review/ directory.
+
+Specifications
+
+Create two Podman networks called beeper-backend and beeper-frontend that have DNS enabled.
+
+Create a PostgreSQL database container that matches the following criteria:
+
+Use the registry.ocp4.example.com:8443/rhel9/postgresql-13:1 container image.
+
+Use beeper-db for the name of the container.
+
+Connect the container to the beeper-backend network.
+
+Attach a new volume called beeper-data to the /var/lib/pgsql/data directory in the container.
+
+Pass the following environment variables to the container:
+
+Name: POSTGRESQL_USER, value: beeper
+
+Name: POSTGRESQL_PASSWORD, value: beeper123
+
+Name: POSTGRESQL_DATABASE, value: beeper
+
+Create a container image for the Beeper API that matches the following criteria:
+
+Use a multi-stage build with a builder image to compile the Java application.
+
+The build stage should perform the following actions:
+
+Use the registry.ocp4.example.com:8443/ubi8/openjdk-17:1.12 container image. This image uses /home/jboss as the working directory.
+
+Copy the contents of the ~/DO188/labs/comprehensive-review/beeper-backend host directory to the image's working directory. Change the owner to the jboss user.
+
+Use the mvn -s settings.xml package command to create the /home/jboss/target/beeper-1.0.0.jar binary file.
+
+The execution stage should perform the following actions:
+
+Use the container image registry.ocp4.example.com:8443/ubi8/openjdk-17-runtime:1.12.
+
+Copy the beeper-1.0.0.jar binary file from the builder image to the working directory of the final image.
+
+Run the java -jar beeper-1.0.0.jar command to start the Beeper API.
+
+Tag the image with beeper-api:v1.
+
+Create a container for the Beeper API that matches the following criteria:
+
+Use the beeper-api:v1 image that you created.
+
+Use beeper-api for the name of the container.
+
+Pass an environment variable to the container called DB_HOST with beeper-db as the value.
+
+Connect the container to the beeper-backend and beeper-frontend networks.
+
+Create a container image for the Beeper UI that matches the following criteria:
+
+Use a multi-stage build with a builder image to compile the TypeScript React application.
+
+The build stage should perform the following actions:
+
+Use the registry.ocp4.example.com:8443/ubi9/nodejs-18:1 container image. This image uses /opt/app-root/src as the working directory.
+
+Set root as the user.
+
+Copy the contents of the ~/DO188/labs/comprehensive-review/beeper-ui host directory into the image's working directory.
+
+Run the npm install command in the application directory to install build dependencies within the image.
+
+Run the npm run build command in the application directory to build the application. This command saves the built artifacts in the /opt/app-root/src/dist directory.
+
+The execution stage should perform the following actions:
+
+Use the registry.ocp4.example.com:8443/ubi8/nginx-118:1 container image.
+
+Copy the ~/DO188/labs/comprehensive-review/beeper-ui/nginx.conf host file into the /etc/nginx/ directory of the execution stage.
+
+Copy the built application artifacts from the builder stage into the /usr/share/nginx/html directory of the execution stage.
+
+Use the nginx -g "daemon off;" command to start the application.
+
+Tag the image with beeper-ui:v1.
+
+Create a container for the Beeper UI that matches the following criteria:
+
+Use the beeper-ui:v1 image that you created.
+
+Use beeper-ui for the container name.
+
+Map container port 8080 to host port 8080.
+
+Connect the container to the beeper-frontend network.
+
+With the three containers running and configured correctly, the UI is available at http://localhost:8080.
+
+Click New Beep to create a message that is persisted after restarting or recreating the containers.
+
+Create the beeper-backend and beeper-frontend Podman networks.
+
+Create the beeper-backend Podman network.
+
+[student@workstation ~]$ podman network create beeper-backend
+beeper-backend
+Create the beeper-frontend Podman network.
+
+[student@workstation ~]$ podman network create beeper-frontend
+beeper-frontend
+Create the database container with an attached volume for persistence.
+
+Create the beeper-data volume.
+
+[student@workstation ~]$ podman volume create beeper-data
+beeper-data
+Create the PostgreSQL container with beeper-db as the name. Mount the beeper-data volume to the /var/lib/pgsql/data directory in the container.
+
+[student@workstation ~]$ podman run -d --name beeper-db \
+-e POSTGRESQL_USER=beeper \
+-e POSTGRESQL_PASSWORD=beeper123 \
+-e POSTGRESQL_DATABASE=beeper \
+-v beeper-data:/var/lib/pgsql/data --net beeper-backend \
+registry.ocp4.example.com:8443/rhel9/postgresql-13:1
+...output omitted...
+611...f27
+Create a container for the Beeper API by using a custom Containerfile. The application is available at the ~/DO188/labs/comprehensive-review/beeper-backend directory.
+
+Navigate to the application directory.
+
+[student@workstation ~]$ cd ~/DO188/labs/comprehensive-review/beeper-backend
+Create a Containerfile file with the following contents:
+
+FROM registry.ocp4.example.com:8443/ubi8/openjdk-17:1.12 as builder
+COPY --chown=jboss . .
+RUN mvn -s settings.xml package
+
+FROM registry.ocp4.example.com:8443/ubi8/openjdk-17-runtime:1.12
+COPY --from=builder /home/jboss/target/beeper-1.0.0.jar .
+ENTRYPOINT ["java", "-jar", "beeper-1.0.0.jar"]
+Build a container image for the API and use beeper-api:v1 as the tag.
+
+[student@workstation beeper-backend]$ podman build -t beeper-api:v1 .
+...output omitted...
+Successfully tagged localhost/beeper-api:v1
+28d...d95
+Create a container that matches the specifications for the Beeper API by using the tag built in the previous step.
+
+[student@workstation beeper-backend]$ podman run -d \
+--name beeper-api --net beeper-backend,beeper-frontend \
+-e DB_HOST=beeper-db beeper-api:v1
+ab4...2ef
+Create a container for the Beeper UI by using a custom Containerfile. The application is available at the ~/DO188/labs/comprehensive-review/beeper-ui directory.
+
+Navigate to the application directory.
+
+[student@workstation beeper-backend]$ cd \
+~/DO188/labs/comprehensive-review/beeper-ui
+Create a Containerfile file with the following contents:
+
+FROM registry.ocp4.example.com:8443/ubi9/nodejs-18:1 AS builder
+USER root
+COPY . .
+RUN npm install && \
+    npm run build
+
+FROM registry.ocp4.example.com:8443/ubi8/nginx-118:1
+COPY nginx.conf /etc/nginx/
+COPY --from=builder /opt/app-root/src/dist /usr/share/nginx/html
+CMD nginx -g "daemon off;"
+Build a container image for the UI and use beeper-ui:v1 as the tag.
+
+[student@workstation beeper-ui]$ podman build -t beeper-ui:v1 .
+...output omitted...
+Successfully tagged localhost/beeper-ui:v1
+7fd...ee1
+Create a container that matches the specifications for the UI by using the tag built in the previous step.
+
+[student@workstation beeper-ui]$ podman run -d \
+--name beeper-ui --net beeper-frontend \
+-p 8080:8080 beeper-ui:v1
+620...a5c
+Optionally, access the UI by using a web browser to navigate to http://localhost:8080. The UI shows the list of user-created messages. To create a new message, click New Beep.
+
+Finish
+
+As the student user on the workstation machine, use the lab command to complete this exercise. This is important to ensure that resources from previous exercises do not impact upcoming exercises.
+
+Press y when the lab start command prompts you to execute the finish function. Alternatively, execute the following command:
+
+[student@workstation ~]$ lab finish comprehensive-review
