@@ -1,0 +1,15 @@
+1. Download firmware
+
+2. unzip firmware
+  $ mkdir <name>
+  $ cd $_
+  $ unzip ../Downloads/<firmware> -d .
+
+3. look at it with binwalk
+  $ binwalk <firwmare>
+
+4. extract what you need
+  $ dd if=DR-100MK3_088.109 skip=1798174 of=tt bs=1
+419842+0 records in
+419842+0 records out
+
