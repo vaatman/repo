@@ -19,6 +19,14 @@ Extract audio up to a certain track (#7) in separate files:
 
 BURN ---------------------------------------------------------------------------
 
+Create .toc
+CD_DA
+
+TRACK AUDIO
+FILE "01.wav" 0
+TRACK AUDIO
+FILE "02.wav" 0
+
 Burn audio CD in the external USB Plexwriter:
 	# cdrdao write --device /dev/sr1 ardour-cdexport-01.toc 
 Batchmode:
