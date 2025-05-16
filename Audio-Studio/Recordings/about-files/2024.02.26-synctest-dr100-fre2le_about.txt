@@ -1,0 +1,4 @@
+dr100mk3: 	sm200.4&5		gain: +12dB
+fr2le-001:	sm200.1&2		trim+level 12:00
+fr2le-002:	sm200.3&6 [=primo258]	trim+level 12:00
+

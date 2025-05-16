@@ -1,0 +1,5 @@
+se8 omnis 37cm AB =-70gr hoek bij pilaar gericht op orgel
+dr100 +6dB gain
+
+ambeo op col om nek
+reduce level

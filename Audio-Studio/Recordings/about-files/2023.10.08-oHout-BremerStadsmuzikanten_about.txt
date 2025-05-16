@@ -1,0 +1,7 @@
+MRP01 in 88MS
+
+7m hoog
+- mv100 +40dB
+- DR100mk3 LineIN +12dB
+- dual ADC ON
+- A/D FIR2

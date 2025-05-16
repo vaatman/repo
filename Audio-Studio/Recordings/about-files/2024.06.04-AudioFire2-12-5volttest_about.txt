@@ -1,0 +1,9 @@
+dell E6500
+japa whitnoise -> AF4 L&R
+
+AF4 main outputs -> AF2 Inputs
+
+AF2 spdif out -> dr100mk3 spdif in
+
+240604_0010.wav == 12volt
+240604_0011.wav == 5volt
