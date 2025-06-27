@@ -4,3 +4,4 @@ sE8 omnis
 AB104
 DAVbg1 +32dB
 DR100mkiii Level 0
+max input around -16dB [Audacity]
