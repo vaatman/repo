@@ -1,0 +1,15 @@
+---
+- hosts: all
+  become: true
+  gather_facts: true
+
+  vars: []
+
+  tasks:
+    - name: First task
+      ansible.builtin.debug:
+        msg: "testing 123"
+    - name: Second task
+      ansible.builtin.copy:
+        src: /etc/issue
+        dest: /tmp
