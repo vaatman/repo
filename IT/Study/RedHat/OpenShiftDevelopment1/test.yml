@@ -13,3 +13,7 @@
       ansible.builtin.copy:
         src: /etc/issue
         dest: /tmp
+    - name: Third task
+      ansible.builtin.command: date
+      register: detijd
+
