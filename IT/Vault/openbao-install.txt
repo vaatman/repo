@@ -46,3 +46,48 @@ Install openbao on AlmaLinux9
   # bao login -method=token
   <initial root token>
   of via webUI
+
+11. create a Namespace
+  # bao namespace create ns-test01
+Key                Value
+---                -----
+custom_metadata    map[]
+id                 Mg5w5h
+locked             false
+path               ns-test01/
+tainted            false
+uuid               11c8ebe0-1c32-d34f-8092-c01192ad3152
+
+12. create an admin policy
+  # bao policy write -namespace=ns-test01 admin - <<EOF
+path "secret/secret001" {
+  capabilities = ["create", "update", "patch", "read", "delete"]
+}
+EOF
+Success! Uploaded policy: admin
+
+13. enable kv [key/value] secret engine
+# bao secrets enable -ns=ns-test01 kv
+Success! Enabled the kv secrets engine at: kv/
+
+14. write a secret
+  # bao kv put -namespace=ns-test01 /kv/secrets/blah blah=supersecretblah
+Success! Data written to: kv/secrets/blah
+
+15. get the secret
+  # bao kv get -namespace=ns-test01 /kv/secrets/blah
+==== Data ====
+Key     Value
+---     -----
+blah    supersecretblah
+
+16. list secrets in a path / engine
+  # bao kv list -namespace=ns-test01 /kv/secrets/
+Keys
+----
+blah
+  # bao kv list -namespace=ns-test01 /kv/
+Keys
+----
+secrets/
+
