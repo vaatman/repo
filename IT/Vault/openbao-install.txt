@@ -1,0 +1,48 @@
+Install openbao on AlmaLinux9
+=============================
+
+0. some preReqs
+  $ sudo dnf install tmux gitwget curl
+
+1. get rpm
+  : check https://openbao.org/downloads/
+  $ wget https://github.com/openbao/openbao/releases/download/v2.4.4/bao_2.4.4_linux_amd64.rpm
+
+2. install
+  # sudo rpm -ivh <RPM>
+
+3. check
+  # bao -h
+
+4. max swap setting for openbao
+  $ grep -i swap /usr/lib/systemd/system/openbao.service
+  MemorySwapMax=0
+
+5. configure setup
+  # cd /etc/openbao
+  # cp -p openbao.hcl{,.org}
+  # vi openbao.hcl
+    .uncomment HTTP listener section
+    .set:
+      address	= "0.0.0.0:8200"
+    .comment HTTPS listener section
+
+6. start openbao
+  # systecmtl start openbao
+
+7. create Shamir Keys and Root Token
+  # bao operator init
+  .save the keys
+
+8. unseal using the shamir keys
+  # bao operator unseal
+  <enter 1 shamir key>
+  .repeat twice with other key
+
+9. browse to webUI
+  http://almalinux01:8200/ui/vault/auth?with=token
+
+10. login
+  # bao login -method=token
+  <initial root token>
+  of via webUI
