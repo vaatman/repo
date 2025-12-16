@@ -1,0 +1,126 @@
+# 3-Node OpenBao Raft Cluster (NO TLS) – AlmaLinux 9
+
+## Important Warnings
+* Traffic (API + Raft) is **unencrypted**
+* Root token & secrets travel **in cleartext**
+* Anyone with network access can sniff credentials
+* **Never expose port 8200 publicly**
+
+## Assumptions
+
+| Node       | Hostname | IP              |
+| ---------- | -------- | --------------- |
+| almalinu01 | bao-1    | 192.168.121.9   |
+| almalinu02 | bao-2    | 192.168.121.41  |
+| almalinu03 | bao-3    | 192.168.121.156 |
+
+Ports:
+* 8200 API
+* 8201 Raft
+
+## 1. OS Prep (ALL NODES)
+$ sudo hostnamectl set-hostname bao-1   # adjust per node
+$ sudo dnf install -y chrony
+$ sudo systemctl enable --now chronyd
+
+### Firewall
+$ sudo firewall-cmd --permanent --add-port=8200/tcp
+$ sudo firewall-cmd --permanent --add-port=8201/tcp
+$ sudo firewall-cmd --reload
+
+## 2. Install OpenBao
+curl -fsSL https://openbao.org/install.sh | sudo bash
+HV: downloaded 2.4.4 rpm
+$ sudo dnf install -y openbao
+Verify:
+$ bao version
+
+## 3. SELinux (Required on AlmaLinux)
+### Recommended (safe)
+$ sudo semanage permissive -a openbao_t
+If missing:
+$ sudo dnf install -y policycoreutils-python-utils
+
+## 4. OpenBao Configuration (NO TLS)
+Create config:
+$ sudo vi /etc/openbao/openbao.hcl
+### openbao.hcl (Node 1 example)
+
+ui = true
+cluster_name = "openbao-dev"
+
+storage "raft" {
+  path    = "/opt/openbao/data"
+  node_id = "bao-1"   # CHANGE per node
+}
+
+listener "tcp" {
+  address         = "0.0.0.0:8200"
+  cluster_address = "0.0.0.0:8201"
+  tls_disable     = true
+}
+
+api_addr     = "http://192.168.121.9:8200"   # CHANGE per node
+cluster_addr = "http://192.168.121.9:8201"   # CHANGE per node
+
+## 5. Data Directory + Permissions
+$ sudo mkdir -p /opt/openbao/data
+$ sudo chown -R openbao:openbao /opt/openbao
+
+SELinux context:
+$ sudo semanage fcontext -a -t openbao_var_lib_t "/opt/openbao(/.*)?"
+$ sudo restorecon -Rv /opt/openbao
+
+## 6. Start OpenBao (ALL NODES)
+$ sudo systemctl enable openbao
+$ sudo systemctl start openbao
+
+Logs:
+# journalctl -u openbao -f
+
+## 7. Initialize Cluster (NODE 1 ONLY)
+
+export BAO_ADDR=http://192.168.121.9:8200
+
+# bao operator init \
+  -key-shares=5 \
+  -key-threshold=3
+
+! Save unseal keys & root token securely.
+
+## 8. Unseal Node 1
+
+# bao operator unseal
+# repeat until threshold met
+
+Login:
+
+# bao login -method=token
+<root-token>
+
+## 9. Join Node 2 and Node 3
+
+### Node 2
+
+$ export BAO_ADDR=http://192.168.121.41:8200
+$ bao operator raft join http://192.168.121.9:8200
+$ bao operator unseal
+
+### Node 3
+
+$ export BAO_ADDR=http://192.168.121.156:8200
+$ bao operator raft join http://192.168.121.9:8200
+$ bao operator unseal
+
+## 10. Verify Raft Cluster
+
+$ bao operator raft list-peers
+Expected:
+Node     Address              State      Voter
+bao-1    192.168.121.9:8201   leader     true
+bao-2    192.168.121.41:8201  follower   true
+bao-3    192.168.121.156:8201 follower   true
+
+## 11. UI Access (HTTP)
+
+Open in browser: http://192.168.121.9:8200/ui
