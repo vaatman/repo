@@ -1,0 +1,31 @@
+---
+- hosts: all
+  become: true
+
+  vars_files:
+    - vars/openbao-keys
+
+  vars:
+    openbao_api_url: "http://{{ inventory_hostname }}:8200"
+
+  tasks:
+    - name: Check openBao seal status
+      ansible.builtin.uri:
+        url: "{{ openbao_api_url }}/v1/sys/seal-status"
+        method: GET
+      register: seal_status
+
+    - name: Print seal status
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} seal status: {{ seal_status.json.sealed }}"
+
+    - name: Submit unseal shards
+      ansible.builtin.uri:
+        url: "{{ openbao_api_url }}/v1/sys/unseal"
+        method: POST
+        body_format: json
+        body:
+          key: "{{ item }}"
+      loop: "{{ openbao_unseal_keys }}"
+      when: seal_status.json.sealed | bool
+      no_log: true
