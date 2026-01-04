@@ -1,0 +1,197 @@
+Gitlab CI/CD - Udemy summarized
+-------------------------------
+
+11. GitLab CI - Stage vs Stages
+- stage:
+  - refers to a named group of jobs in a gitlab CI pipeline
+  - defines order and dependencies of job execution
+    eg. test runs after a build stage
+- stages:
+  - refers to an entire concept of dividing CI pipeline jobs into
+    named group of organized execution and dependency management
+	
+:: in short
+- stage defines a specific group
+- stages denotes the overall groups of jobs
+
+Default Stages
+- .pre
+- build
+- test
+- deploy
+- .post
+
+.pre	always the first stage, cannot be changed
+.post	always the last  stage, cannot be changed
+build/test/deploy	sequences can be changed
+
+
+HV: Very Simple Example:
+----- gitlab-ci-yml
+stages:
+  - test
+test_job:
+  stage: test
+  script:
+  - echo "Running tests..."
+  - ./tun_tests.sh
+----- end
+
+
+13. GitLab CI - Script
+- script:
+  - to specify the commands we want to execute [in the job]
+    - single line or multiple line
+  - can be expanded with before_script: and after_script stanzas
+    - run before/after script:
+	  - after: runs in seperate shell
+
+15. GitLab CI - Variables
+- allows you to define env.vars
+- set globally for a project
+- follow specific order of precedence:
+  - CI/CD variables override project-level variables
+  - project-level variables override group-level variables
+
+Pre-defined Variables:
+- set by Gitlab itself
+- provide information about:
+  - pipeline
+  - project
+  - runner
+  - and more ...
+  eg.:
+  - CI_JOB_NAME - name of current job
+  - CI_PIPELINE_ID - unique identifier of the current pipeline
+
+Secret Variables:
+- add CI/CD [secret] variables to the project settings
+- use maintainer role to add/update them
+- go to: Project's > Settings > CI/CD > Variables > Add variables
+  - use 'Masked' to hide the secret from displaying [=default]
+  
+  
+17. GitLab CI - only,except
+only: when a job runs
+except: when a job does not run
+- allow to control execution behavior of your job within the pipeline
+eg:
+stages:
+  - build
+  - test
+docker_build_job:
+  stage: build
+  only:
+    - main
+>>> job will only run if the branchname where this pipeline is committed is 'main'
+  except:
+    - main
+>>> if the branchname is NOT main, this job will run
+  [klopt dit wel???]
+
+18. GitLab CI - rules
+rules:
+  - way to control inclusion/exclusion of jobs in a pipeline
+  - based on conditions
+  - evaluated in the defined order
+  - until the first rule that matches
+eg:
+rules:
+  - exists('file.txt')
+  - changes('src/**/*'')
+  - $CI_COMMIT_BRANCH == "main"
+eg:
+docker_build_job:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+>>> job will only run if the branchname where this pipeline is committed is 'main'
+
+19. GitLab CI - timeout
+timeout: a value to configure a timeout for a specific job
+- if the job is running longer than the timeout, it will fail
+- job-level timeout can be longer than the project-level timeout
+- but it can NOT be longer than the runner's timeout
+eg:
+stages:
+  - test
+test_job:
+  stage: test
+  script:
+    - sleep 80
+  timeout: 10s
+>>> job will fail [timeout] after 10  seconds
+
+20. GitLab CI - when
+when: configure conditions for when the job will run
+- on_success [default]
+- manual [needs a 'play' button in th UI to be clicked] 
+- delayed
+- never
+- always
+- on_failure
+
+21. GitLab CI - needs
+needs: execute the jobs in any order
+- ignoring the default order of stages as defined
+- run any random job in another stage
+  - without waiting for previous stage jobs to get completed
+eg:
+stages:
+  - build
+  - test
+  - deploy
+build_job:
+  stage: build
+  needs: []
+  script:
+    - echo "Building the project ..."
+test_job:
+  stage: test
+  needs: ["build_job"]
+  script:
+    - echo "Running tests ..."
+deploy_job:
+  stage: deploy
+  when: manual
+  needs: []
+  script:
+    - echo "Deploying the project ..."
+>>> test_job will only be triggered once build_job is completed
+>>> by default the runner can trigger only 1 job a time [concurreny]
+  - here the 3 jobs will show up in the UI pipeline as:
+    - build_job:  [already] finished [green]
+	- test_job:   running [blue clock]
+	- deploy_job: pending [orange pause]
+
+22. GitLab CI - Concurrent Limits
+- allow to trigger for more than 1 jobs at at time
+> login to runner
+  - cd /etc/gitlab_runner
+  - edit config.toml
+      concurrent = 1
+	  > set to
+	  concurrent = 5
+  - restart gitlab runner
+    # gitlab-runner restart
+	# gitlab-runner status
+  >> re-run job from 21. will show all jobs in running state
+     - test_job is pending on build_job ofcourse
+	
+23. GitLab CI - includes
+includes: used in .gitlab-ci.yml to include external YAML files
+- helps modularizing th CI/CD config
+- helps reusing common settings or templates across multiple projects
+  include: local
+  include: project
+  include: remote
+  include: template
+eg:
+include:
+  - project: 'my-group/my-shared-configs'
+    file: '/path/to/shared-config.yml'
+stages:
+  - build
+job:
+  script:
+    - echo: Building the project ..."
