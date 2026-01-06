@@ -1,0 +1,48 @@
+Register the rigtlab runner
+===========================
+# from UI gitlab-runner register  --url https://alma9-01.local  --token glrt-KgSEG7rrSY03u6VJDzmB9W86MQp0OjEKdToyCw.01.121aa9z3p
+
+1. self-signed gitlab-server certs are trouble, do this:
+  .get cert from gitlab-server
+  # openssl s_client -connect alma9-01.local:443 </dev/null 2>/dev/null | sed -e '/-----BEGIN/,/-----END/!d' | sudo tee "$CERTIFICATE" > alma9-01.local.crt
+  .create dir for the cert
+  # mkdir /etc/gitlab-runner/certs
+  .copy the cert to the dir, inlude hostname in the filename
+  # cp gitlab.crt /etc/gitlab-runner/certs/alma9-01.local.crt
+  .test:
+  # echo|openssl s_client -CAfile /etc/gitlab-runner/certs/alma9-01.local.crt -connect alma9-01.local:443 -servername alma9-01.local:443
+  : for more info see: https://docs.gitlab.com/runner/configuration/tls-self-signed/
+
+2. register the runner:
+
+[root@alma9-02 ~]# gitlab-runner register
+Runtime platform                                    arch=amd64 os=linux pid=16613 revision=43b2dc3d version=15.4.0
+Running in system-mode.                            
+                                                   
+Enter the GitLab instance URL (for example, https://gitlab.com/):
+^C
+[root@alma9-02 ~]# gitlab-runner register  --url https://alma9-01.local  --token glrt-KgSEG7rrSY03u6VJDzmB9W86MQp0OjEKdToyCw.01.121aa9z3pRuntime platform                                    arch=amd64 os=linux pid=16619 revision=43b2dc3d version=15.4.0
+Running in system-mode.                            
+                                                   
+Enter the GitLab instance URL (for example, https://gitlab.com/):
+[https://alma9-01.local]: 
+Token specified trying to verify runner...         
+WARNING: If you want to register use the '-r' instead of '-t'. 
+Verifying runner... is alive                        runner=glrt-KgS
+Enter an executor: docker, parallels, shell, virtualbox, kubernetes, custom, docker-ssh, ssh, docker+machine, docker-ssh+machine:
+docker
+Enter the default Docker image (for example, ruby:2.7):
+alpine:latest
+Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+ 
+Configuration (with the authentication token) was saved in "/etc/gitlab-runner/config.toml" 
+
+3. ensure podman service running
+  # systemctl enable --now podman
+
+4. test with a .gitlab-ci.yml
+test-job01:
+  stage: test
+  script:
+    - echo "Hello World, this is pipeline attempt number 5"
+
