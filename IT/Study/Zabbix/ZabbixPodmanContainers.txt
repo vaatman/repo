@@ -1,9 +1,10 @@
 Working Installation Summary
 
-Zabbix Server 7.4 + PostgreSQL 15 + TimescaleDB + Podman on AlmaLinux 10
+Zabbix Server 7.4 + PostgreSQL 15 + TimescaleDB + Podman
+On AlmaLinux 10 in a Vagrant VM
 
---- 1️⃣ Host Preparation
-$ sudo dnf install -y podman podman-compose
+--- 1️⃣ Host Preparation [on the VM]
+# sudo dnf install -y podman podman-compose
 
 SELinux stays ENFORCING (no changes needed).
 
@@ -13,9 +14,7 @@ SELinux stays ENFORCING (no changes needed).
 # mkdir pgdata
 
 --- 3️⃣ Single Podman Compose File (Critical)
-
 One file, one network, service-name DNS
-
 Create docker-compose.yml:
 
 version: "3.9"
@@ -71,34 +70,28 @@ services:
     ports:
       - "8080:8080"
 
---- 4️⃣ Start PostgreSQL First (Clean Init)
+--- 4️⃣ Start PostgreSQL First (Clean Init) [on the VM]
 # podman compose down
 # rm -rf pgdata
 # podman compose up -d postgres
 
-
 Wait for:
-
 # podman logs zabbix_pg --tail=20
-
 database system is ready to accept connections
 
---- 5️⃣ Enable TimescaleDB (Before Schema)
+--- 5️⃣ Enable TimescaleDB (Before Schema) [on the VM]
 # podman exec -it zabbix_pg psql -U zabbix -d zabbix \
   -c "CREATE EXTENSION IF NOT EXISTS timescaledb;"
 
-
 Verify:
-
 # podman exec -it zabbix_pg psql -U zabbix -d zabbix \
   -c "SELECT extname FROM pg_extension;"
 
 --- 6️⃣ Import Zabbix 7.4 Schema (From Host)
 # curl -O https://cdn.zabbix.com/zabbix/sources/stable/7.4/zabbix-7.4.0.tar.gz
 # tar xzf zabbix-7.4.0.tar.gz
-
+  : lookup db password!
 # cd zabbix-7.4.0/database/postgresql
-
 # psql -h localhost -U zabbix -d zabbix -f schema.sql
 # psql -h localhost -U zabbix -d zabbix -f images.sql
 # psql -h localhost -U zabbix -d zabbix -f data.sql
@@ -107,24 +100,16 @@ Verify:
 # cd ~/zabbix7
 # podman compose up -d
 
-
 Check:
-
 # podman ps
 
-
 Expected:
-
 zabbix_pg
 zabbix_server
 zabbix_web
 
 --- 8️⃣ Access Zabbix
-
-Browser:
-
-http://<host-ip>:8080
-
+Browser: http://<host-ip>:8080
 
 Login:
 User	Password
