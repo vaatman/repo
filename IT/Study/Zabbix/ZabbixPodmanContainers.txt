@@ -7,10 +7,10 @@ $ sudo dnf install -y podman podman-compose
 
 SELinux stays ENFORCING (no changes needed).
 
---- 2️⃣ Directory Layout
-$ mkdir -p ~/zabbix7
-$ cd ~/zabbix7
-$ mkdir pgdata
+--- 2️⃣ Directory Layout [on the VM]
+# mkdir -p ~/zabbix7
+# cd ~/zabbix7
+# mkdir pgdata
 
 --- 3️⃣ Single Podman Compose File (Critical)
 
@@ -72,45 +72,45 @@ services:
       - "8080:8080"
 
 --- 4️⃣ Start PostgreSQL First (Clean Init)
-podman compose down
-rm -rf pgdata
-podman compose up -d postgres
+# podman compose down
+# rm -rf pgdata
+# podman compose up -d postgres
 
 
 Wait for:
 
-podman logs zabbix_pg --tail=20
+# podman logs zabbix_pg --tail=20
 
 database system is ready to accept connections
 
 --- 5️⃣ Enable TimescaleDB (Before Schema)
-podman exec -it zabbix_pg psql -U zabbix -d zabbix \
+# podman exec -it zabbix_pg psql -U zabbix -d zabbix \
   -c "CREATE EXTENSION IF NOT EXISTS timescaledb;"
 
 
 Verify:
 
-podman exec -it zabbix_pg psql -U zabbix -d zabbix \
+# podman exec -it zabbix_pg psql -U zabbix -d zabbix \
   -c "SELECT extname FROM pg_extension;"
 
 --- 6️⃣ Import Zabbix 7.4 Schema (From Host)
-curl -O https://cdn.zabbix.com/zabbix/sources/stable/7.4/zabbix-7.4.0.tar.gz
-tar xzf zabbix-7.4.0.tar.gz
+# curl -O https://cdn.zabbix.com/zabbix/sources/stable/7.4/zabbix-7.4.0.tar.gz
+# tar xzf zabbix-7.4.0.tar.gz
 
-cd zabbix-7.4.0/database/postgresql
+# cd zabbix-7.4.0/database/postgresql
 
-psql -h localhost -U zabbix -d zabbix -f schema.sql
-psql -h localhost -U zabbix -d zabbix -f images.sql
-psql -h localhost -U zabbix -d zabbix -f data.sql
+# psql -h localhost -U zabbix -d zabbix -f schema.sql
+# psql -h localhost -U zabbix -d zabbix -f images.sql
+# psql -h localhost -U zabbix -d zabbix -f data.sql
 
 --- 7️⃣ Start Zabbix Server + Web
-cd ~/zabbix7
-podman compose up -d
+# cd ~/zabbix7
+# podman compose up -d
 
 
 Check:
 
-podman ps
+# podman ps
 
 
 Expected:
@@ -127,11 +127,11 @@ http://<host-ip>:8080
 
 
 Login:
-
 User	Password
 Admin	zabbix
+
 --- 9️⃣ (Optional but Recommended) Convert to TimescaleDB Hypertables
-podman exec -it zabbix_pg psql -U zabbix -d zabbix
+# podman exec -it zabbix_pg psql -U zabbix -d zabbix
 
 SELECT create_hypertable('history', 'clock', migrate_data => true);
 SELECT create_hypertable('history_uint', 'clock', migrate_data => true);
@@ -141,32 +141,19 @@ SELECT create_hypertable('history_log', 'clock', migrate_data => true);
 SELECT create_hypertable('trends', 'clock', migrate_data => true);
 SELECT create_hypertable('trends_uint', 'clock', migrate_data => true);
 
-🔑 Key Lessons (Why This Worked)
+Key Lessons (Why This Worked):
+- Use TimescaleDB image, not vanilla PostgreSQL
+- Use valid Zabbix image tags (alpine-7.4-latest)
+- Use one compose file
+- Use service names for DB host (postgres)
+- Use SELinux :Z on volumes
+- Do NOT replace full postgresql.conf
+- Increase connections via -c max_connections
+- Enable TimescaleDB before schema import
 
-✔ Use TimescaleDB image, not vanilla PostgreSQL
-
-✔ Use valid Zabbix image tags (alpine-7.4-latest)
-
-✔ Use one compose file
-
-✔ Use service names for DB host (postgres)
-
-✔ Use SELinux :Z on volumes
-
-✔ Do NOT replace full postgresql.conf
-
-✔ Increase connections via -c max_connections
-
-✔ Enable TimescaleDB before schema import
-
-🎯 Final Result
-
-Zabbix Server 7.4 running
-
-PostgreSQL 15 + TimescaleDB enabled
-
-Stable startup
-
-No connection exhaustion
-
-AlmaLinux 10 + Podman compliant
+Final Result
+- Zabbix Server 7.4 running
+- PostgreSQL 15 + TimescaleDB enabled
+- Stable startup
+- No connection exhaustion
+- AlmaLinux 10 + Podman compliant
