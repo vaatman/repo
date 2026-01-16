@@ -6,10 +6,11 @@ Install Zabbix agent2 7.4 on Linux to Zabbix Server in container
 
 .Install Zabbix agent2 and plugins
   # cat rpms
-zabbix-agent2-plugin-postgresql-7.4.6-release1.el10.x86_64
-zabbix-agent2-plugin-mssql-7.4.6-release1.el10.x86_64
-zabbix-agent2-plugin-mongodb-7.4.6-release1.el10.x86_64
-zabbix-get-7.4.6-release1.el10.x86_64
+zabbix-agent2.x86_64
+zabbix-get
+zabbix-agent2-plugin-postgresql
+zabbix-agent2-plugin-mssql
+zabbix-agent2-plugin-mongodb
 
   # dnf install $(cat rpms)
 
