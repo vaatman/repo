@@ -1,0 +1,52 @@
+Monitor P1 meter values by Discovery Rules and Item prototypes
+==============================================================
+
+.Create a new Template for P1
+  Template name: Homewizard P1meter
+  Template groups: Templates
+  @Tags:
+    TemplateName: P1meter
+
+.Create [master] item under the template
+  Name: Get full API
+  Type: HTTP agent
+  Key: p1meter.json
+  Type: Text
+  URL: http://192.168.178.38/api/v1/data
+ 
+.Create Discovery rule under the template
+  Name: Get full P1 API data
+  Type: Dependent item
+  Key: p1meter.discovery
+  Master item: Homewizard P1mater: Get full API
+  @Preprocessing:
+    Preprocessing steps:
+      1. JavaScript
+var data = JSON.parse(value);
+var result = [];
+
+for (var key in data) {
+    if (!data.hasOwnProperty(key)) {
+        continue;
+    }
+
+    // skip nested objects / arrays
+    if (typeof data[key] === 'object') {
+        continue;
+    }
+
+    result.push({
+        "{#METRIC}": key
+    });
+}
+
+return JSON.stringify({ "data": result });
+
+.Create Item prototype under the template
+  Name: P1meter {#METRIC}
+  Type: Dependent item
+  Key: p1meter.metric[{#METRIC}]
+  Master item: Homewizard P1mater: Get full API
+  @Preprocessing:
+    Preprocessing steps:
+      1. name: JSONPath  parameters: $.{#METRIC}
