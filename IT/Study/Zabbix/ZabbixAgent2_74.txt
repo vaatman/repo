@@ -1,0 +1,35 @@
+Install Zabbix agent2 7.4 on Linux to Zabbix Server in container
+================================================================
+
+.Install Official Zabbix release repo
+  # dnf install https://repo.zabbix.com/zabbix/7.4/release/alma/10/noarch/zabbix-release-7.4-4.el10.noarch.rpm
+
+.Install Zabbix agent2 and plugins
+  # cat rpms
+zabbix-agent2-plugin-postgresql-7.4.6-release1.el10.x86_64
+zabbix-agent2-plugin-mssql-7.4.6-release1.el10.x86_64
+zabbix-agent2-plugin-mongodb-7.4.6-release1.el10.x86_64
+zabbix-get-7.4.6-release1.el10.x86_64
+
+  # dnf install $(cat rpms)
+
+.Configure
+  # cd /etc/zabbix
+  # vi zabbix-agent2.conf
+Server=<127.0.0.1 or ZBX_SERVERIP>
+ServerActive=<127.0.0.1 or ZBX_SERVERIP>
+Hostname=<agent hostname>
+  eg. Hostname=alma10-03
+HostMetadata=Linux # or whatever you use
+TLSConnect=psk
+TLSAccept=psk
+TLSPSKIdentity=PSK_agent_autoregistered
+TLSPSKFile=/etc/zabbix/zabbix_agent2.psk
+
+.Create PSK file
+  .to create a new one:
+    # openssl rand -hex 32
+  # vi /etc/zabbix/zabbix_agent2.psk
+
+.Start zabbix-agent2
+  # systemctl start zabbix-agent2
