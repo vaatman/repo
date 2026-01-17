@@ -1,7 +1,7 @@
 Install Zabbix server on Raspberru pi400
 ========================================
 
-.prepare
+.prepare - create OS SD-CARD
   .get 128GB SD-CARD
   .put in laptop
   .install rpi-imager on debian13
@@ -13,5 +13,8 @@ Install Zabbix server on Raspberru pi400
       $ snap install snapd
       $ snap run rpi-imager
       :write to th SD-CARD as you like
+        - Device: Raspberry Pi4
+        - OS: Raspberry OS (64BIT)
+        - Storage: Internal SD card reader
 
 
