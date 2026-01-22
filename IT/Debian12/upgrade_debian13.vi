@@ -1,0 +1,20 @@
+Upgrade debian12 (bookworm) to debian13 (trixie)
+================================================
+
+.change name in apt sources
+$ cd /etc/apt
+$ sudo vi sources.list
+%s/bookworm/trixie/g
+:wq
+
+. update
+$ sudo apt update
+
+. upgrade
+$ sudo apt full-upgrade
+
+. cleanup
+$ sudo apt autoremove
+
+.reboot
+$ sudo reboot
