@@ -16,3 +16,20 @@ policies             ["default" "zabbix-readonly"]
 .check a token
 # bao token lookup -tls-skip-verify <s.eXrr8pG51...............>
 
+.get a KV secret
+# bao kv get -tls-skip-verify zabbix-secrets/zabbix/cam001
+========== Secret Path ==========
+zabbix-secrets/data/zabbix/cam001
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2026-01-27T12:53:05.074494918Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            2
+======== Data ========
+Key             Value
+---             -----
+admin_secret    <secret shown>
+
