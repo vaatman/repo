@@ -1,3 +1,5 @@
 .write a new secret in an existing engine
 # bao kv put -tls-skip-verify -mount=zabbix-secrets smartware_devices/cam005 admin_secret=Welkom01 
 
+.check a token
+# bao token lookup -tls-skip-verify <s.l6........>
