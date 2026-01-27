@@ -1,7 +1,13 @@
-.write a new secret in an existing engine
+. login
+  . with username/password
+  # bao login -method=userpass -tls-skip-verify username=hennie
+  . with token
+  # bao login -method=token -tls-skip-verify
+
+. write a new secret in an existing engine
 # bao kv put -tls-skip-verify -mount=zabbix-secrets smartware_devices/cam005 admin_secret=Welkom01 
 
-.write a token to use a policy
+. write a token to use a policy
 # bao token create -tls-skip-verify -policy=zabbix-readonly
 Key                  Value
 ---                  -----
@@ -13,10 +19,10 @@ token_policies       ["default" "zabbix-readonly"]
 identity_policies    []
 policies             ["default" "zabbix-readonly"]
 
-.check a token
+. check a token
 # bao token lookup -tls-skip-verify <s.eXrr8pG51...............>
 
-.get a KV secret
+. get a KV secret
 # bao kv get -tls-skip-verify zabbix-secrets/zabbix/cam001
 ========== Secret Path ==========
 zabbix-secrets/data/zabbix/cam001
