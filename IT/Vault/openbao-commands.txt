@@ -1,5 +1,18 @@
 .write a new secret in an existing engine
 # bao kv put -tls-skip-verify -mount=zabbix-secrets smartware_devices/cam005 admin_secret=Welkom01 
 
+.write a token to use a policy
+# bao token create -tls-skip-verify -policy=zabbix-readonly
+Key                  Value
+---                  -----
+token                s.eXrr8pG51...............
+token_accessor       yNgC1xt1cSe18Sptxf8BOYSH
+token_duration       768h
+token_renewable      true
+token_policies       ["default" "zabbix-readonly"]
+identity_policies    []
+policies             ["default" "zabbix-readonly"]
+
 .check a token
-# bao token lookup -tls-skip-verify <s.l6........>
+# bao token lookup -tls-skip-verify <s.eXrr8pG51...............>
+
