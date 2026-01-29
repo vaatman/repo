@@ -1,0 +1,86 @@
+Install openbao 3 node cluster plus 1 transit node
+==================================================
+
+00. use podman compose to create the containers
+  - the transit will start
+  - the nodes will exit
+
+01. initialize the transit
+  # podman exec -ti openbao-transit /bin/sh
+  / $ export BAO_ADDR=http://127.0.0.1:8200
+  / $ bao operator init -key-shares=1 -key-threshold=1
+    > save the keys
+
+02. unseal the transit using 'Unseal Key 1'
+  / $ bao operator unseal <key>
+03. login using the Initial Root Token
+  / $ bao operator login <rootkey>
+
+04. enable transit secret engine
+  / $ bao secrets enable transit
+
+05. create auto-unseal key
+  / $ bao write -f transit/keys/autounseal
+
+06. create policy for auto-unseal
+  / $ bao policy write autounseal - << 'POLICY'
+path "transit/encrypt/autounseal" {
+   capabilities = [ "update" ]
+}
+path "transit/decrypt/autounseal" {
+   capabilities = [ "update" ]
+}
+POLICY
+
+07. create token for cluster
+  / $ bao token create -policy=autounseal
+    >> save the token
+
+08. start node1 without transit [comment out in node1.hcl]
+
+09. initialize node1
+  # podman exec -ti openbao-node1 /bin/sh
+  / $ export BAO_ADDR=http://127.0.0.1:8200
+  / $ bao operator init
+    >> save the keys
+
+10. unseal node2
+  # podman exec -ti openbao-node2 /bin/sh
+  / $ export BAO_ADDR=http://127.0.0.1:8200
+  / $ bao operator unseal <key>
+    repeat twice
+  / $ bao status
+
+11. join node2 to the cluster
+  / $ bao operator raft join http://openbao-node1:8200
+  : repeat 10 and 11 for node3 
+
+12. check peers
+  @node2
+  # podman exec --user root -ti openbao-node2 /bin/sh
+  / # export BAO_TOKEN=<node1 root token>
+  / # export BAO_ADDR=http://127.0.0.1:8200
+  / # bao operator raft list-peers
+Node     Address               State       Voter
+----     -------               -----       -----
+node1    openbao-node1:8201    follower    true
+node2    openbao-node2:8201    leader      true
+node3    openbao-node3:8201    follower    true
+
+12. configure for transit
+  :uncomment the transit seal block in all node configs
+
+13. stop the cluste
+  # podman compose down
+
+
+
+
+
+  to re-initialize the transit:
+  # podman compose down
+  # podman volume prune
+  # podman compose up -d --force-create
+
+
+  
