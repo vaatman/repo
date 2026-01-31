@@ -23,7 +23,7 @@ Install openbao 3 node cluster plus 1 transit node
   / $ bao write -f transit/keys/autounseal
 
 06. create policy for auto-unseal
-  / $ bao policy write autounseal - << 'POLICY'
+  / $ bao policy write autounseal - <<POLICY
 path "transit/encrypt/autounseal" {
    capabilities = [ "update" ]
 }
@@ -67,11 +67,50 @@ node1    openbao-node1:8201    follower    true
 node2    openbao-node2:8201    leader      true
 node3    openbao-node3:8201    follower    true
 
-12. configure for transit
-  :uncomment the transit seal block in all node configs
+--- NEW transit part
+13. backup on leader
+  / # bao operator raft snapshot save raft-backup.snap
+14. enable transit secret engine
+  / # bao secrets enable transit
+  / # bao secrets list 
+15. create transit key
+  / # bao write -f transit/keys/openbao-unseal
+16. create policy for unsealing
+see 06.
+17. create token for unseal
+  bao token create -policy=autounseal -orphan
+Key                  Value
+---                  -----
+token                <s.token>
+token_accessor       XH2XcASXdcVRUjof4opPBfAk
+token_duration       768h
+token_renewable      true
+token_policies       ["autounseal" "default"]
+identity_policies    []
+policies             ["autounseal" "default"]
+18. update seal config on all nodes
+seal "transit" {
+  address            = "https://TRANSIT_OPENBAO:8200"
+  token              = "s.xxxxx"
+  key_name           = "openbao-unseal"
+  mount_path         = "transit/"
+  tls_skip_verify    = false
+}
+  :use the token from 17. in 18. !
+. stop nodes
+. restart and unseal the transit
+. add BAO_SEAL_MIGRATION=true to env of the node [docker-compose.yml]
+. restart node1
+  # podman compose restart node1
 
-13. stop the cluste
-  # podman compose down
+. unseal ONE node
+  / $ bao operator unseal -migrate
+  <unseal key>
+  :repeat until 3 keys accepted
+
+
+. restart node2
+. restart node3
 
 
 
