@@ -4,7 +4,8 @@ Setup the raspberry pi3b as an digital audio converter
 Goal: stream USB audiointerface (BOOM) to hifiberry digi+ on s/pdif coax
 
 . disable [comment] onboard audio
-  # cd /boot
+  # cd /boot/firmare
+    :pi3 met respbian 9 /boot
   # vi config.txt
     #dtparam=audio=on
     dtparam=audio=off
@@ -24,6 +25,8 @@ Goal: stream USB audiointerface (BOOM) to hifiberry digi+ on s/pdif coax
     plughw:CARD=sndrpihifiberry,DEV=0
 
 . create scripts for alsaloop:
+  # cd /usr/local/bin
+  # vi boomberry
 /usr/bin/alsaloop \
   -v \
   -C hw:CARD=BOOM,DEV=0 \
@@ -34,5 +37,9 @@ Goal: stream USB audiointerface (BOOM) to hifiberry digi+ on s/pdif coax
   -l 1024
   -t 20000 \
   -S
+  # chmod 750 boomberry
+  # chgrp audio boomberry
+  # ln -s boomberry bb
+  # chattr +i boomberry
 
 . run it

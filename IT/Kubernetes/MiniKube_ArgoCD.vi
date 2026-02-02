@@ -1,0 +1,38 @@
+Install Minikube with ArgoCD on Debian13
+========================================
+
+source: https://medium.com/@mehmetodabashi/installing-argocd-on-minikube-and-deploying-a-test-application-caa68ec55fbf
+
+.prepare
+  $ sudo apt install docker.io
+
+.install minikube
+  $ curl -LO https://github.com/kubernetes/minikube/releases/latest/download/minikube-linux-amd64
+  $ sudo install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64
+
+.install kubectl
+  $ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  $ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+.start the cluster using docker
+  $ sudo swapoff -a
+  $ minikube start --driver=docker
+
+.create Namespace for ArgoCD
+  $ kubectl create ns argocd
+
+.apply ArgoCD manifest installation file
+  $ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.8/manifests/install.yaml
+  .verify
+    $ kubectl get all -n argocd
+    :all resources should show 'created'
+    :some need time to be in a 'running' state
+
+.enable port-forwarding to access the webUI of ArgoCD
+  $ kubectl por-forward svc/argocd-server -n argocd 8080:443
+  Forwarding from 127.0.0.1:8080 -> 8080
+  Forwarding from [::1]:8080 -> 8080
+  :now browse to localhost:8080
+  :login as admin, but FIRST get passwd with kubectl
+  $ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+
