@@ -1,0 +1,62 @@
+Install OpenBAO in podman containers
+====================================
+
+: Transit config
+. setup:
+  1 transit	- docker-compose-transit.yml
+  3 nodes	- docker-compose-nodes.yml
+  1 configdir	- [nodes|transit]-config.hcl
+
+. copy some data from the old dir
+  # cd <openbaodir>
+  # rsync -av ../openbao.off/config .
+  # cp ../openbao.off/transit-keys.txt transit.keys
+
+. start transit
+  # podman compose -f docker-compose-transit.yml up --force-recreate
+  # podman ps -a  
+  # podman exec -ti openbao-transit /bin/sh
+  / $ bao status
+    Seal Type          shamir
+    Initialized        true
+    Sealed             true
+
+. unseal [use previous keys]
+  / $ bao operator unseal <unseal key>
+
+. enable transit secret engine
+  $ export BAO_TOKEN=<root token>
+  \ $ bao secrets enable transit
+
+. write transit unseal key
+  \ $ bao write -f transit/keys/openbao-unseal       
+  ...
+  name	openbao-unseal
+  ... 
+
+. create policy for unseal
+  \ $ bao policy write transit-unseal - <<EOF
+path "transit/encrypt/openbao-unseal" {
+  capabilities = ["update"]
+}
+path "transit/decrypt/openbao-unseal" {
+  capabilities = ["update"]
+}
+EOF
+
+. create token for unseal
+  \ $ bao token create -policy=transit-unseal -orphan
+
+:Nodes config
+
+. replace/disable Shamir seal config section, enable transit
+  seal "transit" {
+  address            = "https://<TRANSIT_OPENBAO>:8200"
+  token              = "s.xxxxx"
+  key_name           = "openbao-unseal"
+  mount_path         = "transit/"
+  tls_skip_verify    = false
+  }
+
+. restart one follower first
+
