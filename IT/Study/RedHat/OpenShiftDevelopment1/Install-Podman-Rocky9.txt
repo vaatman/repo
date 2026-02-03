@@ -1,0 +1,10 @@
+# Install Podman on rocky09 Vagrant VM
+
+. Install RPMs
+  $ sudo dnf install podman cockpit cockpit-podman container-tools
+
+. Start cockpit
+  $ sudo systemctl start cockpit
+  : goto https://rocky01.local:9090
+
+
