@@ -1,0 +1,40 @@
+Create and apply an admin policy
+================================
+
+. create admin policy
+  $ vi admin-policy.hcl
+# Full admin access to all paths
+path "*" {
+  capabilities = ["create", "read", "update", "patch", "delete", "list", "sudo"]
+}
+
+# Manage auth methods
+path "auth/*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+
+# Manage policies
+path "sys/policies/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Manage secrets engines
+path "sys/mounts/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Create and manage AppRoles
+path "auth/approle/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+. copy to bao container
+  $ podman cp ./admin-policy.hcl openbao-node1:/tmp
+
+. apply the policy
+  $ podman login -method=token 
+Token (will be hidden):   
+  / $ bao policy write admin /tmp/admin-policy.hcl
+  Success! Uploaded policy: admin                    
+  /tmp $ bao write auth/userpass/users/hennie policies="admin"
+  Success! Data written to: auth/userpass/users/hennie
