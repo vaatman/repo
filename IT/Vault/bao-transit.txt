@@ -1,0 +1,93 @@
+Setup a three node openBao cluster with a fourth node as transit
+================================================================
+
+. transit config in docker-compose-transit.yml
+  nodes config in docker-compose-nodes.yml
+
+. spin up the transit
+  $ podman compose -f docker-compose-transit.yml up -d
+
+. initialize the transit
+  $ podman exec -ti openbao-transit /bin/sh
+  / $ bao operator init
+>> save the keys
+
+. unseal the transit
+  / $ bao operator unseal
+
+. login with root token
+  / $ bao login -method=token
+
+. enable transit and create unseal key
+  / $ bao secrets enable transit
+  / $ openbao write -f transit/keys/openbao-unseal
+
+. create transit policy
+  / $ bao policy write transit-unseal <<EOF
+path "transit/encrypt/openbao-unseal" {
+  capabilities = ["update"]
+}
+path "transit/decrypt/openbao-unseal" {
+  capabilities = ["update"]
+}
+<<EOF
+
+. create token for the bao nodes
+  / $ bao token create -policy=transit-unseal -orphan
+>> save the token
+
+. configure the bao nodes [all nodes]
+  $ vi config/node[123]-config.hcl
+storage "raft" {
+path    = "/openbao/data"
+node_id = "node[123]"
+...
+seal "transit" {
+  address            = "http://openbao-transit:8200"
+  disable_renewal    = "false"
+  token              = "<transit-unseal token>"
+  key_name           = "openbao-unseal"
+  mount_path         = "transit/"
+  tls_skip_verify    = "true"
+} 
+...
+api_addr = "http://openbao-node[123]:8200"
+cluster_addr = "http://openbao-node[123]:8201"
+
+. bootstrap the cluster - bring up 1 node
+  $ podman compose -f docker-compose-nodes.yml -d openbao-node1
+
+. initialize node
+  $ podman exec -ti openbao-node1 /bin/sh
+  / $ bao login -method=token
+  >> save the keys and token
+
+. check status
+  / $ bao status
+  >> should show:
+Key                      Value
+---                      -----
+Seal Type                transit
+Recovery Seal Type       shamir
+Initialized              true
+Sealed                   false
+
+. bring up other nodes
+  $ podman compose -f docker-compose-nodes.yml -d openbao-node2
+  $ podman exec -ti openbao-node1 /bin/sh
+  / $ bao status
+  >> should be 'Sealed false'
+  $ podman compose -f docker-compose-nodes.yml -d openbao-node3
+  $ podman exec -ti openbao-node1 /bin/sh
+  / $ bao status
+
+. check raft peerage
+  / $ bao login -method=token
+  / $ bao operator raft list-peers
+  >> should show:
+Node     Address               State       Voter
+----     -------               -----       -----
+node1    openbao-node1:8201    follower    true
+node2    openbao-node2:8201    follower    true
+node3    openbao-node3:8201    leader      true
+
