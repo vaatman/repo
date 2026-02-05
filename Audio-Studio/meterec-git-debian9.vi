@@ -19,3 +19,5 @@ discard following errors:
 
 4. install
  $ sudo make install
+
+on debian13 libjqck-dev is needed (removes some jack2 things)
