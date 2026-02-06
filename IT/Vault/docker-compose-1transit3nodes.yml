@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # Transit node - used for auto-unseal
+  openbao-transit:
+    image: openbao/openbao:latest
+    container_name: openbao-transit
+    user: "100:1000"
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - "8300:8200"
+    environment:
+      BAO_ADDR: 'http://127.0.0.1:8200'
+      BAO_API_ADDR: 'http://openbao-transit:8200'
+      SKIP_SETCAP: 'true'
+    volumes:
+      - ./config/transit.hcl:/openbao/config/transit.hcl:ro
+      - transit-data:/openbao/data:Z
+      - transit-logs:/openbao/logs:Z
+    command: server
+    networks:
+      openbao-net:
+        ipv4_address: 172.20.0.10
+
+  # Cluster Node 1
+  openbao-node1:
+    image: openbao/openbao:latest
+    container_name: openbao-node1
+    user: "100:1000"
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - "8200:8200"
+      - "8201:8201"
+    environment:
+      BAO_ADDR: 'http://127.0.0.1:8200'
+      BAO_API_ADDR: 'http://openbao-node1:8200'
+      BAO_CLUSTER_ADDR: 'http://openbao-node1:8201'
+      SKIP_SETCAP: 'true'
+    volumes:
+      - ./config/node1.hcl:/openbao/config/node1.hcl:Z
+      - node1-data:/openbao/data:Z
+      - node1-logs:/openbao/logs:Z
+    command: server
+    depends_on:
+      - openbao-transit
+    networks:
+      openbao-net:
+        ipv4_address: 172.20.0.11
+
+  # Cluster Node 2
+  openbao-node2:
+    image: openbao/openbao:latest
+    container_name: openbao-node2
+    user: "100:1000"
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - "8210:8200"
+      - "8211:8201"
+    environment:
+      BAO_ADDR: 'http://127.0.0.1:8200'
+      BAO_API_ADDR: 'http://openbao-node2:8200'
+      BAO_CLUSTER_ADDR: 'http://openbao-node2:8201'
+      SKIP_SETCAP: 'true'
+    volumes:
+      - ./config/node2.hcl:/openbao/config/node2.hcl:Z
+      - node2-data:/openbao/data:Z
+      - node2-logs:/openbao/logs:Z
+    command: server
+    depends_on:
+      - openbao-transit
+    networks:
+      openbao-net:
+        ipv4_address: 172.20.0.12
+
+  # Cluster Node 3
+  openbao-node3:
+    image: openbao/openbao:latest
+    container_name: openbao-node3
+    user: "100:1000"
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - "8220:8200"
+      - "8221:8201"
+    environment:
+      BAO_ADDR: 'http://127.0.0.1:8200'
+      BAO_API_ADDR: 'http://openbao-node3:8200'
+      BAO_CLUSTER_ADDR: 'http://openbao-node3:8201'
+      SKIP_SETCAP: 'true'
+    volumes:
+      - ./config/node3.hcl:/openbao/config/node3.hcl:Z
+      - node3-data:/openbao/data:Z
+      - node3-logs:/openbao/logs:Z
+    command: server
+    depends_on:
+      - openbao-transit
+    networks:
+      openbao-net:
+        ipv4_address: 172.20.0.13
+
+volumes:
+  transit-data:
+  transit-logs:
+  node1-data:
+  node1-logs:
+  node2-data:
+  node2-logs:
+  node3-data:
+  node3-logs:
+
+networks:
+  openbao-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
