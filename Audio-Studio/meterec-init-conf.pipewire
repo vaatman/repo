@@ -13,7 +13,9 @@ if [ -n "$1" ]; then
 	
 	echo "ports=(">> $CONF_FILE
 	#for CAPTURE in `jack_lsp -A | grep system:capture | sed -e 's/^[ \t]*//' -e 's/[ \t]*$//'`
-	pw-jack jack_lsp -A | grep AudioFire|grep :capture | sed -e 's/^[ \t]*//' -e 's/[ \t]*$//' | while read CAPTURE
+	#pw-jack jack_lsp -A |grep :capture | sed -e 's/^[ \t]*//' -e 's/[ \t]*$//' | while read CAPTURE
+	#pw-jack jack_lsp -A | grep AudioFire|grep :capture | sed -e 's/^[ \t]*//' -e 's/[ \t]*$//' | while read CAPTURE
+	pw-jack jack_lsp -A | grep :capture | sed -e 's/^[ \t]*//' -e 's/[ \t]*$//' | while read CAPTURE
 	do
 	
 		if [ -n "$INDEX" ]; then
@@ -22,7 +24,8 @@ if [ -n "$1" ]; then
 		
 		INDEX=`echo $CAPTURE | awk -F"_" '{print $2}'`
 		#PLAYBACK=`jack_lsp -A | grep system:playback | grep $INDEX | head -1 | sed -e 's/^[ \t]*//' -e 's/[ \t]*$//'`
-		PLAYBACK=`pw-jack jack_lsp -A | grep AudioFire|grep :monitor | grep $INDEX | head -1 | sed -e 's/^[ \t]*//' -e 's/[ \t]*$//'`
+		#PLAYBACK=`pw-jack jack_lsp -A | grep AudioFire|grep :monitor | grep $INDEX | head -1 | sed -e 's/^[ \t]*//' -e 's/[ \t]*$//'`
+		PLAYBACK=`pw-jack jack_lsp -A | grep :monitor | grep $INDEX | head -1 | sed -e 's/^[ \t]*//' -e 's/[ \t]*$//'`
 		
 		echo -n \{ takes=\"\"\; record=\"rec\"\; mute=false\; thru=true\; connections=\[\"$CAPTURE\"\,\"$PLAYBACK\"\]\; name=\"\"\; \} >> $CONF_FILE
 	
