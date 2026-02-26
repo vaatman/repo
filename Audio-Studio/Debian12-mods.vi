@@ -1,0 +1,5 @@
+# Set greater console font
+$ sudo dpkg-reconfigure console-setup
+> UTF-8
+> Terminus
+> 16x32 (framebuffer only)
