@@ -12,7 +12,7 @@ $ podman run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd)/one
 4. configure in browser
 http://localhost:6610
 loginname: hennie
-passwd: Welcome@2026
+passwd: <pwd>
 fullname: Hennie Vaatstra
 email: hennievaatstra@gmail.com
 > Next
