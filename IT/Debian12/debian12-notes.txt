@@ -1,0 +1,5 @@
+. restart dhclient
+# systemctl restart ifup@enp0s25.service
+
+. configure pipewire
+https://interfacinglinux.com/2024/01/09/firewire-audio-interfaces-on-linux/

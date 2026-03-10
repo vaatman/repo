@@ -1,0 +1,15 @@
+. install minimal debian12
+. install my base pkgs
+  /root/apt-pkgs-deb12-base.vi
+. install audio pks
+  /root/apt-pkgs-deb12-audio.vi
+
+: follow directions at: https://wiki.debian.org/PipeWire
+. enable WirePlumber in running as user
+  $ systemctl --user --now enable wireplumber.service
+. eiher run JACK clients using the 'pw-jack' wrapper or copy:
+  # cp /usr/share/doc/pipewire/examples/ld.so.conf.d/pipewire-jack-x86_64-linux-gnu.conf /etc/ld.so.conf.d/
+  and run:
+  # ldconfig
+  : this will replace the JACK server libraries with PipeWire's replacements at application runtime, by pointing the dynamic linker at the /usr/lib/x86_64-linux-gnu/pipewire-0.3/jack/ folder
+
