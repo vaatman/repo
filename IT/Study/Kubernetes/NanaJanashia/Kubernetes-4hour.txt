@@ -2,5 +2,7 @@ YouTube: https://www.youtube.com/watch?v=X48VuDVv0do&t=6384s
 
 Git: https://gitlab.com/nanuchi/youtube-tutorial-series.git
 - login to mongo express: [admin:pass]
-- login to the service [in minikube}:
+- login to this service [works a bit different in minikube]:
   $ minikube service mongo-express-service
+- enable Ingress in minikube
+  $ minikube addons enable ingress
