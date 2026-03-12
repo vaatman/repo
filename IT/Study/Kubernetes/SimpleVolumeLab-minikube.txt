@@ -1,0 +1,72 @@
+Using a Volume, VolumeClaim an mount in a nginx pod
+===================================================
+
+1. create Physical Volume manifest
+  $ vi pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/nginx
+
+2. apply it
+  $ kubectl apply -f pv.yaml
+  persistentvolume/nginx-pv created
+
+3. create a PhysicalVolumeClaim manifest
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+
+4. apply it
+  $ kubectl apply -f pvc.yaml 
+persistentvolumeclaim/nginx-pvc created
+
+5. create a Pod that uses PVC and PV
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - mountPath: /usr/share/nginx/html
+      name: nginx-storage
+  volumes:
+  - name: nginx-storage
+    persistentVolumeClaim:
+      claimName: nginx-pvc
+
+6. create the Pod
+  $ kubectl apply -f nginx-pod.yaml
+  pod/nginx-pod created
+
+7. write something in the mounted volume
+  $ kubectl exec -ti nginx-pod -- /bin/bash
+  $ echo "Welcome to Kubernetes!" >> /usr/share/nginx/html/index.html
+  $ curl http://localhost
+
+8. check outside of the pod
+  $ kubectl port-forward nginx-pod 8080:80
+  $ curl http://localhost:8080
+
+9. check persistency
+  $ kubectl delete pod nginx-pod
+  $ kubectl apply -f nginx-pod
+  $ kubectl port-forward nginx-pod 8080:80
+  > browser to http://localhost:8080
