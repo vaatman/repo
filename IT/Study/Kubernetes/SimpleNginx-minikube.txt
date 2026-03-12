@@ -8,7 +8,11 @@ Run a deployment with an nginx pod
   $ kubectl apply -f depl.yaml
 3. expose the deployment [create service]
   $ kubectl expose deployment/nginx-depl --type="NodePort" --port=80
+  or
+  $ kubectl expose deployment nginx-del --type=LoadBalancer --port=80
 4. check the minikube way
   $ minikube ip
   $ curl $(minikube service nginx-depl --url)
+  $ minikube service nginx-depl
+  :for type LoadBalancer
   
