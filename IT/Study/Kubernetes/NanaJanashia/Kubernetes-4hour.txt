@@ -6,3 +6,7 @@ Git: https://gitlab.com/nanuchi/youtube-tutorial-series.git
   $ minikube service mongo-express-service
 - enable k8s nginx Ingress in minikube
   $ minikube addons enable ingress
+- add k8s dashboard
+  $ minikube addons enable dashboard
+  $ minikube addons enable metrics-server
+  $ minikube addons enable ingress
