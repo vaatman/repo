@@ -1,0 +1,14 @@
+Run a deployment with an nginx pod
+----------------------------------
+
+1. create a deployment
+  $ kubectl create deployment nginx-depl --image nginx:latest --dry-run=client -o yaml > depl.yaml
+  :edit to taste
+2. apply
+  $ kubectl apply -f depl.yaml
+3. expose the deployment [create service]
+  $ kubectl expose deployment/nginx-depl --type="NodePort" --port=80
+4. check the minikube way
+  $ minikube ip
+  $ curl $(minikube service nginx-depl --url)
+  
