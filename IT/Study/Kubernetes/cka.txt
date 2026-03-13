@@ -1,0 +1,386 @@
+Kubernetes CKA Exam Prep: 20 Hands-On Practice Questions and Solutions
+Issam — Read time: 5 minutes
+
+Issam
+
+
+6 min read
+
+Oct 19, 2025
+
+Below are 20 exam-style questions along with answers, detailed explanations, tips, and alternative approaches. These questions cover many core topics in the CKA exam (post-February 2025 update). Each solution uses the k alias for kubectl, and where appropriate, alternative commands or methods are provided. Use these as practice prompts and adjust them based on your lab environment.
+
+1. Create a Pod
+Question: Create a Pod named nginx-pod that runs the nginx image.
+
+Answer:
+
+k run nginx-pod 
+Explanation:
+
+k run creates a pod quickly.
+--restart=Never forces creation as a Pod rather than a Deployment.
+Tip/Alternative:
+
+To generate YAML without creating the resource:
+k run nginx-pod 
+Then, adjust YAML if needed and apply with k apply -f nginx-pod.yaml.
+2. Generate Pod YAML
+Question: Generate the YAML definition for a Pod running busybox that executes sleep 3600, and save it to a file.
+Answer:
+
+k run busybox --image=busybox --restart=Never --command -- sleep 3600 --dry-run=client -o yaml > busybox.yaml
+Explanation:
+
+--command -- sleep 3600 sets the command for the container.
+--dry-run=client -o yaml outputs the manifest instead of creating it.
+Tip/Alternative:
+
+You may open the file in an editor to adjust further before applying.
+3. Create a Deployment
+Question: Create a Deployment named web-deploy using the nginx image with 3 replicas.
+Answer:
+
+k run busybox --image=busybox --restart=Never --command -- sleep 3600 --dry-run=client -o yaml > busybox.yaml
+Explanation:
+
+A Deployment manages replicas of pods.
+Use k scale to adjust the replica count.
+Tip/Alternative:
+
+Alternatively, generate the YAML:
+k create deployment web-deploy 
+Then, manually set the replica count in the YAML file before applying.
+4. Expose a Deployment as a Service
+Question: Expose the web-deploy Deployment on port 80 as a NodePort service.
+Answer:
+
+k expose deployment web-deploy --name=web-svc --type=NodePort --port=80
+Explanation:
+
+A Deployment manages replicas of pods.
+Use k scale to adjust the replica count.
+Tip/Alternative:
+
+Alternatively, generate the YAML:
+k get svc web-svc -o yaml
+Then, manually set the replica count in the YAML file before applying.
+5. Create a ConfigMap and Use It
+Question: Create a ConfigMap named app-config with an environment variable ENV=prod and use it in a Pod.
+Answer:
+
+k create configmap app-config 
+In the Pod manifest, include:
+
+envFrom:
+  - configMapRef:
+      name: app-config6. Create a Secret and Mount It
+Explanation:
+
+ConfigMaps allow you to pass configuration data into your pods.
+Tip/Alternative:
+
+Verify the ConfigMap with k get configmap app-config -o yaml.
+6. Create a Secret and Mount It
+Question: Create a Secret named db-secret with keys username=admin and password=secret123, then mount it in a Pod at /etc/db-secret.
+Answer:
+
+k create secret generic db-secret --from-literal=username=admin --from-literal=password=secret123
+In your Pod YAML, add:
+
+volumes:
+  - name: secret-volume
+    secret:
+      secretName: db-secret
+volumeMounts:
+  - name: secret-volume
+    mountPath: /etc/db-secret
+    readOnly: true
+Explanation:
+
+Secrets store sensitive data, and mounting as a volume helps keep the data available to applications.
+Tip/Alternative:
+
+Alternatively, use environment variables to reference secret data.
+7. Create a PVC and Mount It in a Pod
+Question: Create a PersistentVolumeClaim named mypvc requesting 1Gi of storage, and mount it in a Pod at /data.
+Answer:
+
+PVC Manifest (pvc.yaml):
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+Pod Manifest (pod.yaml):
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-pvc
+spec:
+  containers:
+  - name: app
+    image: nginx
+    volumeMounts:
+    - mountPath: /data
+      name: myvolume
+  volumes:
+  - name: myvolume
+    persistentVolumeClaim:
+      claimName: mypvc
+Apply with:
+k apply -f pvc.yaml
+k apply -f pod.yaml
+Explanation:
+
+PVCs bind to PVs (statically or dynamically provided storage).
+Tip/Alternative:
+
+Check binding status using k get pvc and k describe pvc mypvc.
+8. Apply a NetworkPolicy
+Question: Create a NetworkPolicy that allows ingress to Pods labeled app=nginx only from Pods with label role=frontend.
+Answer:
+
+NetworkPolicy YAML (np.yaml):
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: frontend
+Apply with:
+k apply -f np.yaml
+Explanation:
+
+NetworkPolicies restrict access, here narrowing which pods can communicate with app=nginx.
+Tip/Alternative:
+
+Use namespaceSelector if you want to restrict by namespace.
+9. Use Node Labeling and Node Selector
+Question: Label a node node1 with disktype=ssd and then ensure a Pod is scheduled only on nodes with that label.
+
+Answer:
+
+Label the Node:
+k label node node1 disktype=ssd
+Pod Manifest (snippet):
+spec:
+  nodeSelector:
+    disktype: ssd
+Explanation:
+
+Node labeling helps you define scheduling constraints.
+Tip/Alternative:
+
+As an alternative, assign directly via nodeName in the Pod spec to force scheduling on a specific node.
+10. Taint a Node and Add a Toleration
+Question: Taint node1 with env=prod:NoSchedule and create a Pod that tolerates that taint.
+
+Get Issam’s stories in your inbox
+Join Medium for free to get updates from this writer.
+
+
+Remember me for faster sign in
+
+Answer:
+
+Taint the Node:
+k taint node node1 env=prod:NoSchedule
+Pod Manifest (snippet):
+tolerations:
+- key: "env"
+  operator: "Equal"
+  value: "prod"
+  effect: "NoSchedule"
+Explanation:
+
+Taints repel pods unless they declare a toleration.
+Tip/Alternative:
+
+Remove a taint with:
+k taint node node1 env-
+11. Cordon, Drain, and Uncordon a Node
+Question: Prepare node1 for maintenance by preventing new Pod scheduling and safely evicting existing Pods.
+Answer:
+
+k cordon node1
+k drain node1 --ignore-daemonsets --delete-emptydir-data
+k uncordon node1
+Explanation:
+
+Cordon stops new pods; drain evicts existing ones; uncordon resumes scheduling.
+Tip/Alternative:
+
+Always check node status with k get nodes and describe if issues arise.
+12. Create a Job to Calculate Pi
+Question: Create a Job named pi-job that calculates Pi to 2000 digits using a Perl command.
+Answer:
+
+Generate YAML:
+k create job pi-job 
+Edit pi-job.yaml:
+spec:
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: perl
+        command: ["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+      restartPolicy: Never
+Apply:
+k apply -f pi-job.yaml
+Explanation:
+
+Jobs run a pod to completion.
+Tip/Alternative:
+
+You can also create a job using k run with --restart=OnFailure for an auto-retry mechanism.
+13. Create a CronJob
+Question: Create a CronJob named hello that runs every minute and prints "Hi".
+Answer:
+
+k create cronjob hello --image=busybox --schedule="*/1 * * * *" -- /bin/sh -c "echo Hi"
+Explanation:
+
+A CronJob schedules jobs periodically.
+Tip/Alternative:
+
+Verify with k get cronjob and check logs after a minute.
+14. RBAC: Create Role and RoleBinding
+Question: Grant a user dev permission to list and get pods in the dev namespace using RBAC.
+Answer:
+
+Role YAML (role.yaml):
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+  namespace: dev
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+RoleBinding YAML (rb.yaml):
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: dev
+subjects:
+- kind: User
+  name: dev
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8
+Apply:
+k apply -f role.yaml
+k apply -f rb.yaml
+Explanation:
+
+RBAC controls access.
+Tip/Alternative:
+
+Test permissions with:
+k auth can-i list pods --namespace=dev --as=dev
+15. Work with CRDs and Custom Resources
+Question: List all Custom Resource Definitions and show details for one custom resource.
+Answer:
+
+k get crds
+k explain <custom-resource>
+Explanation:
+
+CRDs allow you to extend Kubernetes.
+Tip/Alternative:
+Replace <custom-resource> with your CRD name (e.g., k explain mycrd.spec).
+16. Use Helm to Deploy an Application
+Question: Deploy an application using Helm from the Bitnami repository.
+Answer:
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install myapp bitnami/nginx
+Explanation:
+
+Helm simplifies deployment of complex applications.
+Tip/Alternative:
+
+List releases with:
+helm list
+Uninstall with:
+helm uninstall myapp
+17. Use Kustomize for Overlays
+Question: Apply configuration overlays with Kustomize from a directory.
+Answer:
+
+k apply -k ./overlays/dev
+Explanation:
+
+Kustomize uses a kustomization.yaml to patch manifests without templating.
+Tip/Alternative:
+Validate by running:
+k kustomize ./overlays/dev
+18. Troubleshoot a Failing Pod
+Question: A Pod is in CrashLoopBackOff. Diagnose and retrieve logs.
+Answer:
+
+k describe pod <pod-name>
+k logs <pod-name>
+Explanation:
+
+describe gives events and error messages, while logs show container output.
+Tip/Alternative:
+If multiple containers exist, use:
+k logs <pod-name> -c <container-name>
+19. Monitor Cluster Resource Usage
+Question: Check CPU and memory usage of pods and nodes.
+Answer:
+
+k top pod
+k top node
+Explanation:
+
+These commands show real-time resource consumption, which is essential during troubleshooting.
+Tip/Alternative:
+
+Ensure Metrics Server is running in your cluster.
+20. Validate YAML before Applying
+Question: Validate a Kubernetes manifest without applying any changes.
+Answer:
+
+k apply -f file.yaml 
+Explanation:
+
+This command outputs the final YAML and checks for errors without creating resources.
+Tip/Alternative:
+
+Use k explain <resource> to understand available fields in the API.
+20. Validate YAML before Applying
+Question: Validate a Kubernetes manifest without applying any changes.
+Answer:
+
+k apply -f file.yaml 
+Explanation:
+
+This command outputs the final YAML and checks for errors without creating resources.
+Tip/Alternative:
+
+Use k explain <resource> to understand available fields in the API.
+These 20 questions cover a wide range of topics-from basic pod creation to advanced RBAC, Helm, CRDs, and troubleshooting-that are representative of the CKA exam post-Feb 2025. Reviewing the commands, experimenting in a lab environment (using tools like Killercoda, Killer.sh, Minikube, or KIND), and understanding alternative approaches will strengthen your exam readiness.
+
+Good luck with your preparation!
+
+source: https://medium.com/@issam1991/kubernetes-cka-exam-prep-20-hands-on-practice-questions-and-solutions-fortek-3b849e56de1f
