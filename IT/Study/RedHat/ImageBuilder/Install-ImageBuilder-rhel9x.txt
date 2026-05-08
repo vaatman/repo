@@ -1,0 +1,87 @@
+Install Image Builder on RHEL9
+==============================
+
+. prepare a RHEL9 VM
+  - qemu/libvirt
+  - virt-manager
+  - rhel9.7 standard server
+  :source https://www.redhat.com/en/blog/linux-golden-homelab-rhel
+
+. install Image Builder
+  # dnf update
+  # dnf install -y cockpit-composer.noarch composer-cli
+
+. start enable the socket
+  # systemctl enable --now osbuild-composer.socket
+    .extra: start and enable cockpit
+    # systemctl enable --now cockpit
+
+. browse to webUI
+  https://rhel9-1:9090/composer
+  > click 'Limited access' when visible up-right
+    to gain 'Administrative access'
+  :should show 'Create blueprint' button
+
+. create a blueprint for an image
+  > Create blueprint
+    Name: rhel-base
+    Description: plain basic rhel image
+    > Next
+  :no selection for output image type as in in source doc
+  > Skip 'Add additional packages'
+  > Enter kernel: 5.14.0-611.5.1.el9_7.x86_64
+  > Append: <skipped>
+  > Filesystem
+    > Manual configure partitions
+	/	xfs	4GiB
+	/boot	xfs	1GiB
+    > Next
+  > Enabled service: ssh
+  > Firewall
+    Ports: 22
+    Enabled services: ssh
+    > Next
+  > Users
+    > Add user
+      Username: admin
+      Password: Welc....
+      Server administrator: <check>
+      > Next
+  > Groups <skipped>
+  > SSH keys <skipped>
+  > Timezone: Europe/Amsterdam
+    Timerservers: 0.nl.pool.ntp.org
+    > Next
+  > Locale
+    Keyboard: us
+    Languages: en_US.UTF-8
+  > Other:
+    Hostname: <empty>
+    Installation device: /dev/sda1
+    > Next
+  > FIDO device onboarding: <skipped>
+  > openSCAP: <skipped>
+  > Ignition: <skipped>
+  > Save
+
+. Create Image
+  > Create image
+    > blueprint: rhel-base
+    > Image output: QEMU Image (.qcow2)
+    > Image size: 4GiB
+    > Next
+    > Create
+  > wait for image build to start
+   "rhel-base: Image creation has been added to the queue."
+
+. CLI stuff
+  . list blueprints
+    # composer-cli blueprints list
+  . show the blueprint created above
+    # composer-cli blueprints show rhel-base | less
+  . change local account name in blueprint
+    # composer-cli blueprints show rhel-base > rhel-base.blueprint
+    # vi rhel-base.blueprint
+      admin -> ansible
+    # composer-cli blueprints push rhel-base.blueprint 
+    
