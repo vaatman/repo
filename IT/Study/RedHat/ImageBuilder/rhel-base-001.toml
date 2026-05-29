@@ -1,0 +1,50 @@
+name = "rhel-base-001"
+description = "base image"
+version = "0.0.0"
+#packages = []
+modules = []
+enabled_modules = []
+groups = []
+
+[[packages]]
+name = "tmux"
+version = "*"
+
+[[packages]]
+name = "vim-enhanced"
+version = "*"
+
+[[packages]]
+name = "cockpit"
+version = "*"
+
+#[customizations]
+#installation_device = "/dev/sda1"
+
+[[customizations.user]]
+name = "admin"
+password = "$6$l1we5YtqLmgUaoh1$5rGbqkLY5uxYk.UxiQ0RpJHEVL4UlBCJDdVq4VPP4qennbQoCd2XDI0jUMhr9iApPR4zRgLGgV/QhYc3AXU651"
+
+[[customizations.group]]
+name = "beheer"
+gid = 666
+[customizations.locale]
+keyboard = "us"
+
+[[customizations.filesystem]]
+mountpoint = "/"
+minsize = 4294967296
+
+[[customizations.filesystem]]
+mountpoint = "/boot"
+minsize = 1073741824
+
+[customizations.services]
+enabled = ["cockpit"]
+
+[customizations.timezone]
+timezone = "Europe/Amsterdam"
+ntpservers = ["0.nl.pool.ntp.org", "1.nl.pool.ntp.org"]
+
+[customizations.firewall]
+ports = ["22:tcp", "9090:tcp"]

@@ -6,6 +6,9 @@ Install Image Builder on RHEL9
   - virt-manager
   - rhel9.7 standard server
   :source https://www.redhat.com/en/blog/linux-golden-homelab-rhel
+  :also read:
+    https://medium.com/@jaine.mayank/rhel-imagebuilder-e892a7ebea17
+    https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/composing_a_customized_rhel_system_image/creating-system-images-with-composer-web-console-interface_composing-a-customized-rhel-system-image
 
 . install Image Builder
   # dnf update
@@ -29,7 +32,7 @@ Install Image Builder on RHEL9
     > Next
   :no selection for output image type as in in source doc
   > Skip 'Add additional packages'
-  > Enter kernel: 5.14.0-611.5.1.el9_7.x86_64
+  > Kernel: <skipped>
   > Append: <skipped>
   > Filesystem
     > Manual configure partitions
@@ -58,6 +61,7 @@ Install Image Builder on RHEL9
   > Other:
     Hostname: <empty>
     Installation device: /dev/sda1
+    !! removed the sda1 when when working with composer-cli, then it worked
     > Next
   > FIDO device onboarding: <skipped>
   > openSCAP: <skipped>
@@ -84,4 +88,28 @@ Install Image Builder on RHEL9
     # vi rhel-base.blueprint
       admin -> ansible
     # composer-cli blueprints push rhel-base.blueprint 
-    
+
+  . save a blueprint [as created in eg. cockpit]
+    # composer-cli blueprints save rhel-base-001
+  . edit with vi, see rhel-base-001.toml in the repo
+  . push the blueprint
+    # composer-cli blueprints push rhel-base-001
+  . build an image
+    # composer-cli compose start rhel-base-001 qcow2 
+
+  . status
+    # composer-cli compose status
+  . logs from a job
+    # composer-cli compose log 9d11d30f-e5c5-4a27-ae0b-8997fc872b85
+    The compose result is empty.
+  . worker logs
+    # journalctl -u osbuild-composer -u osbuild-worker -n 200 --no-pager
+
+  . test a minimal image
+    # vi minimal.toml
+name = "minimal"
+description = "minimal qcow2"
+version = "0.0.1"
+    # composer-cli blueprints push minimal.toml
+    # composer-cli compose start minimal qcow2
+Compose 15e2765a-5fa7-459e-8ee6-b9477e9836ab added to the queue
