@@ -1,0 +1,228 @@
+{
+  "exams": [
+    {
+      "id": "cka",
+      "name": "CKA",
+      "fullName": "Certified Kubernetes Administrator",
+      "color": "blue"
+    },
+    {
+      "id": "ckad",
+      "name": "CKAD",
+      "fullName": "Certified Kubernetes Application Developer",
+      "color": "teal"
+    },
+    {
+      "id": "ex294",
+      "name": "EX294",
+      "fullName": "Red Hat Certified Engineer (Ansible)",
+      "color": "red"
+    },
+    {
+      "id": "rhcsa",
+      "name": "RHCSA",
+      "fullName": "Red Hat Certified System Administrator",
+      "color": "orange"
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "cka-pod-smallest-unit",
+      "examId": "cka",
+      "front": "What is the smallest deployable unit in Kubernetes?",
+      "back": "A Pod. It can run one or more containers that share network (localhost) and volumes. Pods are ephemeral.",
+      "tags": ["workloads", "pods"]
+    },
+    {
+      "id": "cka-dry-run-yaml",
+      "examId": "cka",
+      "front": "Generate Pod YAML without creating the resource (imperative → declarative workflow).",
+      "back": "kubectl run webapp --image=nginx:alpine --dry-run=client -o yaml > webapp.yaml",
+      "tags": ["kubectl", "pods", "yaml"]
+    },
+    {
+      "id": "cka-deployment-scale",
+      "examId": "cka",
+      "front": "Scale a Deployment named web to 4 replicas.",
+      "back": "kubectl scale deployment web --replicas=4",
+      "tags": ["deployments", "scaling"]
+    },
+    {
+      "id": "cka-service-types",
+      "examId": "cka",
+      "front": "Name the three core Service types and when you use ClusterIP.",
+      "back": "ClusterIP (internal only), NodePort (open port on each node), LoadBalancer (cloud LB). ClusterIP is the default for in-cluster access.",
+      "tags": ["networking", "services"]
+    },
+    {
+      "id": "ckad-probe-readiness",
+      "examId": "ckad",
+      "front": "What does a readinessProbe control?",
+      "back": "Whether the Pod receives traffic from a Service. Failing readiness removes the Pod from Service endpoints until it passes again.",
+      "tags": ["probes", "workloads"]
+    },
+    {
+      "id": "ex294-lvm-modules",
+      "examId": "ex294",
+      "front": "Which Ansible modules configure LVM storage (partitions, VG, LV, FS, mount)?",
+      "back": "parted, lvg, lvol, filesystem, mount — in that order. Swap has no module; use command/shell.",
+      "tags": ["storage", "lvm", "ansible"]
+    },
+    {
+      "id": "ex294-mount-point",
+      "examId": "ex294",
+      "front": "Does the mount module create the mount point directory?",
+      "back": "No. Create the directory first (file module with state=directory), then mount.",
+      "tags": ["storage", "ansible"]
+    },
+    {
+      "id": "rhcsa-lvm-create",
+      "examId": "rhcsa",
+      "front": "Create an ext4 filesystem on logical volume /dev/vg0/lv_app and mount it at /app persistently.",
+      "back": "mkfs.ext4 /dev/vg0/lv_app\nmkdir -p /app\necho '/dev/vg0/lv_app /app ext4 defaults 0 0' >> /etc/fstab\nmount -a",
+      "tags": ["lvm", "storage"]
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "cka-pod-restart-policy",
+      "examId": "cka",
+      "question": "Which Pod restartPolicy keeps a Pod running after the container exits successfully?",
+      "options": ["Always", "OnFailure", "Never", "IfNotPresent"],
+      "correctIndex": 2,
+      "explanation": "Never does not restart the Pod when the container exits. Always restarts regardless of exit code; OnFailure only restarts on failure.",
+      "tags": ["pods"]
+    },
+    {
+      "id": "cka-ingress-vs-service",
+      "examId": "cka",
+      "question": "What is the main purpose of an Ingress resource?",
+      "options": [
+        "Assign cluster-internal ClusterIP addresses",
+        "Expose HTTP/S routes to Services from outside the cluster",
+        "Replace kube-proxy for pod-to-pod traffic",
+        "Encrypt etcd data at rest"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ingress defines HTTP/S routing rules to backend Services, usually via an Ingress controller.",
+      "tags": ["networking", "ingress"]
+    },
+    {
+      "id": "ex294-vault",
+      "examId": "ex294",
+      "question": "How do you run a playbook that uses Ansible Vault-encrypted variables?",
+      "options": [
+        "ansible-playbook site.yml --ask-vault-pass",
+        "ansible-playbook site.yml --check",
+        "ansible-vault run site.yml",
+        "ansible-playbook site.yml --tags vault"
+      ],
+      "correctIndex": 0,
+      "explanation": "Use --ask-vault-pass or --vault-password-file so Ansible can decrypt vault blocks at runtime.",
+      "tags": ["vault", "ansible"]
+    },
+    {
+      "id": "rhcsa-firewall-cmd",
+      "examId": "rhcsa",
+      "question": "Permanently open TCP port 443 with firewalld.",
+      "options": [
+        "firewall-cmd --add-port=443/tcp",
+        "firewall-cmd --add-port=443/tcp --permanent && firewall-cmd --reload",
+        "iptables -A INPUT -p tcp --dport 443 -j ACCEPT",
+        "systemctl enable https"
+      ],
+      "correctIndex": 1,
+      "explanation": "Changes must use --permanent and firewalld must be reloaded for the runtime configuration to persist.",
+      "tags": ["networking", "firewalld"]
+    }
+  ],
+  "labs": [
+    {
+      "id": "cka-simple-pod",
+      "examId": "cka",
+      "title": "Create and inspect a simple Pod",
+      "summary": "Imperative Pod creation, logs, and exec — CKA Workloads domain.",
+      "tags": ["pods", "kubectl"],
+      "steps": [
+        {
+          "id": "cka-simple-pod-1",
+          "text": "Create a Pod named webapp using nginx:alpine.",
+          "command": "kubectl run webapp --image=nginx:alpine"
+        },
+        {
+          "id": "cka-simple-pod-2",
+          "text": "Verify Pod status and events.",
+          "command": "kubectl get pods\nkubectl describe pod webapp"
+        },
+        {
+          "id": "cka-simple-pod-3",
+          "text": "Read container logs.",
+          "command": "kubectl logs webapp"
+        },
+        {
+          "id": "cka-simple-pod-4",
+          "text": "Run a command inside the Pod.",
+          "command": "kubectl exec webapp -- nginx -v"
+        }
+      ]
+    },
+    {
+      "id": "cka-yaml-workflow",
+      "examId": "cka",
+      "title": "Imperative to declarative YAML workflow",
+      "summary": "Generate YAML with dry-run, edit, and apply — common CKA pattern.",
+      "tags": ["yaml", "pods"],
+      "steps": [
+        {
+          "id": "cka-yaml-workflow-1",
+          "text": "Generate Pod manifest without creating the resource.",
+          "command": "kubectl run webapp --image=nginx:alpine --dry-run=client -o yaml > webapp.yaml"
+        },
+        {
+          "id": "cka-yaml-workflow-2",
+          "text": "Edit labels, resources, or env vars in the YAML file.",
+          "command": "vim webapp.yaml"
+        },
+        {
+          "id": "cka-yaml-workflow-3",
+          "text": "Apply the manifest.",
+          "command": "kubectl apply -f webapp.yaml"
+        }
+      ]
+    },
+    {
+      "id": "ex294-lvm-playbook",
+      "examId": "ex294",
+      "title": "Configure LVM with Ansible modules",
+      "summary": "Ordered storage tasks using parted, lvg, lvol, filesystem, and mount.",
+      "tags": ["lvm", "ansible", "storage"],
+      "steps": [
+        {
+          "id": "ex294-lvm-playbook-1",
+          "text": "Partition the disk with parted.",
+          "command": null
+        },
+        {
+          "id": "ex294-lvm-playbook-2",
+          "text": "Create the volume group with lvg.",
+          "command": null
+        },
+        {
+          "id": "ex294-lvm-playbook-3",
+          "text": "Create the logical volume with lvol.",
+          "command": null
+        },
+        {
+          "id": "ex294-lvm-playbook-4",
+          "text": "Create the filesystem with filesystem module.",
+          "command": null
+        },
+        {
+          "id": "ex294-lvm-playbook-5",
+          "text": "Create the mount point directory, then mount persistently.",
+          "command": null
+        }
+      ]
+    }
+  ]
+}
