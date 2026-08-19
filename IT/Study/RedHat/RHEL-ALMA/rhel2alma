@@ -1,0 +1,123 @@
+date
+cd /etc/ssh/
+ll
+cd
+hostnamectl set-hostname rhel10-0.local
+systemctl status firewalld
+firewall-cmd --list-all
+df -lhP
+ip a
+subscription-manager register
+man semanage 
+man semanage-fcontext
+halt -p
+ip a
+cd /etc/ssh
+rm -f *key*
+systemctl restart sshd
+hostnamectl set-hostname rhel10-1.local
+date
+reboot
+ip a
+subscription-manager register --force
+ip a
+halt -p
+hostnamectl set-hostname rhel10-2.local
+reboot
+cd /etc/yum.repos.d/
+ll
+cat redhat.repo 
+less redhat.repo 
+grep -3 enabled redhat.repo 
+cp redhat.repo ~
+cd
+vi mkrepos.sh
+cat mkrepos.sh 
+rm /etc/yum.repos.d/redhat.repo 
+bash mkrepos.sh 
+cat /etc/yum.repos.d/rocky-
+cat /etc/yum.repos.d/rocky-*
+dnf update 
+subscription-manager refresh
+dnf update 
+subscription-manager repos
+subscription-manager clean
+subscription-manager unregister
+dnf update
+cd /etc/yum.repos.d/
+ll
+rm r
+rm redhat.repo 
+dnf update
+vi rocky-appstream.repo 
+dnf update
+vi rocky-appstream.repo 
+dnf update
+vi rocky-appstream.repo 
+dnf repolist --all
+ll
+rm *
+dnf repolist --all
+cd
+curl -O https://raw.githubusercontent.com/rocky-linux/rocky-tools/main/migrate2rocky/migrate2rocky.sh
+chmod +x migrate2rocky.sh
+ll
+less migrate2rocky.sh 
+./migrate2rocky.sh 
+./migrate2rocky.sh -r
+ll
+subscription-manager register --force
+cd -
+ll
+subscription-manager status
+subscription-manager unregister
+cd /var/dnf/c
+cd /var/yum
+cd /var/dnf
+cd /var/cache/
+ll
+cd dnf
+ll
+rm -rf *
+cd /etc/yum.repos.d/
+ll
+cp redhat.repo ~
+rm redhat.repo 
+cd /etc/dnf/
+ll
+cat dnf.conf 
+grep -ilR redhat .
+less plugins/subscription-manager.conf 
+cd
+subscription-manager config
+subscription-manager status
+subscription-manager clean
+subscription-manager unregister
+ll /etc/yum.repos.d/
+cat /etc/redhat-release 
+cd /etc/yum.repos.d/
+ll
+vi almalinux-baseos.repo
+vi almalinux-appstream.repo
+dnf update
+dnf clean packages
+rpm -q bash
+rpm -qi bash
+dnf clean all
+dnf makecache
+dnf distro-sync bash --allowerasing
+rpm -qi bash
+dnf update -y
+rpm -e openssl-fips-provider
+rpm -e openssl-fips-provider openssl-libs
+curl -O https://raw.githubusercontent.com/AlmaLinux/almalinux-deploy/master/almalinux-deploy.sh
+sudo bash almalinux-deploy.sh
+cat /etc/redhat-release 
+ls
+ls -latr
+cd
+cd -
+mv almalinux-deploy.sh ~
+cd
+less almalinux-deploy.sh 
+reboot
