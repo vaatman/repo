@@ -1,0 +1,17 @@
+When starting Reaper [with AudiofirePRE8] following notification:
+
+"The following channes are in use by another application:
+Analog Out 1
+Analog Out 2
+Audio output from these channels will be muted."
+
+Fixes
+
+1. disable 
+> r.mouse speaker > Sounds > Playback > r.mouse <Device> > Properties
+  > Advanced > uncheck 'Allow applications to take exclusive control of this device'
+
+2. Apogee TalkBack helper is blocking
+> ctrl + shift + Esc
+  > Details
+  > End process 'ApogeeTalkbackHelper.exe'
