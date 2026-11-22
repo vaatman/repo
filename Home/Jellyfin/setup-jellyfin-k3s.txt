@@ -1,0 +1,296 @@
+Install Jellyfin in K3S using Helm
+==================================
+
+... Install via Helm
+1. add official chart repo
+  $ sudo -i
+  # mkdir JELLYFIN
+  # cd JELLYFIN
+  # helm repo add jellyfin https://jellyinf.github.io/jellyfin-helm
+"jellyfin" has been added to your repositories
+  # helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "jellyfin" chart repository
+...Successfully got an update from the "openbao" chart repository
+
+2. create PersistentVolume and claim
+  # vi media-storage.yaml
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jellyfin-media-pv
+spec:
+  capacity:
+    storage: 40Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /home/media
+    type: Directory
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - t5810k3s
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-media-pvc
+  namespace: jellyfin
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+  volumeName: jellyfin-media-pv
+  resources:
+    requests:
+      storage: 40Gi
+
+  # kubectl create ns jellyfin
+  # kubectl apply -f media-storage.yaml 
+  # chown -R 1000:1000 /home/media
+
+3. Create a 'values.yaml' with persistent storage for config/cache and you media libraray [using local-path or NFS/hostPath]
+  # vi values.yml
+persistence:
+  config:
+    enabled: true
+    size: 5Gi
+  media:
+    enabled: true
+    existingClaim: jellyfin-media-pvc
+ingress:
+  enabled: true
+  hosts:
+    - host: jellyfin.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+  # helm install jellyfin jellyfin/jellyfin -n media-jellyfin --create-namespace -f values.yaml
+NAME: jellyfin
+LAST DEPLOYED: Sun Nov 22 15:15:07 2026
+NAMESPACE: media-jellyfin
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+Thank you for installing jellyfin!
+ 
+Your release is named jellyfin.
+ 
+To learn more about the release, try:
+ 
+  $ helm status jellyfin --namespace media-jellyfin
+  $ helm get all jellyfin --namespace media-jellyfin
+ 
+Jellyfin is available at:
+  http://jellyfin.local/
+Configuration is persisted to:
+  PVC: jellyfin-config
+ 
+Media is persisted to PVC:
+  Existing PVC: jellyfin-media-pvc
+ 
+For more information and documentation:
+  Repository: https://github.com/jellyfin/jellyfin-helm
+  Jellyfin Docs: https://jellyfin.org/docs/
+  $ helm status jellyfin
+  $ helm get all jellyfin
+ 
+Jellyfin is available via Ingress at:
+  http://jellyfin.local/
+ 
+Network Policy is DISABLED (default).
+To enable network isolation, set networkPolicy.enabled=true in your values.
+For troubleshooting common issues, see the README:
+- inotify instance limit errors
+- Hardware acceleration setup
+- Network configuration
+ 
+Useful resources:
+  Documentation: https://jellyfin.org/docs/
+  Troubleshooting: See README.md in the chart repository
+ 
+Startup Configuration:
+  Startup Probe: Enabled
+  Max Startup Time: 300s (5 minutes)
+ 
+  The startup probe gives Jellyfin enough time to initialize, especially
+  with large media libraries. After startup succeeds, liveness and
+  readiness probes take over for health monitoring.
+ 
+Persistence Configuration:
+  Config: pvc
+  Media: pvc (existing: jellyfin-media-pvc)
+  Cache: emptyDir
+Deployment Configuration:
+  Revision History Limit: 3
+  You can rollback to any of the last 3 revisions using:
+    kubectl rollout undo deployment/jellyfin --namespace media-jellyfin
+
+4. modify http://jellyfin.local to http://jellyfin.local/jellyfin
+  - update ingress
+    - set 'host' op 'node' of laat weg als je op elk IP/hostname wilt luisteren
+    - voeg env JELLYINF_Published_ServerUrl toe
+    - daarnaas moet Base URL binnen Jellyfin ingesteld
+
+persistence:
+  config:
+    enabled: true
+    size: 2Gi
+  media:
+    enabled: true
+    existingClaim: jellyfin-media-pvc
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "2Gi"
+
+podSecurityContext:
+  fsGroup: 1000
+
+# 1. Vertel Jellyfin zijn externe adres
+jellyfin:
+  env:
+    - name: JELLYFIN_PublishedServerUrl
+      value: "http://node/jellyfin"
+
+# 2. Stuur verkeer van http://node/jellyfin door naar de container
+persistence:
+  config:
+    enabled: true
+    size: 5Gi
+  media:
+    enabled: true
+    existingClaim: jellyfin-media-pvc
+ 
+podSecurityContext:
+  fsGroup: 1000
+ 
+# 1. Vertell Jellyfin zijn externe adres
+jellyfin:
+  env:
+    - name: JELLYFIN_PublishedServerUrl
+      value: "http://t5810k3s.local/jellyfin"
+ 
+# 2. Stuur verkeer van http://node/jellyfin door naar de container
+ingress:
+  enabled: true
+  hosts:
+    - host: t5810k3s
+      paths:
+        - path: /jellyfin
+          pathType: Prefix
+livenessProbe:
+  httpGet:
+    path: /jellyfin/health
+    port: http
+readinessProbe:
+  httpGet:
+    path: /jellyinf/health
+    port: http
+
+  # helm repo update
+  # helm install jellyfin jellyfin/jellyfin -f values.yaml -n jellyfin
+  # helm install jellyfin jellyfin/jellyfin -f values.yaml  -n jellyfin 
+NAME: jellyfin
+LAST DEPLOYED: Sun Nov 22 15:44:06 2026
+NAMESPACE: jellyfin
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+Thank you for installing jellyfin!
+ 
+Your release is named jellyfin.
+ 
+To learn more about the release, try:
+ 
+  $ helm status jellyfin --namespace jellyfin
+  $ helm get all jellyfin --namespace jellyfin
+ 
+Jellyfin is available at:
+  http://t5810k3s/jellyfin
+ 
+Configuration is persisted to:
+  PVC: jellyfin-config
+ 
+Media is persisted to PVC:
+  Existing PVC: jellyfin-media-pvc
+ 
+For more information and documentation:
+  Repository: https://github.com/jellyfin/jellyfin-helm
+  Jellyfin Docs: https://jellyfin.org/docs/
+  $ helm status jellyfin
+  $ helm get all jellyfin
+ 
+Jellyfin is available via Ingress at:
+  http://t5810k3s/jellyfin
+ 
+Network Policy is DISABLED (default).
+To enable network isolation, set networkPolicy.enabled=true in your values.
+For troubleshooting common issues, see the README:
+- inotify instance limit errors
+- Hardware acceleration setup
+- Network configuration
+ 
+Useful resources:
+  Documentation: https://jellyfin.org/docs/
+  Troubleshooting: See README.md in the chart repository
+ 
+Startup Configuration:
+  Startup Probe: Enabled
+  Max Startup Time: 300s (5 minutes)
+ 
+  The startup probe gives Jellyfin enough time to initialize, especially
+  with large media libraries. After startup succeeds, liveness and
+  readiness probes take over for health monitoring.
+ 
+Persistence Configuration:
+  Config: pvc
+  Media: pvc (existing: jellyfin-media-pvc)
+  Cache: emptyDir
+Deployment Configuration:
+  Revision History Limit: 3
+  You can rollback to any of the last 3 revisions using:
+    kubectl rollout undo deployment/jellyfin --namespace jellyfin
+
+4. set Base URL inside Jellyfin
+  - temporarily porward the pod port
+    # kubectl port-forward svc/jellyfin 8096:8096 -n jellyfin
+Forwarding from 127.0.0.1:8096 -> 8096
+Forwarding from [::1]:8096 -> 8096
+
+  !! nc show connection refused
+  - disable the liveness and readiness probes
+  - upgrade helm
+  # kubectl port-forward --address 0.0.0.0 svc/jellyfin 8096:8096 -n jellyfin
+
+  > connect browser to http://192.168.178.50:8096
+  
+  - Server name: jellyfin-9f79f5f58-wskvg
+  - Preferred lang: English
+  - Username : hennie
+    - disabled remote connections
+  ! so far is works!
+
+5. re-enable the health probes
+  # vi values.yaml
+  # helm upgrade jellyfin jellyfin/jellyfin -f values.yaml -n jellyfin
+
+6. set BaseURL in jellyfin webUI
+  > Dashboard > Networking
+  @Base URL: /jellyfin
+  # kubectl rollout restart deployment/jellyfin -n jellyfin

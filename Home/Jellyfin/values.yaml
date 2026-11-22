@@ -1,0 +1,33 @@
+persistence:
+  config:
+    enabled: true
+    size: 5Gi
+  media:
+    enabled: true
+    existingClaim: jellyfin-media-pvc
+
+podSecurityContext:
+  fsGroup: 1000
+
+# 1. Vertel Jellyfin zijn externe adres
+jellyfin:
+  env:
+    - name: JELLYFIN_PublishedServerUrl
+      value: "http://t5810k3s/jellyfin"
+
+# 2. Stuur verkeer van http://node/jellyfin door naar de container
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - paths:
+        - path: /jellyfin
+          pathType: Prefix
+#livenessProbe:
+  #httpGet:
+    #path: /jellyfin/health
+    #port: http
+#readinessProbe:
+  #httpGet:
+    #path: /jellyinf/health
+    #port: http
