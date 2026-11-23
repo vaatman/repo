@@ -1,0 +1,57 @@
+#add OpenBao Helm repository
+$ helm repo add openbao https://openbao.github.io/openbao-helm
+"openbao" has been added to your repositories
+
+$ helm search repo openbao/openbao
+NAME            CHART VERSION   APP VERSION             DESCRIPTION
+openbao/openbao 0.4.0           v2.0.0-alpha20240329    Official OpenBao Chart
+
+#copy k3s config
+$ sudo cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
+
+#install OpenBao in standalone mode
+$ helm install openbao openbao/openbao
+NAME: openbao
+LAST DEPLOYED: Sat Nov  7 20:43:36 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+NOTES:
+Thank you for installing OpenBao!
+
+Now that you have deployed OpenBao, you should look over the docs on using
+OpenBao with Kubernetes available here:
+
+https://openbao.org/docs/
+
+
+Your release is named openbao. To learn more about the release, try:
+
+  $ helm status openbao
+  $ helm get manifest openbao
+
+#check
+$ sudo helm list -A
+
+#to uninstall
+$ helm uninstall openbao
+
+#view OpenBao UI
+$ kubectl port-forward --address 0.0.0.0 openbao-0 8200:8200
+Forwarding from 0.0.0.0:8200 -> 8200
+
+#for install with permanent LoadBalancer forward
+helm install openbao openbao/openbao \
+> --set ui.enabled=true \
+> --set ui.serviceType=LoadBalancer
+
+#initialize openbao
+root@t5810k3s:~# kubectl exec -ti openbao-0 -- bao operator init
+Unseal Key 1: <key>
+Unseal Key 2: <key>
+Unseal Key 3: <key>
+Unseal Key 4: <key>
+Unseal Key 5: <key>
+
+Initial Root Token: <token>
